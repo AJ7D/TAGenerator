@@ -4,7 +4,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -13,8 +12,6 @@ import java.util.ArrayList;
 
 public class ExitConfigController {
     public Pane pane;
-
-    public static Stage stage;
 
     public Text title;
     public Text roomDirTxt;
@@ -29,7 +26,6 @@ public class ExitConfigController {
     public ComboBox<String> roomSelCbx;
 
     Game game = GeneratorController.getNewGame();
-    public Room oldRoom;
 
     @FXML
     private void initialize() {
@@ -37,9 +33,10 @@ public class ExitConfigController {
         isLockedChx.setOnAction(eventHandler);
     }
 
-    public void saveExit(MouseEvent event) {
+    public void saveExit() {
         Room toConnect = game.getRoom(roomSelCbx.getValue());
         game.connectRooms(room, direction, toConnect);
+        room.setIsLocked(isLockedChx.isSelected(), direction);
 
         System.out.println(room.getExits());
         System.out.println(toConnect.getExits());
@@ -74,15 +71,10 @@ public class ExitConfigController {
         }
 
         isLockedChx.setSelected(room.isDirectionBlocked(dir));
-        if (isLockedChx.isSelected()) {
-            newReqBtn.setDisable(false);
-        }
-        else {
-            newReqBtn.setDisable(true);
-        }
+        newReqBtn.setDisable(!isLockedChx.isSelected());
     }
 
-    EventHandler eventHandler = new EventHandler<ActionEvent>() {
+    EventHandler<ActionEvent> eventHandler = new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent event) {
             if (event.getSource().equals(isLockedChx)) {

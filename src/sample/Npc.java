@@ -5,16 +5,16 @@ import java.util.ArrayList;
 
 public class Npc extends Character implements Serializable {
 
-    private ArrayList<String> dialogue = new ArrayList<>();
+    private final ArrayList<String> dialogue = new ArrayList<>();
     private int currentDialogue;
 
-    Npc(String n) {
-        super(n);
+    Npc(String name) {
+        super(name);
         currentDialogue = 0;
     }
 
-    Npc(String n, Room cr) {
-        super(n, cr);
+    Npc(String name, Room currentRoom) {
+        super(name, currentRoom);
         currentDialogue = 0;
     }
 

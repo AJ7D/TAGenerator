@@ -1,42 +1,56 @@
 package sample;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 
 public class EngineController {
 
     public TextField textEntryTa;
-    public VBox gameTextVbox;
     public ScrollPane gameTextSp;
     public TextArea gameTextTa;
+    public Button loadGameBtn;
 
-    Game game = GeneratorController.getNewGame();
-    Player player = game.getPlayer();
+    EngineState state = EngineState.NOT_LOADED;
+    Game game;
+    Player player;
 
     @FXML
     private void initialize() {
-        player.setCurrentRoom(game.getGameMap().get(0));
-        textEntryTa.setOnKeyPressed(new EventHandler<KeyEvent>() {
-
-            @Override
-            public void handle(KeyEvent event) {
-                if(event.getCode().equals(KeyCode.ENTER)) {
-                    String text = textEntryTa.getText();
-                    gameTextTa.appendText(text + "\n");
-                    gameTextTa.appendText(parseInput(text) +"\n\n");
-                    textEntryTa.clear();
-                }
+        textEntryTa.setOnKeyPressed(event -> {
+            if(event.getCode().equals(KeyCode.ENTER)) {
+                String text = textEntryTa.getText();
+                gameTextTa.appendText(text + "\n");
+                gameTextTa.appendText(engineControl(text) +"\n\n");
+                textEntryTa.clear();
             }
         });
+    }
+
+    public String engineControl(String input) {
+        switch (state) {
+            case NOT_LOADED:
+                return "NO GAME LOADED.\nPlease load a game to play.";
+            case PLAYING:
+                return parseInput(input);
+            case GAMEOVER:
+                return "YOU HAVE LOST.\nIf you wish to play again, please load your last save or" +
+                        "start from the beginning.";
+            case WIN:
+                return "YOU HAVE WON.\nPlease load a new game if you wish to play more.";
+        }
+        return "ERROR: Unknown state.";
     }
 
     public String parseInput(String input) {
@@ -64,10 +78,40 @@ public class EngineController {
                     return player.viewItem(split[1]);
                 case "inventory":
                     return player.checkInventory();
+                case "location":
+                    return player.getBearings();
                 default:
                     return "Command not recognised.";
             }
         }
         return "Enter [command] [item]";
+    }
+
+    public void selectGameFile() throws IOException, ClassNotFoundException {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Game file", "*.txt"));
+
+        Stage stage = (Stage) loadGameBtn.getScene().getWindow();
+        File selectedFile = fileChooser.showOpenDialog(stage);
+        gameTextTa.appendText(loadGameFile(selectedFile));
+    }
+
+    public String loadGameFile(File file) throws IOException, ClassNotFoundException {
+        FileInputStream fileInputStream
+                = new FileInputStream(file);
+        ObjectInputStream objectInputStream
+                = new ObjectInputStream(fileInputStream);
+
+        game = (Game) objectInputStream.readObject();
+        objectInputStream.close();
+
+        if (game == null) {
+            return "Unable to load game. Please check that the file is correct.";
+        }
+
+        player = game.getPlayer();
+        player.setCurrentRoom(game.getStartingRoom());
+        state = EngineState.PLAYING;
+        return "Game loaded successfully. Enjoy playing " + game.getTitle() + "!\n";
     }
 }

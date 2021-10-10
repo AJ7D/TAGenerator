@@ -7,7 +7,7 @@ import java.util.List;
 public class Inventory implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private List<Item> contents = new ArrayList<>();
+    private final List<Item> contents = new ArrayList<>();
     private int capacity;
 
     public static int NO_CAPACITY = -1;
@@ -20,34 +20,25 @@ public class Inventory implements Serializable {
         this.capacity = capacity;
     }
 
-    public Inventory(List<Item> contents) {
-        this.contents = contents;
-    }
-
     public List<Item> getContents() { return this.contents; }
 
-    public void addItem(Item itemToAdd) {
+    public int getCapacity() { return this.capacity; }
+
+    public void setCapacity(int newCapacity) { this.capacity = newCapacity; }
+
+    public String addItem(Item itemToAdd) {
         if (this.getContents().size() == this.capacity) {
-            System.out.println("You are carrying too many items.");
-            return;
-        }
-        if (contents != null) {
-            for (Item i : contents) {
-                if (i.getId() == itemToAdd.getId())
-                    //increment count
-                    return;
-            }
+            return "You are carrying too many items.";
         }
         contents.add(itemToAdd);
+        return "Picked up " + itemToAdd.getName() + ".";
     }
 
     public void removeItem(Item itemToRemove) {
-        if (contents != null) {
-            for (Item i : contents) {
-                if (i.getId() == itemToRemove.getId()) {
-                    contents.remove(itemToRemove);
-                    return;
-                }
+        for (Item i : contents) {
+            if (i.getId() == itemToRemove.getId()) {
+                contents.remove(itemToRemove);
+                return;
             }
         }
         System.out.println(itemToRemove + " was not found.");

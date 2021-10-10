@@ -1,21 +1,15 @@
 package sample;
 
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 
 public class RoomConfigController {
     public Pane pane;
-
-    public static Stage stage;
 
     public Text title;
     public Text roomIdTxt;
@@ -34,7 +28,7 @@ public class RoomConfigController {
 
     }
 
-    public void saveRoom(MouseEvent event) {
+    public void saveRoom() {
         String rName = nameEntryTF.getText();
         String rDesc = roomDescTA.getText();
 

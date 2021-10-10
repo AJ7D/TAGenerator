@@ -14,17 +14,17 @@ public class Room implements Serializable {
 
     private String name;
     private String description;
-    private ArrayList<Item> items = new ArrayList<>();
-    private ArrayList<Npc> npcs = new ArrayList<>();
+    private final ArrayList<Item> items = new ArrayList<>();
+    private final ArrayList<Npc> npcs = new ArrayList<>();
 
-    private boolean[] isLocked = new boolean[4];
-    private String[] lockedText = new String[4];
+    private final boolean[] isLocked = new boolean[4];
+    private final String[] lockedText = new String[4];
     private Room[] exits = new Room[4];
 
     //for when no passage exists, as opposed to a locked passage
 
     public Room() {
-        this.name = "Room 001";
+        this.name = "Room1";
         this.description = "An empty room.";
     }
 
@@ -59,6 +59,18 @@ public class Room implements Serializable {
     public ArrayList<Npc> getNpcs() { return npcs; }
 
     public boolean[] getIsLocked() { return this.isLocked; }
+
+    public String[] getExitNames() {
+        String[] rooms = new String[4];
+        int i = 0;
+        for (Room r : this.exits ) {
+            if (r != null) {
+                rooms[i] = r.getName();
+            }
+            i++;
+        }
+        return rooms;
+    }
 
     public boolean isDirectionBlocked(Direction dir) { return this.isLocked[dir.getValue()]; }
 
@@ -123,9 +135,9 @@ public class Room implements Serializable {
                 ", description='" + description + '\'' +
                 ", items=" + this.getItems() +
                 ", npcs=" + npcs +
-                ", isLocked=" + isLocked +
-                ", lockedText=" + lockedText +
-                ", exits=" + exits +
+                ", isLocked=" + Arrays.toString(isLocked) +
+                ", lockedText=" + Arrays.toString(lockedText) +
+                ", exits=" + Arrays.toString(this.getExitNames()) +
                 '}';
     }
 
@@ -154,82 +166,5 @@ public class Room implements Serializable {
     public boolean compareRoom(Room room) {
         return room.getId() == this.getId();
     }
-
-    /**
-     *     public boolean createPassage(Room room2, Direction dir, int id, String name, boolean locked,
-     *                                  boolean[] conditions, String success, String failure) {
-     *         boolean p = (this.checkForPassage(dir) && this.getConnectedRoom(dir).checkForPassage(dir.inverseDir()));
-     *         while (p) {
-     *                 Scanner s = new Scanner(System.in);
-     *                 System.out.println("Do you wish to overwrite the passage for " + dir.name()
-     *                                     + " of " + this.getName() + "? Y/N\n");
-     *                 String input = s.next();
-     *                 if (input.equals("Y") || input.equals("y")) {
-     *                     Room other = this.getConnectedRoom(dir); //remove connection from both ends
-     *                     other.clearDir(dir.inverseDir());
-     *                     this.clearDir(dir);
-     *                     p = false;
-     *                 }
-     *                 else if (input.equals("N") || input.equals("n")) {
-     *                     return false;
-     *                 }
-     *             }
-     *         Passage passage = new Passage(id, name, locked, conditions, new Room[]{this, room2}, success, failure); //todo read this data
-     *         this.getPassages()[dir.getValue()] = passage;
-     *         dir = dir.inverseDir();
-     *         room2.getPassages()[dir.getValue()] = passage;
-     *         return true;
-     *     }
-     *
-     *         public void clearDir(Direction dir) {
-     *         this.getPassages()[dir.getValue()] = null;
-     *     }
-     *
-     *
-     public boolean checkForPassage(Direction dir) {
-     Passage d = this.getPassages()[dir.getValue()];
-     return d != null;
-     }
-
-     public boolean addConnection(Direction dir, Room roomToConnect) {
-     boolean p = (this.getConnections().get(dir) != null);
-     while (p) {
-     Scanner s = new Scanner(System.in);
-     System.out.println("Do you wish to overwrite the passage for " + dir.name()
-     + " of " + this.getName() + "? Y/N\n");
-     String input = s.next();
-     if (input.equals("Y") || input.equals("y")) {
-     Room other = this.getConnections().get(dir); //remove connection from both ends
-     other.getConnections().remove(dir.inverseDir());
-     this.getConnections().remove(dir);
-     p = false;
-     }
-     else if (input.equals("N") || input.equals("n")) {
-     return false;
-     }
-     }
-     this.connections.put(dir, roomToConnect);
-     roomToConnect.connections.put(dir.inverseDir(), this);
-     return true;
-     }
-
-     public Room getConnectedRoom(Direction dir) {
-     Passage p = this.getPassages()[dir.getValue()];
-     if (p.getRooms()[0] != this)
-     return p.getRooms()[0];
-     else
-     return p.getRooms()[1];
-     }
-
-     public String deleteConnection(Direction dir) {
-     if (this.hasConnection(dir)) {
-     Room other = this.getConnections().get(dir);
-     other.getConnections().remove(dir.inverseDir());
-     this.getConnections().remove(dir);
-     return "Deleted " + this.getName() + " <--> " + other.getName();
-     }
-     return "No connection found (" + this.getName() + " - " + dir + ")";
-     }
-     */
 }
 

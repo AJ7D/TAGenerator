@@ -8,16 +8,15 @@ public class Player extends Character {
         super(n);
     }
 
-    Player(String n, Room cr) {
-        super(n, cr);
+    Player(String name, Room currentRoom) {
+        super(name, currentRoom);
     }
 
     public String acquire(String item) {
         for (Item i : this.getCurrentRoom().getItems()) {
-            if (i.canBeTaken() && i.getName().toLowerCase().equals(item.toLowerCase())) {
-                this.getInventory().addItem(i);
+            if (i.canBeTaken() && i.getName().equalsIgnoreCase(item)) {
                 this.getCurrentRoom().deleteItem(i);
-                return "Picked up " + i.getName() + ".";
+                return this.getInventory().addItem(i);
             }
         }
         return "You could not get that item.";
@@ -25,7 +24,7 @@ public class Player extends Character {
 
     public String drop(String item) {
         for (Item i : this.getInventory().getContents()) {
-            if (i.getName().toLowerCase().equals(item.toLowerCase())) {
+            if (i.getName().equalsIgnoreCase(item)) {
                 this.getInventory().removeItem(i);
                 this.getCurrentRoom().addItem(i);
                 return "Dropped " + i.getName() + ".";
@@ -42,7 +41,6 @@ public class Player extends Character {
     public String travel(Direction dir) {
         if (this.getCurrentRoom().checkForExit(dir)) {
             Room r = this.getCurrentRoom().getExit(dir);
-            int i = dir.getValue();
             String output;
 
             if (!this.getCurrentRoom().isDirectionBlocked(dir)) {
@@ -66,7 +64,8 @@ public class Player extends Character {
     }
 
     public String getBearings() {
-        return "YOU STAND IN: " + this.getCurrentRoom().getName() + "\nWhat will you do?";
+        return "YOU STAND IN: " + this.getCurrentRoom().getName() + "\n" +
+                this.getCurrentRoom().getDescription();
     }
 
     public String checkSurroundings() {

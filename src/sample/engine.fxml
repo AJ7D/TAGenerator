@@ -1,27 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import java.net.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
 <AnchorPane prefHeight="500.0" prefWidth="800.0" style="-fx-background-color: #F0DFAD;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.EngineController">
-   <children>
-      <TextField fx:id="textEntryTa" layoutX="140.0" layoutY="455.0" promptText="Enter command..." scaleX="1.5" scaleY="1.5" style="-fx-pref-width: 520; -fx-background-color: transparent;">
-         <font>
-            <Font name="Courier New Bold" size="14.0" />
-         </font></TextField>
-      <Text layoutX="14.0" layoutY="472.0" strokeType="OUTSIDE" strokeWidth="0.0" text="&gt;">
-         <font>
-            <Font name="Courier New Bold" size="14.0" />
-         </font>
-      </Text>
-      <ScrollPane fx:id="gameTextSp" prefHeight="451.0" prefWidth="800.0" style="-fx-background-color: transparent;" styleClass="viewport">
-         <content>
-            <TextArea fx:id="gameTextTa" prefHeight="447.0" prefWidth="793.0" styleClass="enginetext" />
-         </content></ScrollPane>
-   </children>
    <stylesheets>
       <URL value="@TAGmain.css" />
    </stylesheets>
+   <TextField fx:id="textEntryTa" layoutX="140.0" layoutY="455.0" promptText="Enter command..." scaleX="1.5" scaleY="1.5" style="-fx-pref-width: 520; -fx-background-color: transparent;">
+      <font>
+         <Font name="Courier New Bold" size="14.0" />
+      </font>
+   </TextField>
+   <Text layoutX="14.0" layoutY="472.0" strokeType="OUTSIDE" strokeWidth="0.0" text="&gt;">
+      <font>
+         <Font name="Courier New Bold" size="14.0" />
+      </font>
+   </Text>
+   <Button fx:id="loadGameBtn" layoutX="10.0" layoutY="8.0" mnemonicParsing="false" text="Load Game" onMouseClicked="#selectGameFile" />
+   <ScrollPane fx:id="gameTextSp" layoutY="45.0" prefHeight="406.0" prefWidth="800.0" style="-fx-background-color: transparent;" styleClass="viewport">
+      <TextArea fx:id="gameTextTa" editable="false" prefHeight="393.0" prefWidth="793.0">
+         <styleClass>
+            <String fx:value="enginetext" />
+            <String fx:value="engineTa" />
+         </styleClass></TextArea>
+   </ScrollPane>
 </AnchorPane>

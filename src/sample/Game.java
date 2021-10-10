@@ -10,17 +10,26 @@ public class Game implements Serializable {
     private ArrayList<Room> gameMap = new ArrayList<>();
     private ArrayList<Item> gameItems = new ArrayList<>();
     private Player player = new Player("Player");
+    private Room startingRoom = new Room();
 
     public Game() {
+        gameMap.add(startingRoom);
     }
 
     public Game(String title) {
+        gameMap.add(startingRoom);
         this.title = title;
     }
 
     public String getTitle() { return this.title; }
 
+    public void setTitle(String newTitle) { this.title = newTitle; }
+
     public Player getPlayer() { return this.player; }
+
+    public Room getStartingRoom() { return this.startingRoom; }
+
+    public void setStartingRoom(Room newRoom) { this.startingRoom = newRoom; }
 
     public ArrayList<Room> getGameMap() { return this.gameMap; }
 
@@ -72,7 +81,7 @@ public class Game implements Serializable {
         for (Room r : gameMap) {
             if (r.getId() == (room.getId())) {
                 r = room;
-                System.out.println("Room " + room + " was updated.");
+                System.out.println("Room " + r + " was updated.");
                 return;
             }
         }
@@ -84,7 +93,7 @@ public class Game implements Serializable {
         for (Item i : gameItems) {
             if (i.getId() == (item.getId())) {
                 i = item;
-                System.out.println("Item " + item + " was updated.");
+                System.out.println("Item " + i + " was updated.");
                 return;
             }
         }
@@ -140,6 +149,7 @@ public class Game implements Serializable {
         System.out.println(g2.getGameMap());
         this.title = g2.getTitle();
         this.gameMap = g2.getGameMap();
+        this.gameItems = g2.getGameItems();
     }
 
     public static void main(String[] args) {

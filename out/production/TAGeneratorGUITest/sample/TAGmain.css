@@ -57,19 +57,19 @@ buttonscroll:pressed {
        -fx-background-color: transparent;
 }
 
-.text-area {
+.engineTa {
     -fx-background-color: transparent;
 }
 
-.text-area .scroll-pane {
+.engineTa .scroll-pane {
     -fx-background-color: transparent;
 }
 
-.text-area .scroll-pane .viewport{
+.engineTa .scroll-pane .viewport{
     -fx-background-color: transparent;
 }
 
 
-.text-area .scroll-pane .content{
+.engineTa .scroll-pane .content{
     -fx-background-color: transparent;
 }

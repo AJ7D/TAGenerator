@@ -6,7 +6,7 @@ public class Character implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String name;
-    private Inventory inventory = new Inventory();
+    private final Inventory inventory = new Inventory();
     private Room currentRoom;
 
     Character(String n) {
@@ -19,6 +19,8 @@ public class Character implements Serializable {
     }
 
     public String getName() { return this.name; }
+
+    public void setName(String newName) { this.name = newName; }
 
     public Inventory getInventory() { return this.inventory; }
 

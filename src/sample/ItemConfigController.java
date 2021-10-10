@@ -2,7 +2,6 @@ package sample;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -11,8 +10,6 @@ import java.util.ArrayList;
 
 public class ItemConfigController {
     public Pane pane;
-
-    public static Stage stage;
 
     public Text title;
     public Text itemIdTxt;
@@ -46,7 +43,7 @@ public class ItemConfigController {
         roomSelCbx.getSelectionModel().selectFirst();
     }
 
-    public void saveItem(MouseEvent event) {
+    public void saveItem() {
         String iName = nameEntryTF.getText();
         String iDesc = itemDescTA.getText();
         Type iType = readType();
@@ -106,7 +103,7 @@ public class ItemConfigController {
     }
 
     public Type readType() {
-        switch (itemTypeCbx.getValue().toString()) {
+        switch (itemTypeCbx.getValue()) {
             case "Consumable":
                 return Type.CONSUMABLE;
             case "Key":

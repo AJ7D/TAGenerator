@@ -117,10 +117,5 @@ public class Item implements Serializable {
                 '}';
     }
 
-    //FUNCTIONALITY
-    public void look() {
-        System.out.println(this.getDescription());
-    }
-
 }
 
