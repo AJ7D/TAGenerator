@@ -38,6 +38,8 @@
    </Text>
    <Button fx:id="editRoomBtn" layoutX="212.0" layoutY="388.0" mnemonicParsing="false" text="Edit Room" />
    <Button fx:id="addItemRoomBtn" layoutX="213.0" layoutY="445.0" mnemonicParsing="false" text="Add item to room" />
+   <Button fx:id="saveReturnBtn" layoutX="538.0" layoutY="285.0" mnemonicParsing="false" text="Save and return"
+   onMouseClicked="#switchScene"/>
     <stylesheets>
         <URL value="@TAGmain.css" />
     </stylesheets>

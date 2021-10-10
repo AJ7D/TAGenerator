@@ -12,28 +12,26 @@ public class Player extends Character {
         super(n, cr);
     }
 
-    public void acquire(String item) {
+    public String acquire(String item) {
         for (Item i : this.getCurrentRoom().getItems()) {
             if (i.canBeTaken() && i.getName().toLowerCase().equals(item.toLowerCase())) {
                 this.getInventory().addItem(i);
-                System.out.println("Picked up " + i.getName() + ".");
                 this.getCurrentRoom().deleteItem(i);
-                return;
+                return "Picked up " + i.getName() + ".";
             }
         }
-        System.out.println("You could not get that item.");
+        return "You could not get that item.";
     }
 
-    public void drop(String item) {
+    public String drop(String item) {
         for (Item i : this.getInventory().getContents()) {
             if (i.getName().toLowerCase().equals(item.toLowerCase())) {
                 this.getInventory().removeItem(i);
-                System.out.println("Dropped " + i.getName() + ".");
                 this.getCurrentRoom().addItem(i);
-                return;
+                return "Dropped " + i.getName() + ".";
             }
         }
-        System.out.println("You are not holding that item.");
+        return "You are not holding that item.";
     }
 
     public void give(Item item) {
@@ -41,38 +39,37 @@ public class Player extends Character {
         System.out.println("Gave player " + item);
     }
 
-    public void travel(Direction dir) {
+    public String travel(Direction dir) {
         if (this.getCurrentRoom().checkForExit(dir)) {
             Room r = this.getCurrentRoom().getExit(dir);
             int i = dir.getValue();
+            String output;
 
             if (!this.getCurrentRoom().isDirectionBlocked(dir)) {
                 this.setCurrentRoom(r);
-                System.out.println("You are in: " + r.getName());
-                System.out.println(r.getDescription());
+                output = "You are in: " + r.getName() + "\n" +r.getDescription();
             } else {
-                System.out.println(r.getLockedText(dir));
+                output = r.getLockedText(dir);
             }
-            return;
+            return output;
         }
-        System.out.println("There is no exit to the " + dir);
+        return "There is no exit to the " + dir;
     }
 
-    public void viewSelf() {
-        System.out.println("YOUR NAME IS " + this.getName() + ".");
+    public String viewSelf() {
         int inventorySize = this.getInventory().countItems();
         String item = "items";
         if (inventorySize == 1)
             item = "item";
-        System.out.println("You are carrying " + this.getInventory().countItems() + " " + item + ".");
+        return "YOUR NAME IS " + this.getName() + ".\nYou are carrying " + this.getInventory().countItems()
+                + " " + item + ".";
     }
 
-    public void getBearings() {
-        System.out.println("YOU STAND IN: " + this.getCurrentRoom().getName());
-        System.out.println("What will you do?");
+    public String getBearings() {
+        return "YOU STAND IN: " + this.getCurrentRoom().getName() + "\nWhat will you do?";
     }
 
-    public void checkSurroundings() {
+    public String checkSurroundings() {
         String desc = this.getCurrentRoom().getDescription();
         List<Item> items = this.getCurrentRoom().getVisibleItems();
         String itemsSeen = "You see... ";
@@ -91,7 +88,7 @@ public class Player extends Character {
                 itemsSeen = itemsSeen.concat(".");
             }
         }
-        System.out.println(itemsSeen);
+        return itemsSeen;
     }
 
     public void talk(Npc npc) {
@@ -103,6 +100,14 @@ public class Player extends Character {
         else {
             System.out.println("You are unable to find " + npc.getName());
         }
+    }
+
+    public String viewItem(String item) {
+        Item i = this.getInventory().findItemByName(item);
+        if (i == null) {
+            return "You are not holding any such item.";
+        }
+        return i.getDescription();
     }
 
     public boolean allTrue(boolean[] ar) {

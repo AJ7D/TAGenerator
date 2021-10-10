@@ -16,9 +16,9 @@
             <Font name="Courier New Bold" size="14.0" />
          </font>
       </Text>
-      <ScrollPane fx:id="gameTextSp" prefHeight="435.0" prefWidth="800.0" style="-fx-background-color: transparent;" styleClass="viewport">
+      <ScrollPane fx:id="gameTextSp" prefHeight="451.0" prefWidth="800.0" style="-fx-background-color: transparent;" styleClass="viewport">
          <content>
-            <TextArea fx:id="gameTextTa" prefHeight="421.0" prefWidth="793.0" styleClass="enginetext" />
+            <TextArea fx:id="gameTextTa" prefHeight="447.0" prefWidth="793.0" styleClass="enginetext" />
          </content></ScrollPane>
    </children>
    <stylesheets>

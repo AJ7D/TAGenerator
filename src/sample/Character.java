@@ -26,8 +26,8 @@ public class Character implements Serializable {
 
     public void setCurrentRoom(Room cr) { this.currentRoom = cr; }
 
-    public void checkInventory() {
-        this.getInventory().viewItems();
+    public String checkInventory() {
+        return this.getInventory().viewItems();
     }
 }
 

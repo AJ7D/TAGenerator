@@ -43,6 +43,7 @@ public class GeneratorController {
     public Button editRoomBtn;
     public Text selectedRoomTxt;
     public Button addItemRoomBtn;
+    public Button saveReturnBtn;
 
     @FXML
     private void initialize() {
@@ -236,4 +237,16 @@ public class GeneratorController {
     }
 
     public static Game getNewGame() { return newGame; }
+
+    public void switchScene(MouseEvent event) throws IOException {
+        String fxml = "sample.fxml";
+        if (event.getSource().equals(saveReturnBtn))
+            fxml = "sample.fxml";
+
+        Parent root = FXMLLoader.load(getClass().getResource(fxml));
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Scene scene = new Scene(root, 800, 500);
+        stage.setScene(scene);
+        stage.show();
+    }
 }

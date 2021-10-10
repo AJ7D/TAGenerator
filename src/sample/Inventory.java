@@ -61,15 +61,27 @@ public class Inventory implements Serializable {
         return "Item not found.";
     }
 
-    public void viewItems() {
-        System.out.println("YOUR INVENTORY CONTAINS: ");
-        if (contents.size() == 0) {
-            System.out.println("Nothing!");
-            return;
-        }
+    public Item findItemByName(String item) {
         for (Item i : contents) {
-            System.out.println(i.getName());
+            if (i.getName().equalsIgnoreCase(item)) {
+                return i;
+            }
         }
+        return null;
+    }
+
+    public String viewItems() {
+        String output = "";
+        output = output.concat("YOUR INVENTORY CONTAINS:\n");
+        if (contents.size() == 0) {
+            output = output.concat("Nothing!");
+        }
+        else {
+            for (Item i : contents) {
+                output = output.concat(i.getName() + "\n");
+            }
+        }
+        return output;
     }
 
     public int countItems() {
@@ -84,4 +96,5 @@ public class Inventory implements Serializable {
         }
         return false;
     }
+
 }

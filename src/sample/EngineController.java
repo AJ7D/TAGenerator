@@ -19,22 +19,55 @@ public class EngineController {
     public ScrollPane gameTextSp;
     public TextArea gameTextTa;
 
+    Game game = GeneratorController.getNewGame();
+    Player player = game.getPlayer();
+
     @FXML
     private void initialize() {
+        player.setCurrentRoom(game.getGameMap().get(0));
         textEntryTa.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
             @Override
             public void handle(KeyEvent event) {
                 if(event.getCode().equals(KeyCode.ENTER)) {
                     String text = textEntryTa.getText();
-                    gameTextTa.appendText(text + "\n\n");
+                    gameTextTa.appendText(text + "\n");
+                    gameTextTa.appendText(parseInput(text) +"\n\n");
                     textEntryTa.clear();
                 }
             }
         });
     }
 
-    public void parseInput(String input) {
+    public String parseInput(String input) {
+        String[] split = input.split(" ");
 
+        if (split.length == 2) {
+            switch (split[0]) {
+                case "take":
+                    return player.acquire(split[1]);
+                case "drop":
+                    return player.drop(split[1]);
+                case "look":
+                    return player.checkSurroundings();
+                case "self":
+                    return player.viewSelf();
+                case "north":
+                    return player.travel(Direction.NORTH);
+                case "east":
+                    return player.travel(Direction.EAST);
+                case "west":
+                    return player.travel(Direction.WEST);
+                case "south":
+                    return player.travel(Direction.SOUTH);
+                case "view":
+                    return player.viewItem(split[1]);
+                case "inventory":
+                    return player.checkInventory();
+                default:
+                    return "Command not recognised.";
+            }
+        }
+        return "Enter [command] [item]";
     }
 }
