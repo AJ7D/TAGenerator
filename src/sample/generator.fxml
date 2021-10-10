@@ -6,16 +6,16 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<Pane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500" prefWidth="800" style="-fx-background-color: #F0DFAD;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.GeneratorController">
-    <Text fx:id="nameTxt" layoutX="200.0" layoutY="29.0" text="Title of Game: " />
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500" prefWidth="800" style="-fx-background-color: #F0DFAD;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.GeneratorController">
+    <Text layoutX="200.0" layoutY="29.0" text="Title of Game: " />
     <TextField fx:id="nameEntryTF" layoutX="285.0" layoutY="12.0" />
 
-    <Button fx:id="newRoomBtn" layoutX="490.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#createNewObject" text="New Room" />
-    <Button fx:id="newItemBtn" layoutX="645.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#createNewItem" text="New Item" />
+    <Button fx:id="newRoomBtn" layoutX="490.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#updateRoom" text="New Room" />
+    <Button fx:id="newItemBtn" layoutX="645.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#updateItem" text="New Item" />
 
-    <ScrollPane fx:id="objectScrollPane" prefHeight="500.0" prefWidth="200.0">
+    <ScrollPane prefHeight="500.0" prefWidth="200.0">
         <AnchorPane fx:id="objectAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="500.0" prefWidth="200.0">
-            <ToolBar fx:id="objectToolBar" orientation="VERTICAL" prefHeight="500.0" prefWidth="200.0" AnchorPane.topAnchor="0.0" />
+            <ToolBar orientation="VERTICAL" prefHeight="500.0" prefWidth="200.0" AnchorPane.topAnchor="0.0" />
         </AnchorPane>
     </ScrollPane>
    <Pane prefHeight="200.0" prefWidth="200.0" scaleX="3.0" scaleY="0.8" style="-fx-background-color: #9DAD6F;" translateX="400.0" translateY="320.0" />
@@ -33,10 +33,10 @@
          <Font size="20.0" />
       </font>
    </Text>
-   <Button fx:id="editRoomBtn" layoutX="212.0" layoutY="388.0" mnemonicParsing="false" text="Edit Room" />
+   <Button fx:id="editRoomBtn" layoutX="212.0" layoutY="388.0" mnemonicParsing="false" text="Edit Room" onMouseClicked="#updateRoom"/>
    <Button fx:id="addItemRoomBtn" layoutX="213.0" layoutY="445.0" mnemonicParsing="false" text="Add item to room" />
    <Button fx:id="saveReturnBtn" layoutX="538.0" layoutY="285.0" mnemonicParsing="false" onMouseClicked="#switchScene" text="Save and return" />
-   <Text fx:id="startRoomTxt" layoutX="201.0" layoutY="59.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Starting room:" />
+   <Text layoutX="201.0" layoutY="59.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Starting room:" />
    <ComboBox fx:id="startRoomCbx" layoutX="284.0" layoutY="42.0" prefWidth="150.0" />
     <stylesheets>
         <URL value="@TAGmain.css" />

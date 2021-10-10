@@ -9,7 +9,6 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -18,30 +17,37 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class GeneratorController {
-    public Pane pane;
 
     public static Stage stage;
+    private static Game newGame;
+    private int spOffset = 0;
 
-    public TextField nameEntryTF;
-    public static Game newGame;
-    public Button newRoomBtn;
-    public Text nameTxt;
-    public ScrollPane objectScrollPane;
-    public AnchorPane objectAnchorPane;
-    public ToolBar objectToolBar;
-
-    public int spOffset = 0;
-    public Button newItemBtn;
-    public Button nExitBtn;
-    public Button eExitBtn;
-    public Button sExitBtn;
-    public Button wExitBtn;
-    public Button editRoomBtn;
-    public Text selectedRoomTxt;
-    public Button addItemRoomBtn;
-    public Button saveReturnBtn;
-    public Text startRoomTxt;
-    public ComboBox<String> startRoomCbx;
+    @FXML
+    private TextField nameEntryTF;
+    @FXML
+    private Button newRoomBtn;
+    @FXML
+    private AnchorPane objectAnchorPane;
+    @FXML
+    private Button newItemBtn;
+    @FXML
+    private Button nExitBtn;
+    @FXML
+    private Button eExitBtn;
+    @FXML
+    private Button sExitBtn;
+    @FXML
+    private Button wExitBtn;
+    @FXML
+    private Button editRoomBtn;
+    @FXML
+    private Text selectedRoomTxt;
+    @FXML
+    private Button addItemRoomBtn;
+    @FXML
+    private Button saveReturnBtn;
+    @FXML
+    private ComboBox<String> startRoomCbx;
 
     @FXML
     private void initialize() {
@@ -54,7 +60,9 @@ public class GeneratorController {
         buttonClick(but);
     }
 
-    public void createNewObject(MouseEvent event) throws IOException {
+    //TODO potentially merge these 3 functions
+    @FXML
+    private void updateRoom(MouseEvent event) throws IOException {
         final Stage dialog = new Stage();
         dialog.initModality(Modality.APPLICATION_MODAL);
         dialog.initOwner(stage);
@@ -62,12 +70,9 @@ public class GeneratorController {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("roomconfig.fxml"));
         Parent root = fxmlLoader.load();
         RoomConfigController controller = fxmlLoader.getController();
-        String buttonId = ((Node) event.getSource()).getId();
 
-        if (event.getSource().equals(newRoomBtn)) {
-            //do stuff
-        }
-        else {
+        if (event.getSource().equals(editRoomBtn)) {
+            String buttonId = selectedRoomTxt.getText();
             controller.loadRoom(buttonId);
         }
 
@@ -83,7 +88,8 @@ public class GeneratorController {
         }
     }
 
-    public void createNewItem(MouseEvent event) throws IOException {
+    @FXML
+    private void updateItem(MouseEvent event) throws IOException {
         final Stage dialog = new Stage();
         dialog.initModality(Modality.APPLICATION_MODAL);
         dialog.initOwner(stage);
@@ -93,10 +99,7 @@ public class GeneratorController {
         ItemConfigController controller = fxmlLoader.getController();
         String buttonId = ((Node) event.getSource()).getId();
 
-        if (event.getSource().equals(newItemBtn)) {
-            //do stuff
-        }
-        else {
+        if (!event.getSource().equals(newItemBtn)) {
             controller.loadItem(buttonId);
         }
 
@@ -112,7 +115,8 @@ public class GeneratorController {
         }
     }
 
-    public void updateExit(MouseEvent event) throws IOException {
+    @FXML
+    private void updateExit(MouseEvent event) throws IOException {
         final Stage dialog = new Stage();
         dialog.initModality(Modality.APPLICATION_MODAL);
         dialog.initOwner(stage);
@@ -155,7 +159,8 @@ public class GeneratorController {
         }
     }
 
-    public void roomDisplayBar(MouseEvent event) {
+    @FXML
+    private void roomDisplayBar(MouseEvent event) {
         Button btn = (Button) event.getSource();
         Room r = newGame.getRoom(btn.getId());
         selectedRoomTxt.setText(r.getName());
@@ -182,7 +187,8 @@ public class GeneratorController {
         }
     }
 
-    public void populateScrollPane() {
+    @FXML
+    private void populateScrollPane() {
         objectAnchorPane.getChildren().clear();
         spOffset = 0;
         if (newGame.getGameMap().size() == 0) {
@@ -192,7 +198,8 @@ public class GeneratorController {
         objectAnchorPane.setPrefHeight(spOffset+20);
     }
 
-    public void populateStartingRoomCombo() {
+    @FXML
+    private void populateStartingRoomCombo() {
         ArrayList<String> rooms = new ArrayList<>();
         for (Room r : newGame.getGameMap()) {
             rooms.add(r.getName());
@@ -200,7 +207,8 @@ public class GeneratorController {
         startRoomCbx.getItems().setAll(rooms);
     }
 
-    public void generateRoomsItems() {
+    @FXML
+    private void generateRoomsItems() {
         for (Room r : newGame.getGameMap()) {
             Button b = new Button(r.getName());
             b.setId(r.getName());
@@ -215,7 +223,7 @@ public class GeneratorController {
                 b2.setId(i.getName());
                 b2.setOnMouseClicked(event -> {
                     try {
-                        createNewItem(event);
+                        updateItem(event);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -229,20 +237,15 @@ public class GeneratorController {
         }
     }
 
-    public void callUpdate() {
-        populateScrollPane();
-        populateStartingRoomCombo();
-    }
-
-    public void buttonClick(Button but) {
+    @FXML
+    private void buttonClick(Button but) {
         but.fireEvent(new MouseEvent(MouseEvent.MOUSE_CLICKED, but.getLayoutX(), but.getLayoutY(), but.getLayoutX(), but.getLayoutY(),
                 MouseButton.PRIMARY, 1, true, true, true, true, true,
                 true, true, true, true, true, null));
     }
 
-    public static Game getNewGame() { return newGame; }
-
-    public void switchScene(MouseEvent event) throws IOException {
+    @FXML
+    private void switchScene(MouseEvent event) throws IOException {
         String fxml = "sample.fxml";
         if (event.getSource().equals(saveReturnBtn)) {
             fxml = "sample.fxml";
@@ -257,8 +260,21 @@ public class GeneratorController {
         stage.show();
     }
 
-    public void setGameParams() {
+    @FXML
+    private void setGameParams() {
         newGame.setTitle(nameEntryTF.getText());
         newGame.setStartingRoom(newGame.getRoom(startRoomCbx.getValue()));
+    }
+
+    public void callUpdate() {
+        populateScrollPane();
+        populateStartingRoomCombo();
+    }
+
+    public static Game getNewGame() { return newGame; }
+
+    public void newRoomDisplay(String string) {
+        Button button = (Button) objectAnchorPane.lookup("#" +string);
+        buttonClick(button);
     }
 }
