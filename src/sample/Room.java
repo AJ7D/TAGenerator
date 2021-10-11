@@ -163,6 +163,13 @@ public class Room implements Serializable {
         return false;
     }
 
+    public boolean hasItems() {
+        if (this.items.size() > 0) {
+            return true;
+        }
+        return false;
+    }
+
     public boolean compareRoom(Room room) {
         return room.getId() == this.getId();
     }

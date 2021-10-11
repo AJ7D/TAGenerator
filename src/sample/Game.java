@@ -101,6 +101,49 @@ public class Game implements Serializable {
         System.out.println("Item " + item + "was added.");
     }
 
+    public void deleteRoom(Room room) {
+        for (Room r : gameMap) {
+            if (r.getId() == room.getId()) {
+                for (Item i : r.getItems()) { //delete all items attached to this room
+                    System.out.println("Deleted item: " + i.getId() + i.getName());
+                    gameItems.remove(i);
+                }
+                for (Direction dir : Direction.values()) { //sever all room connections before deletion
+                    r.deleteExit(dir);
+                }
+                System.out.println("Deleted room: " + r.getId() + r.getName());
+                gameMap.remove(r);
+                return;
+            }
+        }
+        System.out.println("Room not found.");
+    }
+
+    public void deleteItem(Item item) {
+        gameItems.remove(item);
+        Room room = findRoomWithItem(item);
+        if (room != null) {
+            room.deleteItem(item);
+            System.out.println("Deleted " + item + " from " + room);
+            return;
+        }
+        if (player.getInventory().getContents().contains(item)) {
+            player.getInventory().removeItem(item);
+            System.out.println("Deleted " + item + " from player inventory.");
+            return;
+        }
+        System.out.println("Item was not found.");
+    }
+
+    public Room findRoomWithItem(Item item) {
+        for (Room r : gameMap) {
+            if (r.containsItem(item)) {
+                return r;
+            }
+        }
+        return null;
+    }
+
     public void connectRooms(Room r1, Direction dir, Room r2) {
         if (r1 == r2) {
             System.out.println("Cannot connect a room to itself (" + r1.getName() + ")");
@@ -127,9 +170,9 @@ public class Game implements Serializable {
         return null;
     }
 
-    public void saveGameData() throws IOException {
+    public void saveGameData(File file) throws IOException {
         FileOutputStream fileOutputStream
-                = new FileOutputStream(this.getTitle() + ".txt");
+                = new FileOutputStream(file);
         ObjectOutputStream objectOutputStream
                 = new ObjectOutputStream(fileOutputStream);
         objectOutputStream.writeObject(this);

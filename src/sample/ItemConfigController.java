@@ -7,6 +7,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ItemConfigController {
     public Pane pane;
@@ -75,6 +76,11 @@ public class ItemConfigController {
         closeWindow();
     }
 
+    public void deleteItem() {
+        game.deleteItem(item);
+        closeWindow();
+    }
+
     private void closeWindow(){
         Stage stage = (Stage) saveItemBtn.getScene().getWindow();
         generatorController.callUpdate();
@@ -115,20 +121,26 @@ public class ItemConfigController {
 
     public void tryGivePlayerItem(Item item) {
         Player p = game.getPlayer();
-        if (!p.getInventory().containsItem(item))
+        if (!p.getInventory().containsItem(item)) {
             if (oldRoom != null) {
                 oldRoom.deleteItem(item);
             }
-        p.give(item);
-        System.out.println(p.getInventory());
+            p.give(item);
+            System.out.println(p.getInventory());
+            return;
+        }
+        System.out.println("Player already has item.");
     }
 
     public void tryGiveRoomItem(Item item) {
         Room r = game.getRoom(roomSelCbx.getValue());
+        List<Item> inventory = game.getPlayer().getInventory().getContents();
         if (!r.containsItem(item)) {
             if (oldRoom != null) {
                 oldRoom.deleteItem(item);
             }
+            inventory.remove(item);
+
             r.addItem(item);
             System.out.println(r);
         }

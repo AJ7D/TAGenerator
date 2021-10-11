@@ -39,6 +39,7 @@
 
     <Button fx:id="saveItemBtn" layoutX="224.0" layoutY="332.0" mnemonicParsing="false" onMouseClicked="#saveItem" text="Save Item" />
    <Text layoutX="25.0" layoutY="303.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Appears in room:" />
+   <Button fx:id="deleteItemBtn" layoutX="15.0" layoutY="332.0" mnemonicParsing="false" text="Delete Item" onMouseClicked="#deleteItem"/>
 
     <stylesheets>
         <URL value="@TAGmain.css" />

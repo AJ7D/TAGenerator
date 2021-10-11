@@ -1,19 +1,14 @@
 package sample;
 
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 
 public class EngineController {
 
@@ -22,9 +17,11 @@ public class EngineController {
     public TextArea gameTextTa;
     public Button loadGameBtn;
 
-    EngineState state = EngineState.NOT_LOADED;
-    Game game;
-    Player player;
+    public GameManager gameManager = new GameManager();
+
+    private EngineState state = EngineState.NOT_LOADED;
+    private Game game;
+    private Player player;
 
     @FXML
     private void initialize() {
@@ -87,31 +84,17 @@ public class EngineController {
         return "Enter [command] [item]";
     }
 
-    public void selectGameFile() throws IOException, ClassNotFoundException {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Game file", "*.txt"));
-
+    public void loadGame() throws IOException, ClassNotFoundException {
         Stage stage = (Stage) loadGameBtn.getScene().getWindow();
-        File selectedFile = fileChooser.showOpenDialog(stage);
-        gameTextTa.appendText(loadGameFile(selectedFile));
-    }
-
-    public String loadGameFile(File file) throws IOException, ClassNotFoundException {
-        FileInputStream fileInputStream
-                = new FileInputStream(file);
-        ObjectInputStream objectInputStream
-                = new ObjectInputStream(fileInputStream);
-
-        game = (Game) objectInputStream.readObject();
-        objectInputStream.close();
-
-        if (game == null) {
-            return "Unable to load game. Please check that the file is correct.";
-        }
-
+        game = gameManager.loadGameFile(stage);
         player = game.getPlayer();
-        player.setCurrentRoom(game.getStartingRoom());
-        state = EngineState.PLAYING;
-        return "Game loaded successfully. Enjoy playing " + game.getTitle() + "!\n";
+
+        if (game != null ) {
+            gameTextTa.appendText("Game loaded successfully. Enjoy playing " + game.getTitle() + "!\n");
+            state = EngineState.PLAYING;
+        }
+        else {
+            gameTextTa.appendText("Unable to load game. Please check that the file is correct.");
+        }
     }
 }

@@ -4,7 +4,7 @@
 <?import java.net.URL?>
 <?import javafx.scene.text.Text?>
 <Pane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-      prefHeight="500" prefWidth="800" style="-fx-background-color: #F0DFAD;" xmlns="http://javafx.com/javafx/16"
+      prefHeight="500" prefWidth="800" styleClass="mainPane" stylesheets="@TAGmain.css" xmlns="http://javafx.com/javafx/16"
       xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
     <Text fx:id="titleTxt" text="TAG Builder" layoutX="160" layoutY="100" styleClass="title"/>
 

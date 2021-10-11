@@ -9,45 +9,40 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class GeneratorController {
 
     public static Stage stage;
     private static Game newGame;
     private int spOffset = 0;
+    private final GameManager gameManager = new GameManager();
 
-    @FXML
-    private TextField nameEntryTF;
-    @FXML
-    private Button newRoomBtn;
-    @FXML
-    private AnchorPane objectAnchorPane;
-    @FXML
-    private Button newItemBtn;
-    @FXML
-    private Button nExitBtn;
-    @FXML
-    private Button eExitBtn;
-    @FXML
-    private Button sExitBtn;
-    @FXML
-    private Button wExitBtn;
-    @FXML
-    private Button editRoomBtn;
-    @FXML
-    private Text selectedRoomTxt;
-    @FXML
-    private Button addItemRoomBtn;
-    @FXML
-    private Button saveReturnBtn;
-    @FXML
-    private ComboBox<String> startRoomCbx;
+    @FXML private TextField nameEntryTF;
+    @FXML private Button newRoomBtn;
+    @FXML private AnchorPane objectAnchorPane;
+    @FXML private Button newItemBtn;
+    @FXML private Button nExitBtn;
+    @FXML private Button eExitBtn;
+    @FXML private Button sExitBtn;
+    @FXML private Button wExitBtn;
+    @FXML private Button editRoomBtn;
+    @FXML private Text selectedRoomTxt;
+    @FXML private Button deleteRoomBtn;
+    @FXML private Button saveReturnBtn;
+    @FXML private ComboBox<String> startRoomCbx;
+    @FXML private VBox inventoryVbox;
+    @FXML private Button exitNoSaveBtn;
 
     @FXML
     private void initialize() {
@@ -72,7 +67,7 @@ public class GeneratorController {
         RoomConfigController controller = fxmlLoader.getController();
 
         if (event.getSource().equals(editRoomBtn)) {
-            String buttonId = selectedRoomTxt.getText();
+            String buttonId = getSelectedRoom().getName();
             controller.loadRoom(buttonId);
         }
 
@@ -85,6 +80,45 @@ public class GeneratorController {
         }
         catch (Exception e){
             System.out.println("ERROR: " + e);
+        }
+    }
+
+    @FXML
+    private void deleteRoom() {
+        if (newGame.getGameMap().size() == 1) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Room deletion failure");
+            alert.setContentText("You cannot delete this room as it is the last room.");
+
+            Optional<ButtonType> option = alert.showAndWait();
+
+            if (option.isPresent() && option.get() == ButtonType.OK) {
+                return;
+            }
+        }
+
+        Room room = getSelectedRoom();
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Room deletion confirmation");
+        if (room.hasItems()) {
+            alert.setContentText("This room has items that will be deleted. Delete anyway?");
+        }
+        else {
+            alert.setContentText("Are you sure you want to delete " + selectedRoomTxt.getText() + "?");
+        }
+
+        Optional<ButtonType> option = alert.showAndWait();
+
+        if (option.isPresent() && option.get() == ButtonType.OK) {
+            newGame.deleteRoom(room);
+            callUpdate();
+            if (startRoomCbx.getValue().equals(room.getName())) {
+                startRoomCbx.getSelectionModel().selectFirst();
+            }
+            newRoomDisplay(objectAnchorPane.getChildren().get(0).getId());
+        }
+        if (option.isPresent() && option.get() == ButtonType.CANCEL) {
+            System.out.println("Not deleting room");
         }
     }
 
@@ -128,7 +162,7 @@ public class GeneratorController {
         Button button = ((Button) event.getSource());
         String buttonId = button.getId();
 
-        String room = newGame.getRoom(selectedRoomTxt.getText()).getName();
+        String room = getSelectedRoom().getName();
         Direction dir = null;
 
         if (button.equals(nExitBtn)) {
@@ -238,26 +272,82 @@ public class GeneratorController {
     }
 
     @FXML
+    private void populateInventoryItems() {
+        inventoryVbox.getChildren().clear();
+        List<Item> inventory = newGame.getPlayer().getInventory().getContents();
+        for (Item i : inventory) {
+            Button b = new Button(i.getName());
+            b.setId(i.getName());
+            b.setOnMouseClicked(event -> {
+                try {
+                    updateItem(event);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+            b.getStyleClass().add("buttonscroll");
+            inventoryVbox.getChildren().add(b);
+        }
+    }
+
+    @FXML
     private void buttonClick(Button but) {
+        //simulate button click for button arg
         but.fireEvent(new MouseEvent(MouseEvent.MOUSE_CLICKED, but.getLayoutX(), but.getLayoutY(), but.getLayoutX(), but.getLayoutY(),
                 MouseButton.PRIMARY, 1, true, true, true, true, true,
                 true, true, true, true, true, null));
     }
 
     @FXML
-    private void switchScene(MouseEvent event) throws IOException {
-        String fxml = "sample.fxml";
-        if (event.getSource().equals(saveReturnBtn)) {
-            fxml = "sample.fxml";
-            setGameParams();
-            newGame.saveGameData();
+    private void saveAndQuit(MouseEvent event) throws IOException {
+        //TODO fix
+        setGameParams();
+        if (!gameManager.saveGameConfig(newGame, stage)) {
+            System.out.println("ERROR: Failed to save.");
+            return;
         }
+        quit();
+    }
+
+    private void quit() throws IOException {
+        String fxml = "sample.fxml";
 
         Parent root = FXMLLoader.load(getClass().getResource(fxml));
-        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage = (Stage) exitNoSaveBtn.getScene().getWindow();
         Scene scene = new Scene(root, 800, 500);
         stage.setScene(scene);
         stage.show();
+    }
+
+    @FXML
+    private void quitWithWarning() throws IOException {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Quit confirmation");
+        alert.setContentText("Are you sure you want to quit without saving?");
+
+        Optional<ButtonType> option = alert.showAndWait();
+
+        if (option.isPresent() && option.get() == ButtonType.OK) {
+            quit();
+        }
+    }
+
+    @FXML
+    private void loadGameConfig() throws IOException, ClassNotFoundException {
+        newGame = gameManager.loadGameFile(stage);
+        if (newGame == null) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Failed to load game");
+            alert.setContentText("ERROR: Game could not be loaded. Please check that the file is correct.");
+
+            Optional<ButtonType> option = alert.showAndWait();
+
+            if (option.isPresent() && option.get() == ButtonType.OK) {
+                return;
+            }
+        }
+        nameEntryTF.setText(newGame.getTitle());
+        callUpdate();
     }
 
     @FXML
@@ -266,14 +356,22 @@ public class GeneratorController {
         newGame.setStartingRoom(newGame.getRoom(startRoomCbx.getValue()));
     }
 
+    @FXML
+    private Room getSelectedRoom() {
+        return newGame.getRoom(selectedRoomTxt.getText());
+    }
+
     public void callUpdate() {
+        //update ui when new data is added
         populateScrollPane();
         populateStartingRoomCombo();
+        populateInventoryItems();
     }
 
     public static Game getNewGame() { return newGame; }
 
     public void newRoomDisplay(String string) {
+        //simulate button click to update ui, call from external window
         Button button = (Button) objectAnchorPane.lookup("#" +string);
         buttonClick(button);
     }

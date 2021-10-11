@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="500.0" prefWidth="800.0" style="-fx-background-color: #F0DFAD;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.EngineController">
+<AnchorPane prefHeight="500.0" prefWidth="800.0" styleClass="mainPane" stylesheets="@TAGmain.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.EngineController">
    <stylesheets>
       <URL value="@TAGmain.css" />
    </stylesheets>
@@ -20,7 +20,7 @@
          <Font name="Courier New Bold" size="14.0" />
       </font>
    </Text>
-   <Button fx:id="loadGameBtn" layoutX="10.0" layoutY="8.0" mnemonicParsing="false" text="Load Game" onMouseClicked="#selectGameFile" />
+   <Button fx:id="loadGameBtn" layoutX="10.0" layoutY="8.0" mnemonicParsing="false" onMouseClicked="#loadGame" text="Select Game" />
    <ScrollPane fx:id="gameTextSp" layoutY="45.0" prefHeight="406.0" prefWidth="800.0" style="-fx-background-color: transparent;" styleClass="viewport">
       <TextArea fx:id="gameTextTa" editable="false" prefHeight="393.0" prefWidth="793.0">
          <styleClass>
@@ -28,4 +28,7 @@
             <String fx:value="engineTa" />
          </styleClass></TextArea>
    </ScrollPane>
+   <Button layoutX="722.0" layoutY="8.0" mnemonicParsing="false" styleClass="buttonExit" text="Quit" />
+   <Button layoutX="410.0" layoutY="8.0" mnemonicParsing="false" text="Save" />
+   <Button layoutX="492.0" layoutY="8.0" mnemonicParsing="false" text="Load" />
 </AnchorPane>

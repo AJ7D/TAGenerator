@@ -34,23 +34,27 @@ public class ExitConfigController {
     }
 
     public void saveExit() {
-        Room toConnect = game.getRoom(roomSelCbx.getValue());
-        game.connectRooms(room, direction, toConnect);
+        if (roomSelCbx.getValue() != null) {
+            Room toConnect = game.getRoom(roomSelCbx.getValue());
+            game.connectRooms(room, direction, toConnect);
+            System.out.println(toConnect.getExits());
+        }
         room.setIsLocked(isLockedChx.isSelected(), direction);
 
+        generatorController.newRoomDisplay(room.getName());
+
         System.out.println(room.getExits());
-        System.out.println(toConnect.getExits());
         closeWindow();
     }
 
     private void closeWindow(){
         Stage stage = (Stage) saveExitBtn.getScene().getWindow();
         generatorController.callUpdate();
-        generatorController.newRoomDisplay(room.getName());
         stage.close();
     }
     
     public void loadRoom(String str, Direction dir) {
+
         room = game.getRoom(str);
         direction = dir;
         roomDirTxt.setText("To the " + dir + " of " + room.getName() + " is...");
