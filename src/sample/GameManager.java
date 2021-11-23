@@ -1,5 +1,7 @@
 package sample;
 
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -7,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.Optional;
 
 public class GameManager {
 
@@ -31,6 +34,10 @@ public class GameManager {
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Game file", "*.txt"));
 
         File selectedFile = fileChooser.showOpenDialog(stage);
+
+        if (selectedFile == null) {
+            return null;
+        }
         Game game = readGameData(selectedFile);
         return game;
     }
@@ -53,6 +60,15 @@ public class GameManager {
             return game;
         }
         catch (Exception exception) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Failed to load game");
+            alert.setContentText("ERROR: Game could not be loaded. Please check that the file is correct.");
+
+            Optional<ButtonType> option = alert.showAndWait();
+
+            if (option.isPresent() && option.get() == ButtonType.OK) {
+                return null;
+            }
             System.out.println("ERROR: Cannot read game file. (" + exception + ")");
             return null;
         }

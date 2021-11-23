@@ -17,6 +17,8 @@ public class Item implements Serializable {
     private boolean isVisible;
     private boolean isCarry;
     private boolean startWith;
+
+    private ArrayList<String> aliases = new ArrayList<>();
     private HashMap<Item, ArrayList<String>> itemCompatibility = new HashMap<>();
     //A paired array of items and their applicable actions, events will be determined by
     //parsing the combination of item/application and looked up e.g. eat apple --> EAT_APPLE
@@ -113,6 +115,7 @@ public class Item implements Serializable {
                 ", isVisible=" + isVisible +
                 ", isCarry=" + isCarry +
                 ", startWith=" + startWith +
+                ", aliases=" + aliases +
                 ", itemCompatibility=" + itemCompatibility +
                 '}';
     }

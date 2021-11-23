@@ -239,6 +239,7 @@ public class GeneratorController {
             rooms.add(r.getName());
         }
         startRoomCbx.getItems().setAll(rooms);
+        startRoomCbx.setValue(newGame.getStartingRoom().getName());
     }
 
     @FXML
@@ -335,19 +336,11 @@ public class GeneratorController {
     @FXML
     private void loadGameConfig() throws IOException, ClassNotFoundException {
         newGame = gameManager.loadGameFile(stage);
-        if (newGame == null) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Failed to load game");
-            alert.setContentText("ERROR: Game could not be loaded. Please check that the file is correct.");
 
-            Optional<ButtonType> option = alert.showAndWait();
-
-            if (option.isPresent() && option.get() == ButtonType.OK) {
-                return;
-            }
+        if (newGame != null) {
+            nameEntryTF.setText(newGame.getTitle());
+            callUpdate();
         }
-        nameEntryTF.setText(newGame.getTitle());
-        callUpdate();
     }
 
     @FXML

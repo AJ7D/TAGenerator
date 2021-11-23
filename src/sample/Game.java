@@ -1,7 +1,9 @@
 package sample;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Game implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -11,6 +13,8 @@ public class Game implements Serializable {
     private ArrayList<Item> gameItems = new ArrayList<>();
     private Player player = new Player("Player");
     private Room startingRoom = new Room();
+
+    private ArrayList<String> actionDict = new ArrayList<>();
 
     public Game() {
         gameMap.add(startingRoom);
