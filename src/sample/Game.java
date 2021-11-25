@@ -14,8 +14,6 @@ public class Game implements Serializable {
     private Player player = new Player("Player");
     private Room startingRoom = new Room();
 
-    private ArrayList<String> actionDict = new ArrayList<>();
-
     public Game() {
         gameMap.add(startingRoom);
     }

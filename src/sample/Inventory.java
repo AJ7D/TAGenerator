@@ -10,7 +10,7 @@ public class Inventory implements Serializable {
     private final List<Item> contents = new ArrayList<>();
     private int capacity;
 
-    public static int NO_CAPACITY = -1;
+    public static int NO_CAPACITY = Integer.MAX_VALUE;
 
     public Inventory() {
         this.capacity = NO_CAPACITY;

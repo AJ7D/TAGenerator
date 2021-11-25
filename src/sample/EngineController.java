@@ -8,10 +8,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
-import java.io.Console;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class EngineController {
@@ -22,7 +22,9 @@ public class EngineController {
     public Button loadGameBtn;
 
     public GameManager gameManager = new GameManager();
-    private List<String> stopwords = Arrays.asList("i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your", "yours", "yourself", "yourselves", "he", "him", "his", "himself", "she", "her", "hers", "herself", "it", "its", "itself", "they", "them", "their", "theirs", "themselves", "what", "which", "who", "whom", "this", "that", "these", "those", "am", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had", "having", "do", "does", "did", "doing", "a", "an", "the", "but", "if", "or", "because", "as", "until", "while", "of", "at", "by", "for", "with", "about", "against", "between", "into", "through", "during", "before", "after", "above", "below", "to", "from", "up", "down", "in", "out", "on", "off", "over", "under", "again", "further", "then", "once", "here", "there", "when", "where", "why", "how", "all", "any", "both", "each", "few", "more", "most", "other", "some", "such", "no", "nor", "not", "only", "own", "same", "so", "than", "too", "very", "s", "t", "can", "will", "just", "don", "should", "now");
+    private final List<String> stopwords = Arrays.asList("i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your", "yours", "yourself", "yourselves", "he", "him", "his", "himself", "she", "her", "hers", "herself", "it", "its", "itself", "they", "them", "their", "theirs", "themselves", "what", "which", "who", "whom", "this", "that", "these", "those", "am", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had", "having", "do", "does", "did", "doing", "a", "an", "the", "but", "if", "or", "because", "as", "until", "while", "of", "at", "by", "for", "with", "about", "against", "between", "into", "through", "during", "before", "after", "above", "below", "to", "from", "up", "down", "in", "out", "on", "off", "over", "under", "again", "further", "then", "once", "here", "there", "when", "where", "why", "how", "all", "any", "both", "each", "few", "more", "most", "other", "some", "such", "no", "nor", "not", "only", "own", "same", "so", "than", "too", "very", "s", "t", "can", "will", "just", "don", "should", "now");
+
+    private HashMap<String, Action> grammar = new HashMap<>();
 
     private EngineState state = EngineState.NOT_LOADED;
     private Game game;
@@ -30,6 +32,7 @@ public class EngineController {
 
     @FXML
     private void initialize() {
+        defineGrammar();
         textEntryTa.setOnKeyPressed(event -> {
             if(event.getCode().equals(KeyCode.ENTER)) {
                 String text = textEntryTa.getText();
@@ -68,7 +71,6 @@ public class EngineController {
         System.out.println(command);
 
         if (command.size() == 1) {
-            String action = command.get(0);
             System.out.println("Doing single word command.");
             return executeCommand(command);
         }
@@ -94,41 +96,12 @@ public class EngineController {
     }
 
     public String executeCommand(ArrayList<String> args) {
-        if (args.size() == 1) {
-            switch (args.get(0)) {
-                case "look":
-                    return player.checkSurroundings();
-                case "self":
-                    return player.viewSelf();
-                case "north":
-                    return player.travel(Direction.NORTH);
-                case "east":
-                    return player.travel(Direction.EAST);
-                case "west":
-                    return player.travel(Direction.WEST);
-                case "south":
-                    return player.travel(Direction.SOUTH);
-                case "inventory":
-                    return player.checkInventory();
-                case "location":
-                    return player.getBearings();
-                default:
-                    return "Command \"" + args.toString() + "\" not recognised.";
+        if (args.size() > 0) {
+            if (grammar.get(args.get(0)) != null) {
+                return grammar.get(args.get(0)).process(player, args);
             }
         }
-        else if (args.size() == 2) {
-                switch (args.get(0)) {
-                    case "take":
-                        return player.acquire(args.get(1));
-                    case "drop":
-                        return player.drop(args.get(1));
-                    case "view":
-                        return player.viewItem(args.get(1));
-                    default:
-                        return "Command \"" + args.toString() + "\" not recognised.";
-                }
-            }
-        return "Command \"" + args.toString() + "\" not recognised. \nTry [command], [command] [item] or [command] [item] [item].";
+        return "Command " + args.toString() + " not recognised.";
     }
 
     public void loadGame() throws IOException, ClassNotFoundException {
@@ -143,5 +116,45 @@ public class EngineController {
         else {
             gameTextTa.appendText("Unable to load game. Please check that the file is correct.");
         }
+    }
+
+    private void defineGrammar() {
+        grammar.put("take", new Take());
+        grammar.put("get", new Take());
+        grammar.put("grab", new Take());
+        grammar.put("pick", new Take());
+
+        grammar.put("drop", new Drop());
+        grammar.put("discard", new Drop());
+        grammar.put("abandon", new Drop());
+
+        grammar.put("view", new View());
+        grammar.put("look", new View());
+        grammar.put("examine", new View());
+
+        grammar.put("inventory", new ItemCheck());
+        grammar.put("items", new ItemCheck());
+        grammar.put("belongings", new ItemCheck());
+
+        grammar.put("location", new LocationCheck());
+        grammar.put("where", new LocationCheck());
+
+        grammar.put("surroundings", new SurroundingCheck());
+        grammar.put("check", new SurroundingCheck());
+
+        grammar.put("self", new SelfCheck());
+
+        grammar.put("go", new Travel());
+        grammar.put("walk", new Travel());
+        grammar.put("travel", new Travel());
+        grammar.put("journey", new Travel());
+        grammar.put("north", new Travel());
+        grammar.put("n", new Travel());
+        grammar.put("east", new Travel());
+        grammar.put("e", new Travel());
+        grammar.put("west", new Travel());
+        grammar.put("w", new Travel());
+        grammar.put("south", new Travel());
+        grammar.put("s", new Travel());
     }
 }

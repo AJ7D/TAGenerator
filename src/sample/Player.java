@@ -97,7 +97,7 @@ public class Player extends Character {
             System.out.println(speech);
         }
         else {
-            System.out.println("You are unable to find " + npc.getName());
+            System.out.println("You are unable to find " + npc.getName() +".");
         }
     }
 
