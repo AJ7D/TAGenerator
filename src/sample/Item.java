@@ -120,5 +120,9 @@ public class Item implements Serializable {
                 '}';
     }
 
+    public String use(Player p) {
+        return "You cannot use " + this.name + ".";
+    }
+
 }
 

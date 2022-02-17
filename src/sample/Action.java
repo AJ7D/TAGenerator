@@ -105,3 +105,28 @@ class SelfCheck implements Action {
         return player.viewSelf();
     }
 }
+
+class Help implements Action {
+    @Override
+    public String process(Player player, ArrayList<String> input) {
+        return "Welcome to the help section! Be sure to enter\n" +
+                "commands in any of the following formats:\n" +
+                "[action]\n[action] [item]\n[action] [item] [item 2]\n" +
+                "Some basic commands include 'get [item]',\n"+
+                "'drop [item]', 'view [item]', 'go north' (or simply 'n'),\n" +
+                "'inventory', 'surroundings' and 'self'. Trying these commands\n" +
+                "can help if you are stuck.";
+    }
+}
+
+class Use implements Action {
+    @Override
+    public String process(Player player, ArrayList<String> input) {
+        Item item = player.getInventory().findItemByName(wordBuilder(input));
+        if (item == null) {
+            return "You do not have that item.";
+        }
+        return item.use(player);
+        //TODO
+    }
+}

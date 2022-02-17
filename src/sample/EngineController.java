@@ -110,7 +110,8 @@ public class EngineController {
         player = game.getPlayer();
 
         if (game != null ) {
-            gameTextTa.appendText("Game loaded successfully. Enjoy playing " + game.getTitle() + "!\n");
+            gameTextTa.appendText("Game loaded successfully. Enjoy playing " + game.getTitle() + "!\n" +
+                    "Enter !help for additional information.");
             state = EngineState.PLAYING;
         }
         else {
@@ -123,6 +124,7 @@ public class EngineController {
         grammar.put("get", new Take());
         grammar.put("grab", new Take());
         grammar.put("pick", new Take());
+        grammar.put("acquire", new Take());
 
         grammar.put("drop", new Drop());
         grammar.put("discard", new Drop());
@@ -156,5 +158,7 @@ public class EngineController {
         grammar.put("w", new Travel());
         grammar.put("south", new Travel());
         grammar.put("s", new Travel());
+
+        grammar.put("!help", new Help());
     }
 }
