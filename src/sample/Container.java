@@ -59,13 +59,13 @@ public class Container extends Item {
                 return this.getName() + " is locked.";
             }
             case UNLOCKED: {
-                if (items.containsKey(item2.getId())) {
+                if (this.items.containsKey(item2.getId())) {
                     p.give(item2);
-                    items.remove(item2.getId());
+                    this.items.remove(item2.getId());
                     return item2.getName() + " was taken from " + this.getName();
                 } else if (p.getInventory().containsItem(item2)) {
                     p.getInventory().removeItem(item2);
-                    items.put(item2.getId(), item2);
+                    this.items.put(item2.getId(), item2);
                     return item2.getName() + " was placed inside " + this.getName();
                 }
                 return "What item are you talking about?";
@@ -82,5 +82,31 @@ public class Container extends Item {
 
     public void setLockState(LockState lockState) {
         this.lockState = lockState;
+    }
+
+    public static void main(String[] args) {
+        Player p = new Player("June");
+        Container box = new Container();
+        HashMap<Long, Container> compat = new HashMap<>();
+        compat.put(box.getId(), box);
+        Key key = new Key("Key", "A key.", true, true, true, compat);
+        System.out.println(box.getDescription());
+        System.out.println(key.use(p, box));
+        System.out.println(box.getDescription());
+        System.out.println(key.use(p, box));
+        System.out.println(box.getDescription());
+        box.setLockState(LockState.JAMMED);
+        System.out.println(box.getDescription());
+        System.out.println(key.use(p, box));
+
+        box.setLockState(LockState.UNLOCKED);
+        Consumable peach = new Consumable("Peach", "Peachy.", true, true, true, 20, 2);
+        p.give(peach);
+        System.out.println(box.use(p, peach));
+        System.out.println(key.use(p, box));
+        System.out.println(box.getDescription());
+        System.out.println(key.use(p, box));
+        System.out.println(box.getDescription());
+        System.out.println(box.use(p, peach));
     }
 }
