@@ -8,8 +8,8 @@ public class Consumable extends Item{
         super();
     }
 
-    Consumable(String name, String description, Type type, boolean isVisible, boolean isCarry, boolean startWith, int res, int numUses) {
-        super(name, description, type, isVisible, isCarry, startWith);
+    Consumable(String name, String description, boolean isVisible, boolean isCarry, boolean startWith, int res, int numUses) {
+        super(name, description, isVisible, isCarry, startWith);
         this.hpRestore = res;
         this.numUses = numUses;
     }
@@ -37,7 +37,7 @@ public class Consumable extends Item{
     public static void main(String[] args) {
         Player p = new Player("June");
         p.setHp(10);
-        Consumable peach = new Consumable("Peach", "A juicy peach.", Type.DEFAULT, true, true, true, 30, 2);
+        Consumable peach = new Consumable("Peach", "A juicy peach.", true, true, true, 30, 2);
         p.give(peach);
         System.out.println(p.checkInventory());
         System.out.println(p.getHp());

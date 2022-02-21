@@ -8,13 +8,13 @@ public class Light extends Item{
         super();
     }
 
-    Light(String name, String description, Type type, boolean isVisible, boolean isCarry, boolean startWith, LightState lightState) {
-        super(name, description, type, isVisible, isCarry, startWith);
+    Light(String name, String description, boolean isVisible, boolean isCarry, boolean startWith, LightState lightState) {
+        super(name, description, isVisible, isCarry, startWith);
         this.lightState = lightState;
     }
 
-    Light(String name, String description, Type type, boolean isVisible, boolean isCarry, boolean startWith, LightState lightState, int numUses) {
-        super(name, description, type, isVisible, isCarry, startWith);
+    Light(String name, String description, boolean isVisible, boolean isCarry, boolean startWith, LightState lightState, int numUses) {
+        super(name, description, isVisible, isCarry, startWith);
         this.lightState = lightState;
         this.numUses = numUses;
     }
@@ -49,8 +49,8 @@ public class Light extends Item{
 
     public static void main(String[] args) {
         Player p = new Player("June");
-        Light torch = new Light("Torch", "A good light source.", Type.DEFAULT, true, true, true, LightState.OFF, 2);
-        Light deadTorch = new Light("Dead Torch", "A not so good light source.", Type.DEFAULT, true, true, true, LightState.EXHAUSTED, 0);
+        Light torch = new Light("Torch", "A good light source.", true, true, true, LightState.OFF, 2);
+        Light deadTorch = new Light("Dead Torch", "A not so good light source.", true, true, true, LightState.EXHAUSTED, 0);
         p.give(torch);
         p.give(deadTorch);
 

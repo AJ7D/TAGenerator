@@ -26,16 +26,14 @@ public class Item implements Serializable {
     Item() {
         this.name = "Perfectly Generic Object";
         this.description = "It's a perfectly generic object.";
-        this.type = Type.DEFAULT;
         this.isVisible = true;
         this.isCarry = true;
         this.startWith = false;
     }
 
-    public Item(String name, String description, Type type, boolean isVisible, boolean isCarry, boolean startWith) {
+    public Item(String name, String description, boolean isVisible, boolean isCarry, boolean startWith) {
         this.name = name;
         this.description = description;
-        this.type = type;
         this.isVisible = isVisible;
         this.isCarry = isCarry;
         this.startWith = startWith;

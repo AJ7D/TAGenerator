@@ -14,6 +14,8 @@ public class Game implements Serializable {
     private Player player = new Player("Player");
     private Room startingRoom = new Room();
 
+    private HashMap<String, Action> grammar = defineGrammar();
+
     public Game() {
         gameMap.add(startingRoom);
     }
@@ -74,8 +76,8 @@ public class Game implements Serializable {
         return true;
     }
 
-    public void createItem(String name, String description, Type type, boolean isVisible, boolean isCarry, boolean startWith) {
-        Item item = new Item(name, description, type, isVisible, isCarry, startWith);
+    public void createItem(String name, String description, boolean isVisible, boolean isCarry, boolean startWith) {
+        Item item = new Item(name, description, isVisible, isCarry, startWith);
         gameItems.add(item);
     }
 
@@ -195,6 +197,66 @@ public class Game implements Serializable {
         this.title = g2.getTitle();
         this.gameMap = g2.getGameMap();
         this.gameItems = g2.getGameItems();
+    }
+
+    public HashMap<String, Action> getGrammar() {
+        return this.grammar;
+    }
+
+    public void addToGrammar(String verb, Action action) {
+        this.grammar.put(verb, action);
+    }
+
+    public void removeFromGrammar(String verb) {
+        this.grammar.remove(verb);
+    }
+
+    private HashMap<String, Action> defineGrammar() {
+        //default grammar
+        HashMap<String, Action> g = new HashMap<>();
+        g.put("take", new Take());
+        g.put("get", new Take());
+        g.put("grab", new Take());
+        g.put("pick", new Take());
+        g.put("acquire", new Take());
+
+        g.put("drop", new Drop());
+        g.put("discard", new Drop());
+        g.put("abandon", new Drop());
+
+        g.put("view", new View());
+        g.put("look", new View());
+        g.put("examine", new View());
+
+        g.put("inventory", new ItemCheck());
+        g.put("items", new ItemCheck());
+        g.put("belongings", new ItemCheck());
+
+        g.put("location", new LocationCheck());
+        g.put("where", new LocationCheck());
+
+        g.put("surroundings", new SurroundingCheck());
+        g.put("check", new SurroundingCheck());
+
+        g.put("self", new SelfCheck());
+
+        g.put("go", new Travel());
+        g.put("walk", new Travel());
+        g.put("travel", new Travel());
+        g.put("journey", new Travel());
+        g.put("north", new Travel());
+        g.put("n", new Travel());
+        g.put("east", new Travel());
+        g.put("e", new Travel());
+        g.put("west", new Travel());
+        g.put("w", new Travel());
+        g.put("south", new Travel());
+        g.put("s", new Travel());
+
+        g.put("!help", new Help());
+
+        g.put("eat", new Use()); //TODO remove
+        return g;
     }
 
     public static void main(String[] args) {

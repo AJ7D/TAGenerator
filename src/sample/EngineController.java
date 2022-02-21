@@ -32,7 +32,6 @@ public class EngineController {
 
     @FXML
     private void initialize() {
-        defineGrammar();
         textEntryTa.setOnKeyPressed(event -> {
             if(event.getCode().equals(KeyCode.ENTER)) {
                 String text = textEntryTa.getText();
@@ -110,6 +109,7 @@ public class EngineController {
         player = game.getPlayer();
 
         if (game != null ) {
+            grammar = game.getGrammar();
             gameTextTa.appendText("Game loaded successfully. Enjoy playing " + game.getTitle() + "!\n" +
                     "Enter !help for additional information.");
             state = EngineState.PLAYING;
@@ -119,46 +119,4 @@ public class EngineController {
         }
     }
 
-    private void defineGrammar() {
-        grammar.put("take", new Take());
-        grammar.put("get", new Take());
-        grammar.put("grab", new Take());
-        grammar.put("pick", new Take());
-        grammar.put("acquire", new Take());
-
-        grammar.put("drop", new Drop());
-        grammar.put("discard", new Drop());
-        grammar.put("abandon", new Drop());
-
-        grammar.put("view", new View());
-        grammar.put("look", new View());
-        grammar.put("examine", new View());
-
-        grammar.put("inventory", new ItemCheck());
-        grammar.put("items", new ItemCheck());
-        grammar.put("belongings", new ItemCheck());
-
-        grammar.put("location", new LocationCheck());
-        grammar.put("where", new LocationCheck());
-
-        grammar.put("surroundings", new SurroundingCheck());
-        grammar.put("check", new SurroundingCheck());
-
-        grammar.put("self", new SelfCheck());
-
-        grammar.put("go", new Travel());
-        grammar.put("walk", new Travel());
-        grammar.put("travel", new Travel());
-        grammar.put("journey", new Travel());
-        grammar.put("north", new Travel());
-        grammar.put("n", new Travel());
-        grammar.put("east", new Travel());
-        grammar.put("e", new Travel());
-        grammar.put("west", new Travel());
-        grammar.put("w", new Travel());
-        grammar.put("south", new Travel());
-        grammar.put("s", new Travel());
-
-        grammar.put("!help", new Help());
-    }
 }

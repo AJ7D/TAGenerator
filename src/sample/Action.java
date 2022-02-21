@@ -1,8 +1,9 @@
 package sample;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public interface Action {
+public interface Action extends Serializable {
     String process(Player player, ArrayList<String> input);
 
     default String wordBuilder(ArrayList<String> input) {

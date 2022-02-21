@@ -47,18 +47,17 @@ public class ItemConfigController {
     public void saveItem() {
         String iName = nameEntryTF.getText();
         String iDesc = itemDescTA.getText();
-        Type iType = readType();
+        //TODO Type iType = readType();
         boolean iVis = isVisibleChx.isSelected();
         boolean iCarry = isCarryChx.isSelected();
         boolean iStart = startWithChx.isSelected();
 
         if (item == null) {
-            item = new Item(iName, iDesc, iType, iVis, iCarry, iStart);
+            item = readType(iName, iDesc, iVis, iCarry, iStart);
         }
         else {
             item.setName(iName);
             item.setDescription(iDesc);
-            item.setType(iType);
             item.setIsVisible(iVis);
             item.setIsCarry(iCarry);
             item.setStartWith(iStart);
@@ -108,14 +107,15 @@ public class ItemConfigController {
         }
     }
 
-    public Type readType() {
+    public Item readType(String iName, String iDesc, boolean iVis, boolean iCarry, boolean iStart) {
         switch (itemTypeCbx.getValue()) {
             case "Consumable":
-                return Type.CONSUMABLE;
+                //TODO pass consumable parameters
+                return new Consumable(iName, iDesc, iVis, iCarry, iStart, 20, 2);
             case "Key":
-                return Type.KEY;
+                return new Item(iName, iDesc, iVis, iCarry, iStart);
             default:
-                return Type.DEFAULT;
+                return new Item(iName, iDesc, iVis, iCarry, iStart);
         }
     }
 
