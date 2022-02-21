@@ -104,7 +104,10 @@ public class Player extends Character {
     public String viewItem(String item) {
         Item i = this.getInventory().findItemByName(item);
         if (i == null) {
-            return "You are not holding any such item.";
+            i = this.getCurrentRoom().findItemByName(item);
+        }
+        if (i == null) {
+            return "That item cannot be found.";
         }
         return i.getDescription();
     }

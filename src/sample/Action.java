@@ -2,6 +2,7 @@ package sample;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public interface Action extends Serializable {
     String process(Player player, ArrayList<String> input);
@@ -18,6 +19,34 @@ public interface Action extends Serializable {
         }
         System.out.println(item.toString());
         return item.toString();
+    }
+
+    default String[] wordBuilderComplex(ArrayList<String> input) {
+        //temp function for handling 2 items
+        String[] items = new String[2];
+        items[1] = input.get(input.size() - 1);
+
+        StringBuilder item = new StringBuilder();
+        //concat all words into an item query, ignoring action
+        for (int i = 1; i < input.size() - 1; i++) {
+            item.append(input.get(i));
+            if (i != input.size()-1) {
+                item.append(" ");
+            }
+        }
+
+        for (int i = item.length()-1; i > 0; i--) {
+            if (item.charAt(i) == ' ') {
+                item.deleteCharAt(i);
+            }
+            else {
+                break;
+            }
+        }
+
+        items[0] = item.toString();
+        System.out.println(Arrays.toString(items));
+        return items;
     }
 }
 
@@ -125,7 +154,24 @@ class Use implements Action {
     public String process(Player player, ArrayList<String> input) {
         Item item = player.getInventory().findItemByName(wordBuilder(input));
         if (item == null) {
+            item = player.getInventory().findItemByName(wordBuilderComplex(input)[0]);
+        }
+        if (item == null) {
             return "You do not have that item.";
+        }
+
+        if (item instanceof Key || item instanceof Container || item instanceof Weapon) {
+            if (input.size() == 1) {
+                return "What are you using " + item.getName() + " on?";
+            }
+            Item item2 = player.getInventory().findItemByName(wordBuilderComplex(input)[1]);
+            if (item2 == null) {
+                item2 = player.getCurrentRoom().findItemByName(wordBuilderComplex(input)[1]);
+            }
+            if (item2 == null) {
+                return "Cannot find that item.";
+            }
+            return item.use(player, item2);
         }
         return item.use(player);
         //TODO

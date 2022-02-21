@@ -173,5 +173,14 @@ public class Room implements Serializable {
     public boolean compareRoom(Room room) {
         return room.getId() == this.getId();
     }
+
+    public Item findItemByName(String item) {
+        for (Item i : items) {
+            if (i.getName().equalsIgnoreCase(item)) {
+                return i;
+            }
+        }
+        return null;
+    }
 }
 

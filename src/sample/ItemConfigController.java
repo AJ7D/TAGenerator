@@ -7,6 +7,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ItemConfigController {
@@ -110,10 +111,16 @@ public class ItemConfigController {
     public Item readType(String iName, String iDesc, boolean iVis, boolean iCarry, boolean iStart) {
         switch (itemTypeCbx.getValue()) {
             case "Consumable":
-                //TODO pass consumable parameters
+                //TODO pass additional parameters for each item type
                 return new Consumable(iName, iDesc, iVis, iCarry, iStart, 20, 2);
+            case "Light":
+                return new Light(iName, iDesc, iVis, iCarry, iStart, LightState.OFF, 2);
             case "Key":
-                return new Item(iName, iDesc, iVis, iCarry, iStart);
+                return new Key(iName, iDesc, iVis, iCarry, iStart, new HashMap<>());
+            case "Container":
+                return new Container(iName, iDesc, iVis, iCarry, iStart, new HashMap<>(), LockState.LOCKED);
+            case "Weapon":
+                return new Weapon(iName, iDesc, iVis, iCarry, iStart, 5, 3);
             default:
                 return new Item(iName, iDesc, iVis, iCarry, iStart);
         }
