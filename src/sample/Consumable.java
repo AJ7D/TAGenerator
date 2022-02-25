@@ -34,6 +34,22 @@ public class Consumable extends Item{
         return feedback;
     }
 
+    @Override
+    public String toString() {
+        return super.toString() +
+                "hpRestore=" + hpRestore +
+                ", numUses=" + numUses  +
+                '}';
+    }
+
+    public int getHpRestore() {
+        return hpRestore;
+    }
+
+    public int getNumUses() {
+        return numUses;
+    }
+
     public static void main(String[] args) {
         Player p = new Player("June");
         p.setHp(10);

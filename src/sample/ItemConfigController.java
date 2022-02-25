@@ -1,12 +1,15 @@
 package sample;
 
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -30,6 +33,7 @@ public class ItemConfigController {
     public CheckBox isCarryChx;
     public CheckBox startWithChx;
     public ComboBox<String> roomSelCbx;
+    public VBox paramsVbox;
 
     Game game = GeneratorController.getNewGame();
     public Room oldRoom;
@@ -53,16 +57,7 @@ public class ItemConfigController {
         boolean iCarry = isCarryChx.isSelected();
         boolean iStart = startWithChx.isSelected();
 
-        if (item == null) {
-            item = readType(iName, iDesc, iVis, iCarry, iStart);
-        }
-        else {
-            item.setName(iName);
-            item.setDescription(iDesc);
-            item.setIsVisible(iVis);
-            item.setIsCarry(iCarry);
-            item.setStartWith(iStart);
-        }
+        item = readType(iName, iDesc, iVis, iCarry, iStart);
 
         if (iStart) {
             tryGivePlayerItem(item);
@@ -91,7 +86,15 @@ public class ItemConfigController {
         item = game.getItem(str);
         nameEntryTF.setText(item.getName());
         itemDescTA.setText(item.getDescription());
-        itemTypeCbx.setValue(item.getType().getString());
+
+        try {
+            itemTypeCbx.setValue(item.getClass().getSimpleName());
+            produceAdditionalParams();
+        }
+        catch(Exception e) {
+            itemTypeCbx.setValue("Default");
+        }
+
         isVisibleChx.setSelected(item.getIsVisible());
         isCarryChx.setSelected(item.getIsCarry());
         startWithChx.setSelected(item.getStartWith());
@@ -112,7 +115,12 @@ public class ItemConfigController {
         switch (itemTypeCbx.getValue()) {
             case "Consumable":
                 //TODO pass additional parameters for each item type
-                return new Consumable(iName, iDesc, iVis, iCarry, iStart, 20, 2);
+                TextField hp = (TextField) paramsVbox.lookup("#cHpField");
+                int hpRest = Integer.parseInt(hp.getText());
+                TextField cUses = (TextField) paramsVbox.lookup("#numUsesField");
+                int cUse = Integer.parseInt(cUses.getText());
+
+                return new Consumable(iName, iDesc, iVis, iCarry, iStart, hpRest, cUse);
             case "Light":
                 return new Light(iName, iDesc, iVis, iCarry, iStart, LightState.OFF, 2);
             case "Key":
@@ -150,6 +158,119 @@ public class ItemConfigController {
 
             r.addItem(item);
             System.out.println(r);
+        }
+    }
+
+    public void produceAdditionalParams() {
+        switch (itemTypeCbx.getValue()) {
+            case "Consumable":
+                paramsVbox.getChildren().clear();
+                Text cHpText = new Text();
+                cHpText.setText("HP restore:");
+                TextField cHpField = new TextField();
+                cHpField.setText("0");
+                cHpField.setId("cHpField");
+
+                Text numUses = new Text();
+                numUses.setText("Number of uses:");
+                TextField numUsesField = new TextField();
+                numUsesField.setText("1");
+                numUsesField.setId("numUsesField");
+
+                //if item configured already
+                if (item instanceof Consumable) {
+                    cHpField.setText(String.valueOf(((Consumable) item).getHpRestore()));
+                    numUsesField.setText(String.valueOf(((Consumable) item).getNumUses()));
+                }
+
+                paramsVbox.getChildren().addAll(cHpText, cHpField, numUses, numUsesField);
+                return;
+                //hp restore, uses
+            case "Light":
+                paramsVbox.getChildren().clear();
+                Text lStateText = new Text();
+                lStateText.setText("Start state:");
+                ComboBox<String> lStateCombo = new ComboBox<>();
+                ArrayList<String> lightStates = new ArrayList<>();
+                for (LightState l : LightState.values()) {
+                    lightStates.add(l.name());
+                }
+                lStateCombo.setItems(FXCollections.observableList(lightStates));
+                lStateCombo.setValue(lightStates.get(0));
+
+                Text lNumUses = new Text();
+                lNumUses.setText("Number of uses:");
+                TextField lNumUsesField = new TextField();
+                lNumUsesField.setText("1");
+
+                //if item configured already
+                if (item instanceof Light) {
+                    lStateCombo.setValue(String.valueOf(((Light) item).getLightState().name()));
+                    lNumUses.setText(String.valueOf(((Light) item).getNumUses()));
+                }
+
+                paramsVbox.getChildren().addAll(lStateText, lStateCombo, lNumUses, lNumUsesField);
+
+                return;
+                //starting state, uses
+            case "Key":
+                paramsVbox.getChildren().clear();
+                Text kCompText = new Text();
+                kCompText.setText("Compatible items:");
+
+                //TODO configure
+                paramsVbox.getChildren().addAll(kCompText);
+
+                return;
+                //compatible with
+            case "Container":
+                paramsVbox.getChildren().clear();
+                Text cCompText = new Text();
+                cCompText.setText("Items contained:");
+
+                Text cStateText = new Text();
+                cStateText.setText("Starting state:");
+                ComboBox<String> cStateCombo = new ComboBox<>();
+                ArrayList<String> lockStates = new ArrayList<>();
+                for (LockState l : LockState.values()) {
+                    lockStates.add(l.name());
+                }
+                cStateCombo.setItems(FXCollections.observableList(lockStates));
+                cStateCombo.setValue(lockStates.get(0));
+
+                //TODO
+                if (item instanceof Container) {
+                    cStateCombo.setValue(String.valueOf(((Container) item).getLockState().name()));
+                }
+
+                paramsVbox.getChildren().addAll(cCompText, cStateText, cStateCombo);
+
+                return;
+                //items, start state
+            case "Weapon":
+                paramsVbox.getChildren().clear();
+                Text wMightText = new Text();
+                wMightText.setText("Attack damage:");
+                TextField wMightField = new TextField();
+                wMightField.setText("10");
+
+                Text wNumUses = new Text();
+                wNumUses.setText("Number of uses:");
+                TextField wNumUsesField = new TextField();
+                wNumUsesField.setText("5");
+
+                //if item configured already
+                if (item instanceof Weapon) {
+                    wMightField.setText(String.valueOf(((Weapon) item).getMight()));
+                    wNumUses.setText(String.valueOf(((Weapon) item).getDurability()));
+                }
+
+                paramsVbox.getChildren().addAll(wMightText, wMightField, wNumUses, wNumUsesField);
+                return;
+                //might, durability
+            default:
+                paramsVbox.getChildren().clear();
+                //none
         }
     }
 

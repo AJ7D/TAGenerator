@@ -47,6 +47,14 @@ public class Light extends Item{
         return "";
     }
 
+    public LightState getLightState() {
+        return lightState;
+    }
+
+    public int getNumUses() {
+        return numUses;
+    }
+
     public static void main(String[] args) {
         Player p = new Player("June");
         Light torch = new Light("Torch", "A good light source.", true, true, true, LightState.OFF, 2);
@@ -58,5 +66,6 @@ public class Light extends Item{
         System.out.println(p.getInventory().findItemByName("Torch").use(p));
         System.out.println(p.getInventory().findItemByName("Torch").use(p));
         System.out.println(p.getInventory().findItemByName("Dead Torch").use(p));
+
     }
 }
