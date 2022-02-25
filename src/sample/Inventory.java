@@ -88,4 +88,17 @@ public class Inventory implements Serializable {
         return false;
     }
 
+    public String getContentsString() {
+        String s = "";
+        for (int i = 0; i < this.getContents().size(); i++) {
+            if (i == this.getContents().size()-1) {
+                s = s.concat(this.getContents().get(i).getName() + ".");
+            }
+            else {
+                s = s.concat(this.getContents().get(i).getName() + ", ");
+            }
+        }
+        return s;
+    }
+
 }

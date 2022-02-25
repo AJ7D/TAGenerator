@@ -15,7 +15,7 @@ public class Room implements Serializable {
     private String name;
     private String description;
     private final ArrayList<Item> items = new ArrayList<>();
-    private final ArrayList<Npc> npcs = new ArrayList<>();
+    private final ArrayList<Character> npcs = new ArrayList<>();
 
     private final boolean[] isLocked = new boolean[4];
     private final String[] lockedText = new String[4];
@@ -56,7 +56,25 @@ public class Room implements Serializable {
 
     public ArrayList<Item> getItems() { return this.items; }
 
-    public ArrayList<Npc> getNpcs() { return npcs; }
+    public ArrayList<Character> getNpcs() { return npcs; }
+
+    public Character getNpc(Character character) {
+        for (Character c : this.getNpcs()) {
+            if (c == character) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+    public Character getNpc(String character) {
+        for (Character c : this.getNpcs()) {
+            if (c.getName().equals(character)) {
+                return c;
+            }
+        }
+        return null;
+    }
 
     public boolean[] getIsLocked() { return this.isLocked; }
 

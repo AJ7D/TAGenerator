@@ -26,9 +26,12 @@ public class Weapon extends Item {
     }
 
     @Override
-    public String use(Player p, Item item2) {
-        //TODO
-        return super.use(p, item2);
+    public String use(Player p, Character character) {
+        if (character.getHp() > 0) {
+            character.setHp(character.getHp() - this.getMight());
+            return p.getName() + " attacked " + character.getName() + ", dealing " + this.getMight() + " damage.";
+        }
+        return character.getName() + " was already slain.";
     }
 
     public int getMight() {

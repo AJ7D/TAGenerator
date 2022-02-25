@@ -160,7 +160,7 @@ class Use implements Action {
             return "You do not have that item.";
         }
 
-        if (item instanceof Key || item instanceof Container || item instanceof Weapon) {
+        if (item instanceof Key || item instanceof Container) {
             if (input.size() == 1) {
                 return "What are you using " + item.getName() + " on?";
             }
@@ -172,6 +172,17 @@ class Use implements Action {
                 return "Cannot find that item.";
             }
             return item.use(player, item2);
+        }
+
+        if (item instanceof Weapon) {
+            if (input.size() == 1) {
+                return "What are you using " + item.getName() + " on?";
+            }
+            Character character = player.getCurrentRoom().getNpc(wordBuilderComplex(input)[1]);
+            if (character == null) {
+                return "Cannot find that enemy.";
+            }
+            return item.use(player, character);
         }
         return item.use(player);
         //TODO
