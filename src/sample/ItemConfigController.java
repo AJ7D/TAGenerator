@@ -98,6 +98,7 @@ public class ItemConfigController {
         try {
             itemTypeCbx.setValue(item.getClass().getSimpleName());
             produceAdditionalParams();
+            loadVerbs(item);
         }
         catch(Exception e) {
             itemTypeCbx.setValue("Default");
@@ -324,6 +325,28 @@ public class ItemConfigController {
             verbs.put(verb, Action.stringToAction(action));
         }
         return verbs;
+    }
+
+    private TextField getVerbTf(int index) {
+        HBox h = (HBox) verbsVbox.getChildren().get(index);
+        return (TextField) h.getChildren().get(0);
+    }
+
+    private ComboBox<String> getActionCbx(int index) {
+        HBox h = (HBox) verbsVbox.getChildren().get(index);
+        return (ComboBox<String>) h.getChildren().get(1);
+    }
+
+    private void loadVerbs(Item item) {
+        HashMap<String, Action> verbs = item.getVerbs();
+
+        int i = 0;
+        for (HashMap.Entry<String, Action> entry : verbs.entrySet()) {
+            genNewVerb();
+            getVerbTf(i).setText(entry.getKey());
+            getActionCbx(i).setValue(entry.getValue().getClass().getSimpleName());
+            i++;
+        }
     }
 
     public void setGeneratorController(GeneratorController gc) { this.generatorController = gc; }

@@ -83,6 +83,10 @@ public class Item implements Serializable {
         return item.getId() == this.getId();
     }
 
+    public HashMap<String, Action> getVerbs() {
+        return verbs;
+    }
+
     public void setVerbs(HashMap<String, Action> verbs) {
         this.verbs = verbs;
     }

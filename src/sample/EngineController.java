@@ -99,6 +99,14 @@ public class EngineController {
             if (grammar.get(args.get(0)) != null) {
                 return grammar.get(args.get(0)).process(player, args);
             }
+            else {
+                Item i = validateItem(args);
+                if (i != null) {
+                    if (i.getVerbs().get(args.get(0)) != null) {
+                        return i.getVerbs().get(args.get(0)).process(player, args);
+                    }
+                }
+            }
         }
         return "Command " + args.toString() + " not recognised.";
     }
@@ -117,6 +125,62 @@ public class EngineController {
         else {
             gameTextTa.appendText("Unable to load game. Please check that the file is correct.");
         }
+    }
+
+    private String wordBuilder(ArrayList<String> input) {
+        StringBuilder item = new StringBuilder();
+
+        //concat all words into an item query, ignoring action
+        for (int i = 1; i < input.size(); i++) {
+            item.append(input.get(i));
+            if (i != input.size()-1) {
+                item.append(" ");
+            }
+        }
+        System.out.println(item.toString());
+        return item.toString();
+    }
+
+    private String[] wordBuilderComplex(ArrayList<String> input) {
+        //temp function for handling 2 items
+        String[] items = new String[2];
+        items[1] = input.get(input.size() - 1);
+
+        StringBuilder item = new StringBuilder();
+        //concat all words into an item query, ignoring action
+        for (int i = 1; i < input.size() - 1; i++) {
+            item.append(input.get(i));
+            if (i != input.size()-1) {
+                item.append(" ");
+            }
+        }
+
+        for (int i = item.length()-1; i > 0; i--) {
+            if (item.charAt(i) == ' ') {
+                item.deleteCharAt(i);
+            }
+            else {
+                break;
+            }
+        }
+
+        items[0] = item.toString();
+        System.out.println(Arrays.toString(items));
+        return items;
+    }
+
+    private Item validateItem(ArrayList<String> input) {
+        Item item = player.getInventory().findItemByName(wordBuilder(input));
+        if (item == null) {
+            item = player.getInventory().findItemByName(wordBuilderComplex(input)[0]);
+        }
+        if (item == null) {
+            item = player.getCurrentRoom().findItemByName(wordBuilder(input));
+            if (item == null) {
+                item = player.getCurrentRoom().findItemByName(wordBuilderComplex(input)[0]);
+            }
+        }
+        return item;
     }
 
 }
