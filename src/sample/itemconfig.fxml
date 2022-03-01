@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<Pane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400" prefWidth="400" style="-fx-background-color: #F0DFAD;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.ItemConfigController">
+<Pane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400" prefWidth="631.0" style="-fx-background-color: #F0DFAD;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.ItemConfigController">
     <Text fx:id="title" layoutX="25" layoutY="10" text="Creating a new item..." />
 
     <Text fx:id="itemIdTxt" layoutX="25" layoutY="50" text="Item ID: " />
@@ -44,6 +44,13 @@
    <Text layoutX="25.0" layoutY="220.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Appears in room:" />
    <VBox fx:id="paramsVbox" layoutX="10.0" layoutY="235.0" prefHeight="100.0" prefWidth="380.0" />
    <Button fx:id="deleteItemBtn" layoutX="15.0" layoutY="340.0" mnemonicParsing="false" onMouseClicked="#deleteItem" text="Delete Item" />
+   <Text layoutX="390.0" layoutY="10.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Grammar:" />
+   <ScrollPane layoutX="390.0" layoutY="58.0" prefHeight="334.0" prefWidth="234.0">
+      <content>
+         <VBox fx:id="verbsVbox" prefHeight="95.0" prefWidth="228.0" />
+      </content>
+   </ScrollPane>
+   <Button fx:id="newVerbBtn" layoutX="513.0" layoutY="17.0" mnemonicParsing="false" text="New verb" onMouseClicked="#genNewVerb"/>
 
     <stylesheets>
         <URL value="@TAGmain.css" />

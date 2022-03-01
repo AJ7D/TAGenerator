@@ -19,7 +19,8 @@ public class Item implements Serializable {
     private boolean startWith;
 
     private ArrayList<String> aliases = new ArrayList<>();
-    private HashMap<Item, ArrayList<String>> itemCompatibility = new HashMap<>();
+    private HashMap<String, Action> verbs = new HashMap<>();
+
     //A paired array of items and their applicable actions, events will be determined by
     //parsing the combination of item/application and looked up e.g. eat apple --> EAT_APPLE
 
@@ -78,29 +79,12 @@ public class Item implements Serializable {
 
     public boolean canBeTaken() { return (isVisible && isCarry); }
 
-    public void addCompatible(Item item, String string) {
-        if (this.itemCompatibility.containsKey(item)) {
-            for (String s : this.itemCompatibility.get(item)) {
-                if (s.equals(string)) {
-                    System.out.println(string + " is already defined for " + item.getName());
-                    return;
-                }
-            }
-            ArrayList<String> arrayList = this.itemCompatibility.get(item);
-            arrayList.add(string);
-            this.itemCompatibility.replace(item, arrayList);
-            System.out.println(string + " added to commands for " + item.getName());
-            System.out.println("(COMMANDS: " + this.itemCompatibility.get(item) + ")");
-            return;
-        }
-        ArrayList<String> arrayList = new ArrayList<>();
-        arrayList.add(string);
-        this.itemCompatibility.put(item, arrayList);
-        System.out.println(string + " added to commands for " + item.getName());
-    }
-
     public boolean compareItem(Item item) {
         return item.getId() == this.getId();
+    }
+
+    public void setVerbs(HashMap<String, Action> verbs) {
+        this.verbs = verbs;
     }
 
     @Override
@@ -114,7 +98,7 @@ public class Item implements Serializable {
                 ", isCarry=" + isCarry +
                 ", startWith=" + startWith +
                 ", aliases=" + aliases +
-                ", itemCompatibility=" + itemCompatibility +
+                ", verbs=" + verbs.keySet() +
                 '}';
     }
 

@@ -255,7 +255,7 @@ public class Game implements Serializable {
 
         g.put("!help", new Help());
 
-        g.put("eat", new Use()); //TODO remove
+        g.put("use", new Use()); //TODO remove
         return g;
     }
 

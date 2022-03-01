@@ -1,13 +1,18 @@
 package sample;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -35,6 +40,8 @@ public class ItemConfigController {
     public ComboBox<String> roomSelCbx;
     public VBox paramsVbox;
 
+    public VBox verbsVbox;
+
     Game game = GeneratorController.getNewGame();
     public Room oldRoom;
 
@@ -58,6 +65,7 @@ public class ItemConfigController {
         boolean iStart = startWithChx.isSelected();
 
         item = readType(iName, iDesc, iVis, iCarry, iStart);
+        item.setVerbs(getAllVerbs());
 
         if (iStart) {
             tryGivePlayerItem(item);
@@ -272,6 +280,50 @@ public class ItemConfigController {
                 paramsVbox.getChildren().clear();
                 //none
         }
+    }
+
+    public void genNewVerb() {
+        HBox nbx = new HBox();
+        TextField tf = new TextField();
+        ComboBox<String> cbx = new ComboBox<>();
+        cbx.setItems(FXCollections.observableArrayList(
+                new String("Use"),
+                new String("Take"),
+                new String("Drop"),
+                new String("View")));
+        cbx.getSelectionModel().selectFirst();
+
+        Button delBtn = new Button();
+        delBtn.setText("Delete");
+        delBtn.setOnMouseClicked(event -> {
+            try {
+                removeVerb(event);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        nbx.getChildren().addAll(tf,cbx,delBtn);
+        verbsVbox.getChildren().add(nbx);
+    }
+
+    @FXML
+    private void removeVerb(MouseEvent event) throws IOException {
+        Button btn = (Button) event.getSource();
+        verbsVbox.getChildren().remove(btn.getParent());
+    }
+
+    private HashMap<String, Action> getAllVerbs() {
+        HashMap<String, Action> verbs = new HashMap<>();
+        for (Node n : verbsVbox.getChildren()) {
+            HBox h = (HBox) n;
+            TextField t = (TextField) h.getChildren().get(0);
+            String verb = t.getText();
+            ComboBox<String> cbx = (ComboBox<String>) h.getChildren().get(1);
+            String action = cbx.getValue();
+            verbs.put(verb, Action.stringToAction(action));
+        }
+        return verbs;
     }
 
     public void setGeneratorController(GeneratorController gc) { this.generatorController = gc; }

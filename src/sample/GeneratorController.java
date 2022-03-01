@@ -23,6 +23,9 @@ import java.util.Optional;
 
 public class GeneratorController {
 
+    static int ITEMWIDTH = 631;
+    static int ITEMHEIGHT = 400;
+
     public static Stage stage;
     private static Game newGame;
     private int spOffset = 0;
@@ -140,7 +143,7 @@ public class GeneratorController {
         controller.setGeneratorController(this);
 
         try {
-            Scene dialogScene = new Scene(root, 400, 400);
+            Scene dialogScene = new Scene(root, ITEMWIDTH, ITEMHEIGHT);
             dialog.setScene(dialogScene);
             dialog.show();
         }

@@ -7,6 +7,20 @@ import java.util.Arrays;
 public interface Action extends Serializable {
     String process(Player player, ArrayList<String> input);
 
+    static Action stringToAction(String s) {
+        switch (s) {
+            case "Use":
+                return new Use();
+            case "Take":
+                return new Take();
+            case "Drop":
+                return new Drop();
+            case "View":
+                return new View();
+            default:
+                return null;
+        }
+    }
     default String wordBuilder(ArrayList<String> input) {
         StringBuilder item = new StringBuilder();
 
