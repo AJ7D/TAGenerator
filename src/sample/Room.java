@@ -17,6 +17,8 @@ public class Room implements Serializable {
     private final ArrayList<Item> items = new ArrayList<>();
     private final ArrayList<Character> npcs = new ArrayList<>();
 
+    private HashMap<Long, Enemy> enemies = new HashMap<>();
+
     private final boolean[] isLocked = new boolean[4];
     private final String[] lockedText = new String[4];
     private Room[] exits = new Room[4];
@@ -57,6 +59,15 @@ public class Room implements Serializable {
     public ArrayList<Item> getItems() { return this.items; }
 
     public ArrayList<Character> getNpcs() { return npcs; }
+
+    public Enemy getEnemy(String str) {
+        for (Enemy e : enemies.values()) {
+            if (str.equalsIgnoreCase(e.getName())) {
+                return e;
+            }
+        }
+        return null;
+    }
 
     public Character getNpc(Character character) {
         for (Character c : this.getNpcs()) {
@@ -103,6 +114,10 @@ public class Room implements Serializable {
         return GENERIC_FAILURE;
     }
 
+    public HashMap<Long, Enemy> getEnemies() {
+        return enemies;
+    }
+
     public Room[] getExits() { return this.exits; }
 
     public Room getExit(Direction dir) { return this.exits[dir.getValue()]; }
@@ -121,11 +136,15 @@ public class Room implements Serializable {
         this.getItems().add(item);
     }
 
+    public void addEnemy(Enemy enemy) { this.getEnemies().put(enemy.getId(), enemy);}
+
     public void deleteItem(Item item) { this.getItems().remove(item); }
 
     public void addNpc(Npc npc) { this.getNpcs().add(npc); }
 
     public void deleteNpc(Npc npc) { this.getNpcs().remove(npc); }
+
+    public void deleteEnemy(Enemy enemy) { this.getEnemies().remove(enemy.getId());}
 
 
     public boolean checkForExit(Direction dir) {
@@ -179,6 +198,10 @@ public class Room implements Serializable {
             }
         }
         return false;
+    }
+
+    public boolean containsEnemy(Enemy enemy) {
+        return (enemies.containsKey(enemy.getId()));
     }
 
     public boolean hasItems() {

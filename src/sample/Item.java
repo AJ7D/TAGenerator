@@ -114,7 +114,7 @@ public class Item implements Serializable {
         return "You cannot use " + this.name + ".";
     }
 
-    public String use(Player p, Character character) { return "You cannot do that."; }
+    public String use(Player p, Enemy enemy) { return "You cannot do that."; }
 
 }
 

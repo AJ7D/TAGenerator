@@ -5,6 +5,8 @@ public class Enemy extends Character {
     private String passiveText = this.getName() + " does not attack.";
     private EnemyState state = EnemyState.PASSIVE;
 
+    Enemy() {super();}
+
     Enemy(String n) {
         super(n);
     }
@@ -22,6 +24,17 @@ public class Enemy extends Character {
         super(name, currentRoom);
         this.attack = attack;
         this.state = enemyState;
+    }
+
+    Enemy(String name, Room currentRoom, int hp, int attack, EnemyState enemyState) {
+        super(name, currentRoom);
+        this.setMaxHp(hp);
+        this.attack = attack;
+        this.state = enemyState;
+    }
+
+    public EnemyState getState() {
+        return state;
     }
 
     public String processTurn(Player p) {
@@ -62,6 +75,14 @@ public class Enemy extends Character {
 
     public int getAttack() {
         return this.attack;
+    }
+
+    public void setAttack(int attack) {
+        this.attack = attack;
+    }
+
+    public void setState(EnemyState state) {
+        this.state = state;
     }
 
     public static void main(String[] args) {

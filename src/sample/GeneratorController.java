@@ -23,8 +23,11 @@ import java.util.Optional;
 
 public class GeneratorController {
 
-    static int ITEMWIDTH = 631;
-    static int ITEMHEIGHT = 400;
+    static final int ITEMWIDTH = 631;
+    static final int ITEMHEIGHT = 400;
+
+    static final int ENEMYWIDTH = 400;
+    static final int ENEMYHEIGHT = 400;
 
     public static Stage stage;
     private static Game newGame;
@@ -35,6 +38,7 @@ public class GeneratorController {
     @FXML private Button newRoomBtn;
     @FXML private AnchorPane objectAnchorPane;
     @FXML private Button newItemBtn;
+    @FXML private Button newEnemyBtn;
     @FXML private Button nExitBtn;
     @FXML private Button eExitBtn;
     @FXML private Button sExitBtn;
@@ -153,6 +157,33 @@ public class GeneratorController {
     }
 
     @FXML
+    private void updateEnemy(MouseEvent event) throws IOException {
+        final Stage dialog = new Stage();
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.initOwner(stage);
+
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("enemyconfig.fxml"));
+        Parent root = fxmlLoader.load();
+        EnemyConfigController controller = fxmlLoader.getController();
+        String buttonId = ((Node) event.getSource()).getId();
+
+        if (!event.getSource().equals(newEnemyBtn)) {
+            controller.loadEnemy(buttonId);
+        }
+
+        controller.setGeneratorController(this);
+
+        try {
+            Scene dialogScene = new Scene(root, ENEMYWIDTH, ENEMYHEIGHT);
+            dialog.setScene(dialogScene);
+            dialog.show();
+        }
+        catch (Exception e){
+            System.out.println("ERROR: " + e);
+        }
+    }
+
+    @FXML
     private void updateExit(MouseEvent event) throws IOException {
         final Stage dialog = new Stage();
         dialog.initModality(Modality.APPLICATION_MODAL);
@@ -255,6 +286,23 @@ public class GeneratorController {
             b.getStyleClass().add("buttonscroll");
             spOffset = spOffset + 20;
             objectAnchorPane.getChildren().add(b);
+
+            for (Enemy en : r.getEnemies().values()) {
+                Button b2 = new Button(en.getName());
+                b2.setId(en.getName());
+                b2.setOnMouseClicked(event -> {
+                    try {
+                        updateEnemy(event);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+                b2.setLayoutY(spOffset);
+                b2.setLayoutX(20);
+                b2.getStyleClass().add("buttonscroll");
+                spOffset = spOffset + 20;
+                objectAnchorPane.getChildren().add(b2);
+            }
 
             for (Item i : r.getItems()) {
                 Button b2 = new Button(i.getName());

@@ -97,13 +97,13 @@ public class EngineController {
     public String executeCommand(ArrayList<String> args) {
         if (args.size() > 0) {
             if (grammar.get(args.get(0)) != null) {
-                return grammar.get(args.get(0)).process(player, args);
+                return grammar.get(args.get(0)).process(player, args) + "\n" + processEnemyResponses();
             }
             else {
                 Item i = validateItem(args);
                 if (i != null) {
                     if (i.getVerbs().get(args.get(0)) != null) {
-                        return i.getVerbs().get(args.get(0)).process(player, args);
+                        return i.getVerbs().get(args.get(0)).process(player, args) + "\n" + processEnemyResponses();
                     }
                 }
             }
@@ -183,4 +183,20 @@ public class EngineController {
         return item;
     }
 
+    private String processEnemyResponses() {
+        String response = "";
+        if (player.getCurrentRoom().getEnemies().isEmpty())
+            return response;
+        for (Enemy e : player.getCurrentRoom().getEnemies().values()) {
+            if (e.isAlive() && e.getState() == EnemyState.AGGRESSIVE) {
+                response = response.concat(e.attack(player) + "\n");
+                if (player.getHp() <= 0) {
+                    response = response.concat(player.getName() + " has died.");
+                    state = EngineState.GAMEOVER;
+                    return response;
+                }
+            }
+        }
+        return response;
+    }
 }

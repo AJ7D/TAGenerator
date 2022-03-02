@@ -1,9 +1,13 @@
 package sample;
 
 import java.io.Serializable;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class Character implements Serializable {
     private static final long serialVersionUID = 1L;
+
+    static final AtomicLong NEXT_ID = new AtomicLong(0);
+    final long id = NEXT_ID.getAndIncrement();
 
     private String name;
     private final Inventory inventory = new Inventory();
@@ -11,6 +15,11 @@ public class Character implements Serializable {
 
     private int maxHp = 50;
     private int hp;
+
+    Character() {
+        this.name = "Character";
+        this.hp = this.maxHp;
+    }
 
     Character(String n) {
         this.name = n;
@@ -36,6 +45,10 @@ public class Character implements Serializable {
         this.hp = this.maxHp;
     }
 
+    public Long getId() {
+        return this.id;
+    }
+
     public String getName() { return this.name; }
 
     public void setName(String newName) { this.name = newName; }
@@ -49,6 +62,8 @@ public class Character implements Serializable {
     public String checkInventory() {
         return this.getInventory().viewItems();
     }
+
+    public void initialiseHp(int mh) {this.maxHp = mh; this.hp = mh;}
 
     public void setMaxHp(int mh) {
         this.maxHp = mh;

@@ -192,11 +192,11 @@ class Use implements Action {
             if (input.size() == 1) {
                 return "What are you using " + item.getName() + " on?";
             }
-            Character character = player.getCurrentRoom().getNpc(wordBuilderComplex(input)[1]);
-            if (character == null) {
+            Enemy enemy = player.getCurrentRoom().getEnemy(wordBuilderComplex(input)[1]);
+            if (enemy == null) {
                 return "Cannot find that enemy.";
             }
-            return item.use(player, character);
+            return item.use(player, enemy);
         }
         return item.use(player);
         //TODO

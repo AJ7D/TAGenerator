@@ -26,12 +26,22 @@ public class Weapon extends Item {
     }
 
     @Override
-    public String use(Player p, Character character) {
-        if (character.getHp() > 0) {
-            character.setHp(character.getHp() - this.getMight());
-            return p.getName() + " attacked " + character.getName() + ", dealing " + this.getMight() + " damage.";
+    public String use(Player p, Enemy enemy) {
+        String message = "";
+        if (enemy.isAlive()) {
+            enemy.setHp(enemy.getHp() - this.getMight());
+            if (enemy.getState() == EnemyState.PASSIVE) {
+                enemy.setState(EnemyState.AGGRESSIVE);
+            }
+
+            message = p.getName() + " attacked " + enemy.getName() + ", dealing " + this.getMight() + " damage.";
+
+            if (!enemy.isAlive()) {
+                message = message.concat("\n" + enemy.getName() + " was slain.");
+            }
+            return message;
         }
-        return character.getName() + " was already slain.";
+        return enemy.getName() + " was already slain.";
     }
 
     public int getMight() {

@@ -4,6 +4,7 @@ import java.io.*;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class Game implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -11,6 +12,8 @@ public class Game implements Serializable {
     private String title;
     private ArrayList<Room> gameMap = new ArrayList<>();
     private ArrayList<Item> gameItems = new ArrayList<>();
+    private HashMap<Long, Enemy> gameEnemies = new HashMap<>();
+
     private Player player = new Player("Player");
     private Room startingRoom = new Room();
 
@@ -41,6 +44,10 @@ public class Game implements Serializable {
         return gameItems;
     }
 
+    public HashMap<Long, Enemy> getGameEnemies() {
+        return gameEnemies;
+    }
+
     public Room getRoom(String str) {
         for (Room r : this.gameMap) {
             if (str.equals(r.getName())) {
@@ -58,6 +65,16 @@ public class Game implements Serializable {
             }
         }
         System.out.println("ERROR: Item not found.");
+        return null;
+    }
+
+    public Enemy getEnemy(String str) {
+        for (Enemy e : this.gameEnemies.values()) {
+            if (str.equals(e.getName())) {
+                return e;
+            }
+        }
+        System.out.println("ERROR: Enemy not found.");
         return null;
     }
 
@@ -105,6 +122,16 @@ public class Game implements Serializable {
         System.out.println("Item " + item + "was added.");
     }
 
+    public void updateEnemy(Enemy enemy) {
+        if (gameEnemies.containsKey(enemy.getId())) {
+            gameEnemies.replace(enemy.getId(), enemy);
+            System.out.println("Enemy " + enemy + " was updated.");
+            return;
+        }
+        gameEnemies.put(enemy.getId(), enemy);
+        System.out.println("Enemy " + enemy + "was added.");
+    }
+
     public void deleteRoom(Room room) {
         for (Room r : gameMap) {
             if (r.getId() == room.getId()) {
@@ -139,6 +166,26 @@ public class Game implements Serializable {
         System.out.println("Item was not found.");
     }
 
+    public void deleteEnemy(Enemy enemy) {
+        gameEnemies.remove(enemy.getId());
+        Room room = findRoomWithEnemy(enemy);
+        if (room != null) {
+            room.deleteEnemy(enemy);
+            System.out.println("Deleted " + enemy + " from " + room);
+            return;
+        }
+        System.out.println("Enemy was not found.");
+    }
+
+    public Room findRoomWithEnemy(Enemy enemy) {
+        for (Room r : gameMap) {
+            if (r.containsEnemy(enemy)) {
+                return r;
+            }
+        }
+        return null;
+    }
+
     public Room findRoomWithItem(Item item) {
         for (Room r : gameMap) {
             if (r.containsItem(item)) {
@@ -171,6 +218,16 @@ public class Game implements Serializable {
             }
         }
         System.out.println("WARNING: Item " + item + " was not found in any room.");
+        return null;
+    }
+
+    public Room findEnemyLoc(Enemy enemy) {
+        for (Room r : this.gameMap) {
+            if (r.containsEnemy(enemy)) {
+                return r;
+            }
+        }
+        System.out.println("WARNING: Enemy " + enemy + " was not found in any room.");
         return null;
     }
 
