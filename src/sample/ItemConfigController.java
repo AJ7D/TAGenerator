@@ -1,7 +1,6 @@
 package sample;
 
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -11,10 +10,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -49,32 +48,33 @@ public class ItemConfigController {
     private void initialize() {
         ArrayList<String> rooms = new ArrayList<>();
         for (Room r : GeneratorController.getNewGame().getGameMap()) {
-            rooms.add(r.getName());
+            rooms.add(r.getName()); //populate room list for item room selection
         }
         itemTypeCbx.getSelectionModel().selectFirst();
         roomSelCbx.getItems().setAll(rooms);
-        roomSelCbx.getSelectionModel().selectFirst();
+        roomSelCbx.getSelectionModel().selectFirst(); //add room list to combobox values
     }
 
     public void saveItem() {
+        //get item parameters from user interface
         String iName = nameEntryTF.getText();
         String iDesc = itemDescTA.getText();
         boolean iVis = isVisibleChx.isSelected();
         boolean iCarry = isCarryChx.isSelected();
         boolean iStart = startWithChx.isSelected();
 
-        if (item != null) {
+        if (item != null) { //if editing an item, delete the old version
             game.deleteItem(item);
         }
 
-        item = readType(iName, iDesc, iVis, iCarry, iStart);
-        item.setVerbs(getAllVerbs());
+        item = readType(iName, iDesc, iVis, iCarry, iStart); //returns an item of the indicated item type
+        item.setVerbs(getAllVerbs()); //add user's custom verbs to item grammar
 
         if (iStart) {
-            tryGivePlayerItem(item);
+            tryGivePlayerItem(item); //player starts with item
         }
         else {
-            tryGiveRoomItem(item);
+            tryGiveRoomItem(item); //item starts in a room
         }
 
         game.updateItem(item);
@@ -82,36 +82,37 @@ public class ItemConfigController {
         closeWindow();
     }
 
-    public void deleteItem() {
+    public void deleteItem() { //remove item from game
         game.deleteItem(item);
         closeWindow();
     }
 
-    private void closeWindow(){
+    private void closeWindow(){ //close this item window
         Stage stage = (Stage) saveItemBtn.getScene().getWindow();
         generatorController.callUpdate();
         stage.close();
     }
     
     public void loadItem(String str) {
-        item = game.getItem(str);
+        item = game.getItem(str); //load item from game items
+        //populate item fields based on item parameters
         nameEntryTF.setText(item.getName());
         itemDescTA.setText(item.getDescription());
 
         try {
             itemTypeCbx.setValue(item.getClass().getSimpleName());
-            produceAdditionalParams();
+            produceAdditionalParams(); //display additional parameter inputs dependent on item type
             loadVerbs(item);
         }
         catch(Exception e) {
-            itemTypeCbx.setValue("Default");
+            itemTypeCbx.setValue("Default"); //in case of error, set item type to default
         }
 
         isVisibleChx.setSelected(item.getIsVisible());
         isCarryChx.setSelected(item.getIsCarry());
         startWithChx.setSelected(item.getStartWith());
 
-        if (!item.getStartWith()) {
+        if (!item.getStartWith()) { //find item's location
             String r = game.findItemLoc(item).getName();
             if (r != null) {
                 roomSelCbx.getSelectionModel().select(r);
@@ -124,7 +125,7 @@ public class ItemConfigController {
     }
 
     public Item readType(String iName, String iDesc, boolean iVis, boolean iCarry, boolean iStart) {
-
+        //produces a new item dependent on the subclass of item selected
         switch (itemTypeCbx.getValue()) {
             case "Consumable":
                 TextField hp = (TextField) paramsVbox.lookup("#cHpField");
@@ -141,7 +142,12 @@ public class ItemConfigController {
 
                 return new Light(iName, iDesc, iVis, iCarry, iStart, lightState, nUse);
             case "Key":
-                return item;
+                ComboBox<Container> compList = (ComboBox<Container>) paramsVbox.lookup("#compCbx");
+                HashMap<Long, Container> comp = new HashMap<>();
+                for (Container c: compList.getItems()) {
+                    comp.put(c.getId(), c);
+                }
+                return new Key(iName, iDesc, iVis, iCarry, iStart, comp);
             case "Container":
                 ComboBox<String> cState = (ComboBox<String>) paramsVbox.lookup("#cStateCbx");
                 LockState lockState = LockState.valueOf(cState.getValue());
@@ -160,6 +166,7 @@ public class ItemConfigController {
     }
 
     public void tryGivePlayerItem(Item item) {
+        //gives item to player, if permitted
         Player p = game.getPlayer();
         if (!p.getInventory().containsItem(item)) {
             if (oldRoom != null) {
@@ -173,6 +180,7 @@ public class ItemConfigController {
     }
 
     public void tryGiveRoomItem(Item item) {
+        //adds item to room, if permitted
         Room r = game.getRoom(roomSelCbx.getValue());
         List<Item> inventory = game.getPlayer().getInventory().getContents();
         if (!r.containsItem(item)) {
@@ -186,7 +194,8 @@ public class ItemConfigController {
         }
     }
 
-    public void produceAdditionalParams() {
+    public void produceAdditionalParams() throws ClassNotFoundException {
+        //generates different nodes for user input dependent on the item type
         switch (itemTypeCbx.getValue()) {
             case "Consumable":
                 paramsVbox.getChildren().clear();
@@ -245,8 +254,62 @@ public class ItemConfigController {
                 Text kCompText = new Text();
                 kCompText.setText("Compatible items:");
 
-                //TODO configure
-                paramsVbox.getChildren().addAll(kCompText);
+                HBox addHbox = new HBox();
+                ComboBox<Item> containers = new ComboBox<>();
+                //combobox contains container instances, but only displays container name
+
+                ArrayList<Item> containerList = new ArrayList<>();
+
+                Class cls = Class.forName(Container.class.getName());
+
+                if (!getAllItemsOfType(cls).isEmpty()) {
+                    containerList.addAll(getAllItemsOfType(cls));
+                    containers.setItems(FXCollections.observableList(containerList));
+                    containers.setValue(containerList.get(0));
+                }
+
+                Button addButton = new Button();
+                addButton.setText("Add");
+
+                HBox removeHbox = new HBox();
+                ComboBox<Item> containersAdded = new ComboBox<>();
+                containersAdded.setId("compCbx");
+                Button removeButton = new Button();
+                removeButton.setText("Remove");
+
+                addButton.setOnMouseClicked(event -> {
+                    try {
+                        Item c = containers.getValue();
+                        containers.getItems().remove(c);
+                        containersAdded.getItems().add(c);
+                        containers.getSelectionModel().selectFirst();
+                        containersAdded.getSelectionModel().selectFirst();
+                    }
+                    catch (NullPointerException e) {
+                        System.out.println("No container to add.");
+                    }
+                });
+
+                removeButton.setOnMouseClicked(event -> {
+                    try {
+                        Item c = containersAdded.getValue();
+                        containersAdded.getItems().remove(c);
+                        containers.getItems().add(c);
+                        containers.getSelectionModel().selectFirst();
+                        containersAdded.getSelectionModel().selectFirst();
+                    }
+                    catch (NullPointerException e) {
+                        System.out.println("No container to remove.");
+                    }
+                });
+
+                configureCombobox(containers);
+                configureCombobox(containersAdded);
+
+                addHbox.getChildren().addAll(containers, addButton);
+                removeHbox.getChildren().addAll(containersAdded, removeButton);
+
+                paramsVbox.getChildren().addAll(kCompText, addHbox, removeHbox);
 
                 return;
                 //compatible with
@@ -368,6 +431,40 @@ public class ItemConfigController {
             getActionCbx(i).setValue(entry.getValue().getClass().getSimpleName());
             i++;
         }
+    }
+
+    public ArrayList<Item> getAllItems() {
+        ArrayList<Item> items = new ArrayList<>(game.getPlayer().getInventory().getContents());
+        items.addAll(game.getGameItems());
+        return items;
+    }
+
+    public ArrayList<Item> getAllItemsOfType(Class c) throws ClassNotFoundException {
+        ArrayList<Item> ret = new ArrayList<>();
+
+        for (Item i: getAllItems()) {
+            if (c.equals(i.getClass())) {
+                ret.add(i);
+            }
+        }
+        return ret;
+    }
+
+    public <T> void configureCombobox(ComboBox<Item> cbx) {
+
+        cbx.setConverter(new StringConverter<Item>() {
+
+            @Override
+            public String toString(Item cl) {
+                return cl.getName();
+            }
+
+            @Override
+            public Item fromString(String string) {
+                return cbx.getItems().stream().filter(ap ->
+                        ap.getName().equals(string)).findFirst().orElse(null);
+            }
+        });
     }
 
     public void setGeneratorController(GeneratorController gc) { this.generatorController = gc; }
