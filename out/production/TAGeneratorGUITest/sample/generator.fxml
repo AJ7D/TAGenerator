@@ -47,7 +47,7 @@
    <Text layoutX="210.0" layoutY="134.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDefault" text="Starting inventory:" />
    <Button layoutX="672.0" layoutY="48.0" mnemonicParsing="false" onMouseClicked="#loadGameConfig" text="Load Game" />
    <Button fx:id="exitNoSaveBtn" layoutX="554.0" layoutY="6.0" mnemonicParsing="false" onMouseClicked="#quitWithWarning" styleClass="buttonExit" text="Exit" />
-   <Button fx:id="newEnemyBtn" layoutX="666.0" layoutY="300.0" mnemonicParsing="false" text="New Enemy" />
+   <Button fx:id="newEnemyBtn" layoutX="666.0" layoutY="300.0" mnemonicParsing="false" text="New Enemy" onMouseClicked="#updateEnemy"/>
     <stylesheets>
         <URL value="@TAGmain.css" />
     </stylesheets>

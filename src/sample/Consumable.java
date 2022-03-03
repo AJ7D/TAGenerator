@@ -13,6 +13,7 @@ public class Consumable extends Item{
         this.hpRestore = res;
         this.numUses = numUses;
     }
+
     @Override
     public String use(Player p) {
         String feedback = "";
@@ -48,6 +49,14 @@ public class Consumable extends Item{
 
     public int getNumUses() {
         return numUses;
+    }
+
+    public void setHpRestore(int hpRestore) {
+        this.hpRestore = hpRestore;
+    }
+
+    public void setNumUses(int numUses) {
+        this.numUses = numUses;
     }
 
     public static void main(String[] args) {

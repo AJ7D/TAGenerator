@@ -55,6 +55,14 @@ public class Light extends Item{
         return numUses;
     }
 
+    public void setLightState(LightState lightState) {
+        this.lightState = lightState;
+    }
+
+    public void setNumUses(int numUses) {
+        this.numUses = numUses;
+    }
+
     public static void main(String[] args) {
         Player p = new Player("June");
         Light torch = new Light("Torch", "A good light source.", true, true, true, LightState.OFF, 2);

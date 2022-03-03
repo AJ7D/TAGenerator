@@ -25,6 +25,14 @@ public class Weapon extends Item {
         return super.getDescription() + "\nMight: " + this.getMight() + "\nRemaining durability: " + this.getDurability();
     }
 
+    public void setMight(int might) {
+        this.might = might;
+    }
+
+    public void setDurability(int durability) {
+        this.durability = durability;
+    }
+
     @Override
     public String use(Player p, Enemy enemy) {
         String message = "";
