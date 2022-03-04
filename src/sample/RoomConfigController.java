@@ -50,8 +50,8 @@ public class RoomConfigController {
         stage.close();
     }
     
-    public void loadRoom(String str) {
-        room = GeneratorController.getNewGame().getRoom(str);
+    public void loadRoom(Long id) {
+        room = GeneratorController.getNewGame().getRoom(id);
         nameEntryTF.setText(room.getName());
         roomDescTA.setText(room.getDescription());
     }

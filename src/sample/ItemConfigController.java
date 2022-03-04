@@ -36,7 +36,7 @@ public class ItemConfigController {
     public CheckBox isVisibleChx;
     public CheckBox isCarryChx;
     public CheckBox startWithChx;
-    public ComboBox<String> roomSelCbx;
+    public ComboBox<Room> roomSelCbx;
     public VBox paramsVbox;
 
     public VBox verbsVbox;
@@ -46,12 +46,10 @@ public class ItemConfigController {
 
     @FXML
     private void initialize() {
-        ArrayList<String> rooms = new ArrayList<>();
-        for (Room r : GeneratorController.getNewGame().getGameMap()) {
-            rooms.add(r.getName()); //populate room list for item room selection
-        }
+        UITools uit = new UITools();
+        uit.configureComboboxRoom(roomSelCbx);
         itemTypeCbx.getSelectionModel().selectFirst();
-        roomSelCbx.getItems().setAll(rooms);
+        roomSelCbx.getItems().setAll(GeneratorController.getNewGame().getGameMap());
         roomSelCbx.getSelectionModel().selectFirst(); //add room list to combobox values
     }
 
@@ -65,9 +63,13 @@ public class ItemConfigController {
 
         if (item != null) { //if editing an item, delete the old version
             game.deleteItem(item);
+            Long oldId = item.getId();
+            item = readType(iName, iDesc, iVis, iCarry, iStart); //returns an item of the indicated item type
+            item.setId(oldId);
         }
-
-        item = readType(iName, iDesc, iVis, iCarry, iStart); //returns an item of the indicated item type
+        else {
+            item = readType(iName, iDesc, iVis, iCarry, iStart); //returns an item of the indicated item type
+        }
         item.setVerbs(getAllVerbs()); //add user's custom verbs to item grammar
 
         if (iStart) {
@@ -94,7 +96,7 @@ public class ItemConfigController {
     }
     
     public void loadItem(String str) {
-        item = game.getItem(str); //load item from game items
+        item = game.getItem(Long.parseLong(str)); //load item from game items
         //populate item fields based on item parameters
         nameEntryTF.setText(item.getName());
         itemDescTA.setText(item.getDescription());
@@ -113,14 +115,14 @@ public class ItemConfigController {
         startWithChx.setSelected(item.getStartWith());
 
         if (!item.getStartWith()) { //find item's location
-            String r = game.findItemLoc(item).getName();
+            Room r = game.findItemLoc(item);
             if (r != null) {
                 roomSelCbx.getSelectionModel().select(r);
             }
             else {
                 roomSelCbx.getSelectionModel().selectFirst();
             }
-            oldRoom = game.getRoom(r);
+            oldRoom = r;
         }
     }
 
@@ -143,10 +145,8 @@ public class ItemConfigController {
                 return new Light(iName, iDesc, iVis, iCarry, iStart, lightState, nUse);
             case "Key":
                 ComboBox<Container> compList = (ComboBox<Container>) paramsVbox.lookup("#compCbx");
-                HashMap<Long, Container> comp = new HashMap<>();
-                for (Container c: compList.getItems()) {
-                    comp.put(c.getId(), c);
-                }
+                ArrayList<Container> comp = new ArrayList<>(compList.getItems());
+                System.out.println("compatibility = " + comp.toString());
                 return new Key(iName, iDesc, iVis, iCarry, iStart, comp);
             case "Container":
                 ComboBox<String> cState = (ComboBox<String>) paramsVbox.lookup("#cStateCbx");
@@ -161,7 +161,7 @@ public class ItemConfigController {
 
                 return new Weapon(iName, iDesc, iVis, iCarry, iStart, might, wNumUse);
             default:
-                return item;
+                return new Item(iName, iDesc, iVis, iCarry, iStart);
         }
     }
 
@@ -181,7 +181,7 @@ public class ItemConfigController {
 
     public void tryGiveRoomItem(Item item) {
         //adds item to room, if permitted
-        Room r = game.getRoom(roomSelCbx.getValue());
+        Room r = roomSelCbx.getValue();
         List<Item> inventory = game.getPlayer().getInventory().getContents();
         if (!r.containsItem(item)) {
             if (oldRoom != null) {
@@ -303,8 +303,9 @@ public class ItemConfigController {
                     }
                 });
 
-                configureCombobox(containers);
-                configureCombobox(containersAdded);
+                UITools uit = new UITools();
+                uit.configureCombobox(containers);
+                uit.configureCombobox(containersAdded);
 
                 addHbox.getChildren().addAll(containers, addButton);
                 removeHbox.getChildren().addAll(containersAdded, removeButton);
@@ -448,23 +449,6 @@ public class ItemConfigController {
             }
         }
         return ret;
-    }
-
-    public <T> void configureCombobox(ComboBox<Item> cbx) {
-
-        cbx.setConverter(new StringConverter<Item>() {
-
-            @Override
-            public String toString(Item cl) {
-                return cl.getName();
-            }
-
-            @Override
-            public Item fromString(String string) {
-                return cbx.getItems().stream().filter(ap ->
-                        ap.getName().equals(string)).findFirst().orElse(null);
-            }
-        });
     }
 
     public void setGeneratorController(GeneratorController gc) { this.generatorController = gc; }

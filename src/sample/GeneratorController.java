@@ -34,6 +34,8 @@ public class GeneratorController {
     private int spOffset = 0;
     private final GameManager gameManager = new GameManager();
 
+    private Room selectedRoom;
+
     @FXML private TextField nameEntryTF;
     @FXML private Button newRoomBtn;
     @FXML private AnchorPane objectAnchorPane;
@@ -47,7 +49,7 @@ public class GeneratorController {
     @FXML private Text selectedRoomTxt;
     @FXML private Button deleteRoomBtn;
     @FXML private Button saveReturnBtn;
-    @FXML private ComboBox<String> startRoomCbx;
+    @FXML private ComboBox<Room> startRoomCbx;
     @FXML private VBox inventoryVbox;
     @FXML private Button exitNoSaveBtn;
 
@@ -57,9 +59,13 @@ public class GeneratorController {
         nameEntryTF.setText(newGame.getTitle());
 
         callUpdate();
+
+        UITools uit = new UITools();
+        uit.configureComboboxRoom(startRoomCbx);
         startRoomCbx.getSelectionModel().selectFirst();
         Button but = (Button) objectAnchorPane.getChildren().get(0);
         buttonClick(but);
+        selectedRoom = newGame.getRoom(Long.parseLong(objectAnchorPane.getChildren().get(0).getId()));
     }
 
     //TODO potentially merge these 3 functions
@@ -74,7 +80,7 @@ public class GeneratorController {
         RoomConfigController controller = fxmlLoader.getController();
 
         if (event.getSource().equals(editRoomBtn)) {
-            String buttonId = getSelectedRoom().getName();
+            Long buttonId = selectedRoom.getId();
             controller.loadRoom(buttonId);
         }
 
@@ -104,14 +110,14 @@ public class GeneratorController {
             }
         }
 
-        Room room = getSelectedRoom();
+        Room room = selectedRoom;
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Room deletion confirmation");
         if (room.hasItems()) {
             alert.setContentText("This room has items that will be deleted. Delete anyway?");
         }
         else {
-            alert.setContentText("Are you sure you want to delete " + selectedRoomTxt.getText() + "?");
+            alert.setContentText("Are you sure you want to delete " + selectedRoom.getName() + "?");
         }
 
         Optional<ButtonType> option = alert.showAndWait();
@@ -122,7 +128,9 @@ public class GeneratorController {
             if (startRoomCbx.getValue().equals(room.getName())) {
                 startRoomCbx.getSelectionModel().selectFirst();
             }
-            newRoomDisplay(objectAnchorPane.getChildren().get(0).getId());
+            String id = objectAnchorPane.getChildren().get(0).getId();
+            newRoomDisplay(id);
+            selectedRoom = newGame.getRoom(Long.parseLong(id));
         }
         if (option.isPresent() && option.get() == ButtonType.CANCEL) {
             System.out.println("Not deleting room");
@@ -196,7 +204,6 @@ public class GeneratorController {
         Button button = ((Button) event.getSource());
         String buttonId = button.getId();
 
-        String room = getSelectedRoom().getName();
         Direction dir = null;
 
         if (button.equals(nExitBtn)) {
@@ -213,7 +220,7 @@ public class GeneratorController {
         }
 
         //switch case button -> button objects defined
-        controller.loadRoom(room, dir);
+        controller.loadRoom(selectedRoom, dir);
 
         controller.setGeneratorController(this);
 
@@ -230,12 +237,12 @@ public class GeneratorController {
     @FXML
     private void roomDisplayBar(MouseEvent event) {
         Button btn = (Button) event.getSource();
-        Room r = newGame.getRoom(btn.getId());
-        selectedRoomTxt.setText(r.getName());
+        selectedRoom = newGame.getRoom(Long.parseLong(btn.getId()));
+        selectedRoomTxt.setText(selectedRoom.getName());
 
         Button[] buttons = {nExitBtn, wExitBtn, eExitBtn, sExitBtn};
         int i = 0;
-        for (Room ex : r.getExits()) {
+        for (Room ex : selectedRoom.getExits()) {
             if (ex != null) {
                 buttons[i].setText(ex.getName());
                 buttons[i].setId(ex.getName());
@@ -268,19 +275,16 @@ public class GeneratorController {
 
     @FXML
     private void populateStartingRoomCombo() {
-        ArrayList<String> rooms = new ArrayList<>();
-        for (Room r : newGame.getGameMap()) {
-            rooms.add(r.getName());
-        }
-        startRoomCbx.getItems().setAll(rooms);
-        startRoomCbx.setValue(newGame.getStartingRoom().getName());
+        startRoomCbx.getItems().setAll(newGame.getGameMap());
+        startRoomCbx.setValue(newGame.getStartingRoom());
     }
 
     @FXML
     private void generateRoomsItems() {
+        //TODO fix this mess
         for (Room r : newGame.getGameMap()) {
             Button b = new Button(r.getName());
-            b.setId(r.getName());
+            b.setId(String.valueOf(r.getId()));
             b.setOnMouseClicked(this::roomDisplayBar);
             b.setLayoutY(spOffset);
             b.getStyleClass().add("buttonscroll");
@@ -289,7 +293,7 @@ public class GeneratorController {
 
             for (Enemy en : r.getEnemies().values()) {
                 Button b2 = new Button(en.getName());
-                b2.setId(en.getName());
+                b2.setId(String.valueOf(en.getId()));
                 b2.setOnMouseClicked(event -> {
                     try {
                         updateEnemy(event);
@@ -297,16 +301,40 @@ public class GeneratorController {
                         e.printStackTrace();
                     }
                 });
-                b2.setLayoutY(spOffset);
-                b2.setLayoutX(20);
-                b2.getStyleClass().add("buttonscroll");
-                spOffset = spOffset + 20;
-                objectAnchorPane.getChildren().add(b2);
+                configBtn(b2,20);
+                if (!en.getInventory().getContents().isEmpty()) {
+                    for (Item i : en.getInventory().getContents()) {
+                        Button b3 = new Button(i.getName());
+                        b3.setId(String.valueOf(i.getId()));
+                        b3.setOnMouseClicked(event -> {
+                            try {
+                                updateItem(event);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        });
+                        configBtn(b3,40);
+                        if (i instanceof Container && !((Container) i).getItems().isEmpty()) {
+                            for (Item j : ((Container) i).getItems().values()) {
+                                Button b4 = new Button(j.getName());
+                                b4.setId(String.valueOf(j.getName()));
+                                b4.setOnMouseClicked(event -> {
+                                    try {
+                                        updateItem(event);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                });
+                                configBtn(b4,60);
+                            }
+                        }
+                    }
+                }
             }
 
             for (Item i : r.getItems()) {
                 Button b2 = new Button(i.getName());
-                b2.setId(i.getName());
+                b2.setId(String.valueOf(i.getId()));
                 b2.setOnMouseClicked(event -> {
                     try {
                         updateItem(event);
@@ -314,22 +342,39 @@ public class GeneratorController {
                         e.printStackTrace();
                     }
                 });
-                b2.setLayoutY(spOffset);
-                b2.setLayoutX(20);
-                b2.getStyleClass().add("buttonscroll");
-                spOffset = spOffset + 20;
-                objectAnchorPane.getChildren().add(b2);
+                configBtn(b2,20);
+                if (i instanceof Container && !((Container) i).getItems().isEmpty()) {
+                    for (Item j : ((Container) i).getItems().values()) {
+                        Button b4 = new Button(j.getName());
+                        b4.setId(String.valueOf(j.getName()));
+                        b4.setOnMouseClicked(event -> {
+                            try {
+                                updateItem(event);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        });
+                        configBtn(b4, 40);
+                    }
+                }
             }
         }
     }
 
+    public void configBtn(Button btn, int xoffset) {
+        btn.setLayoutY(spOffset);
+        btn.setLayoutX(xoffset);
+        btn.getStyleClass().add("buttonscroll");
+        spOffset = spOffset + 20;
+        objectAnchorPane.getChildren().add(btn);
+    }
     @FXML
     private void populateInventoryItems() {
         inventoryVbox.getChildren().clear();
         List<Item> inventory = newGame.getPlayer().getInventory().getContents();
         for (Item i : inventory) {
             Button b = new Button(i.getName());
-            b.setId(i.getName());
+            b.setId(String.valueOf(i.getId()));
             b.setOnMouseClicked(event -> {
                 try {
                     updateItem(event);
@@ -397,12 +442,7 @@ public class GeneratorController {
     @FXML
     private void setGameParams() {
         newGame.setTitle(nameEntryTF.getText());
-        newGame.setStartingRoom(newGame.getRoom(startRoomCbx.getValue()));
-    }
-
-    @FXML
-    private Room getSelectedRoom() {
-        return newGame.getRoom(selectedRoomTxt.getText());
+        newGame.setStartingRoom(startRoomCbx.getValue());
     }
 
     public void callUpdate() {

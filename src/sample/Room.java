@@ -4,13 +4,10 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class Room implements Serializable {
+public class Room extends Entity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     public static String GENERIC_FAILURE = "You are unable to travel that way currently.";
-
-    static final AtomicLong NEXT_ID = new AtomicLong(0);
-    final long id = NEXT_ID.getAndIncrement();
 
     private String name;
     private String description;
@@ -205,10 +202,7 @@ public class Room implements Serializable {
     }
 
     public boolean hasItems() {
-        if (this.items.size() > 0) {
-            return true;
-        }
-        return false;
+        return this.items.size() > 0;
     }
 
     public boolean compareRoom(Room room) {
@@ -218,6 +212,15 @@ public class Room implements Serializable {
     public Item findItemByName(String item) {
         for (Item i : items) {
             if (i.getName().equalsIgnoreCase(item)) {
+                return i;
+            }
+        }
+        return null;
+    }
+
+    public Item findItemById(Long id) {
+        for (Item i : items) {
+            if (i.getId() == id) {
                 return i;
             }
         }

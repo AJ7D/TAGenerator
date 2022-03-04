@@ -1,5 +1,6 @@
 package sample;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Container extends Item {
@@ -30,8 +31,7 @@ public class Container extends Item {
         this.lockState = locked;
     }
 
-    @Override
-    public String getDescription() {
+    public String getDetailedDescription() {
         String desc = super.getDescription() + "\n";
         switch(lockState) {
             case LOCKED:
@@ -84,11 +84,19 @@ public class Container extends Item {
         this.lockState = lockState;
     }
 
+    public void setItems(HashMap<Long, Item> items) {
+        this.items = items;
+    }
+
+    public HashMap<Long, Item> getItems() {
+        return items;
+    }
+
     public static void main(String[] args) {
         Player p = new Player("June");
         Container box = new Container();
-        HashMap<Long, Container> compat = new HashMap<>();
-        compat.put(box.getId(), box);
+        ArrayList<Container> compat = new ArrayList<>();
+        compat.add(box);
         Key key = new Key("Key", "A key.", true, true, true, compat);
         System.out.println(box.getDescription());
         System.out.println(key.use(p, box));

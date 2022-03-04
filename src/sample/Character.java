@@ -3,11 +3,8 @@ package sample;
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class Character implements Serializable {
+public class Character extends Entity implements Serializable {
     private static final long serialVersionUID = 1L;
-
-    static final AtomicLong NEXT_ID = new AtomicLong(0);
-    final long id = NEXT_ID.getAndIncrement();
 
     private String name;
     private final Inventory inventory = new Inventory();
@@ -43,10 +40,6 @@ public class Character implements Serializable {
         this.name = n;
         this.maxHp = h;
         this.hp = this.maxHp;
-    }
-
-    public Long getId() {
-        return this.id;
     }
 
     public String getName() { return this.name; }

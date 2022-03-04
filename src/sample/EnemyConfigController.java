@@ -33,18 +33,16 @@ public class EnemyConfigController {
     public Enemy enemy;
 
     public GeneratorController generatorController;
-    public ComboBox<String> roomSelCbx;
+    public ComboBox<Room> roomSelCbx;
 
     Game game = GeneratorController.getNewGame();
     public Room oldRoom;
 
     @FXML
     private void initialize() {
-        ArrayList<String> rooms = new ArrayList<>();
-        for (Room r : GeneratorController.getNewGame().getGameMap()) {
-            rooms.add(r.getName());
-        }
-        roomSelCbx.getItems().setAll(rooms);
+        UITools uit = new UITools();
+        uit.configureComboboxRoom(roomSelCbx);
+        roomSelCbx.getItems().setAll(GeneratorController.getNewGame().getGameMap());
         roomSelCbx.getSelectionModel().selectFirst();
     }
 
@@ -56,7 +54,7 @@ public class EnemyConfigController {
         enemy.initialiseHp(Integer.parseInt(healthTF.getText()));
         enemy.setAttack(Integer.parseInt(attackTF.getText()));
         enemy.setState(determineEnemyState());
-        enemy.setCurrentRoom(game.getRoom(roomSelCbx.getValue()));
+        enemy.setCurrentRoom(roomSelCbx.getValue());
 
         tryGiveRoomEnemy(enemy);
 
@@ -77,25 +75,25 @@ public class EnemyConfigController {
     }
 
     public void loadEnemy(String str) {
-        enemy = game.getEnemy(str);
+        enemy = game.getEnemy(Long.parseLong(str));
         nameEntryTF.setText(enemy.getName());
         healthTF.setText(String.valueOf(enemy.getMaxHp()));
         attackTF.setText(String.valueOf(enemy.getAttack()));
         passiveCheck.setSelected(enemy.getState()==EnemyState.PASSIVE);
-        roomSelCbx.getSelectionModel().select(enemy.getCurrentRoom().getName());
+        roomSelCbx.getSelectionModel().select(enemy.getCurrentRoom());
 
-        String r = game.findEnemyLoc(enemy).getName();
+        Room r = game.findEnemyLoc(enemy);
         if (r != null) {
             roomSelCbx.getSelectionModel().select(r);
         }
         else {
             roomSelCbx.getSelectionModel().selectFirst();
         }
-        oldRoom = game.getRoom(r);
+        oldRoom = r;
     }
 
     public void tryGiveRoomEnemy(Enemy enemy) {
-        Room r = game.getRoom(roomSelCbx.getValue());
+        Room r = roomSelCbx.getValue();
         List<Item> inventory = game.getPlayer().getInventory().getContents();
         if (!r.containsEnemy(enemy)) {
             if (oldRoom != null) {

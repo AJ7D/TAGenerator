@@ -21,6 +21,7 @@ public interface Action extends Serializable {
                 return null;
         }
     }
+
     default String wordBuilder(ArrayList<String> input) {
         StringBuilder item = new StringBuilder();
 

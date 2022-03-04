@@ -23,25 +23,27 @@ public class ExitConfigController {
     public Direction direction;
 
     public GeneratorController generatorController;
-    public ComboBox<String> roomSelCbx;
+    public ComboBox<Room> roomSelCbx;
 
     Game game = GeneratorController.getNewGame();
 
     @FXML
     private void initialize() {
+        UITools uit = new UITools();
+        uit.configureComboboxRoom(roomSelCbx);
         roomSelCbx.getSelectionModel().selectFirst();
         isLockedChx.setOnAction(eventHandler);
     }
 
     public void saveExit() {
         if (roomSelCbx.getValue() != null) {
-            Room toConnect = game.getRoom(roomSelCbx.getValue());
+            Room toConnect = roomSelCbx.getValue();
             game.connectRooms(room, direction, toConnect);
             System.out.println(toConnect.getExits());
         }
         room.setIsLocked(isLockedChx.isSelected(), direction);
 
-        generatorController.newRoomDisplay(room.getName());
+        generatorController.newRoomDisplay(String.valueOf(room.getId()));
 
         System.out.println(room.getExits());
         closeWindow();
@@ -53,23 +55,22 @@ public class ExitConfigController {
         stage.close();
     }
     
-    public void loadRoom(String str, Direction dir) {
-
-        room = game.getRoom(str);
+    public void loadRoom(Room rm, Direction dir) {
+        room = rm;
         direction = dir;
         roomDirTxt.setText("To the " + dir + " of " + room.getName() + " is...");
 
-        ArrayList<String> rooms = new ArrayList<>();
+        ArrayList<Room> rooms = new ArrayList<>();
         for (Room r : GeneratorController.getNewGame().getGameMap()) {
             if (!r.compareRoom(room)) {
-                rooms.add(r.getName());
+                rooms.add(r);
             }
         }
         roomSelCbx.getItems().setAll(rooms);
 
         Room connected = room.getExit(dir);
         if (connected != null) {
-            roomSelCbx.getSelectionModel().select(connected.getName());
+            roomSelCbx.getSelectionModel().select(connected);
         }
         else {
             roomSelCbx.getSelectionModel().selectFirst();

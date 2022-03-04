@@ -5,11 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class Item implements Serializable {
+public class Item extends Entity implements Serializable {
     private static final long serialVersionUID = 1L;
-
-    static final AtomicLong NEXT_ID = new AtomicLong(0);
-    final long id = NEXT_ID.getAndIncrement();
 
     private String name;
     private String description;
@@ -38,11 +35,6 @@ public class Item implements Serializable {
         this.isVisible = isVisible;
         this.isCarry = isCarry;
         this.startWith = startWith;
-    }
-
-    //GETTERS
-    public Long getId() {
-        return this.id;
     }
 
     public String getName() {
@@ -116,5 +108,11 @@ public class Item implements Serializable {
 
     public String use(Player p, Enemy enemy) { return "You cannot do that."; }
 
+    public static void main(String[] args) {
+        Item item = new Item();
+        Item item2 = new Item();
+        System.out.println(item.getId());
+        System.out.println(item2.getId());
+    }
 }
 

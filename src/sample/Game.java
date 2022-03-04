@@ -48,34 +48,26 @@ public class Game implements Serializable {
         return gameEnemies;
     }
 
-    public Room getRoom(String str) {
+    public Room getRoom(Long id) {
         for (Room r : this.gameMap) {
-            if (str.equals(r.getName())) {
+            if (id == r.getId()) {
                 return r;
             }
         }
-        System.out.println("ERROR: Room not found.");
         return null;
     }
 
-    public Item getItem(String str) {
+    public Item getItem(Long id) {
         for (Item i : this.gameItems) {
-            if (str.equals(i.getName())) {
+            if (id == i.getId()) {
                 return i;
             }
         }
-        System.out.println("ERROR: Item not found.");
         return null;
     }
 
-    public Enemy getEnemy(String str) {
-        for (Enemy e : this.gameEnemies.values()) {
-            if (str.equals(e.getName())) {
-                return e;
-            }
-        }
-        System.out.println("ERROR: Enemy not found.");
-        return null;
+    public Enemy getEnemy(Long id) {
+        return this.gameEnemies.get(id);
     }
 
     public boolean createRoom(Room room) {
