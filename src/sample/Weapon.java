@@ -20,6 +20,12 @@ public class Weapon extends Item {
         this.durability = durability;
     }
 
+    Weapon(Long id, String name, String description, boolean isVisible, boolean isCarry, boolean startWith, int might, int durability) {
+        super(id, name, description, isVisible, isCarry, startWith);
+        this.might = might;
+        this.durability = durability;
+    }
+
     @Override
     public String getDescription() {
         return super.getDescription() + "\nMight: " + this.getMight() + "\nRemaining durability: " + this.getDurability();

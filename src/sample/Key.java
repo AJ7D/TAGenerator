@@ -20,6 +20,11 @@ public class Key extends Item{
         this.compatibility = comp;
     }
 
+    Key(Long id, String name, String description, boolean isVisible, boolean isCarry, boolean startWith, ArrayList comp) {
+        super(id, name, description, isVisible, isCarry, startWith);
+        this.compatibility = comp;
+    }
+
     @Override
     public String use(Player p, Item item2) {
         boolean valid = this.compatibility.contains(item2);
@@ -41,6 +46,10 @@ public class Key extends Item{
             }
         }
         return this.getName() + " is ineffective on " + item2.getName(); //TODO
+    }
+
+    public ArrayList<Item> getCompatibility() {
+        return compatibility;
     }
 
     public void addCompatibility(Container container) {

@@ -19,6 +19,12 @@ public class Light extends Item{
         this.numUses = numUses;
     }
 
+    public Light(long id, String name, String description, boolean isVisible, boolean isCarry, boolean startWith, LightState lightState, int numUses) {
+        super(id, name, description, isVisible, isCarry, startWith);
+        this.lightState = lightState;
+        this.numUses = numUses;
+    }
+
     @Override
     public String use(Player p) {
         if (this.numUses <= 0) {

@@ -37,6 +37,15 @@ public class Item extends Entity implements Serializable {
         this.startWith = startWith;
     }
 
+    public Item(Long id, String name, String description, boolean isVisible, boolean isCarry, boolean startWith) {
+        super(id);
+        this.name = name;
+        this.description = description;
+        this.isVisible = isVisible;
+        this.isCarry = isCarry;
+        this.startWith = startWith;
+    }
+
     public String getName() {
         return this.name;
     }

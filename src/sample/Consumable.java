@@ -14,6 +14,12 @@ public class Consumable extends Item{
         this.numUses = numUses;
     }
 
+    Consumable(Long id, String name, String description, boolean isVisible, boolean isCarry, boolean startWith, int res, int numUses) {
+        super(id, name, description, isVisible, isCarry, startWith);
+        this.hpRestore = res;
+        this.numUses = numUses;
+    }
+
     @Override
     public String use(Player p) {
         String feedback = "";

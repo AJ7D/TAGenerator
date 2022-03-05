@@ -26,6 +26,12 @@ public class Container extends Item {
         this.lockState = locked;
     }
 
+    Container(Long id, String name, String description, boolean isVisible, boolean isCarry, boolean startWith, HashMap<Long, Item> items, LockState locked) {
+        super(id, name, description, isVisible, isCarry, startWith);
+        this.items = items;
+        this.lockState = locked;
+    }
+
     Container(String name, String description, boolean isVisible, boolean isCarry, boolean startWith, LockState locked) {
         super(name, description, isVisible, isCarry, startWith);
         this.lockState = locked;

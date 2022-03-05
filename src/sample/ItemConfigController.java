@@ -10,7 +10,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.util.StringConverter;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -61,15 +60,11 @@ public class ItemConfigController {
         boolean iCarry = isCarryChx.isSelected();
         boolean iStart = startWithChx.isSelected();
 
+        //returns an item of the indicated item type
         if (item != null) { //if editing an item, delete the old version
             game.deleteItem(item);
-            Long oldId = item.getId();
-            item = readType(iName, iDesc, iVis, iCarry, iStart); //returns an item of the indicated item type
-            item.setId(oldId);
         }
-        else {
-            item = readType(iName, iDesc, iVis, iCarry, iStart); //returns an item of the indicated item type
-        }
+        item = readType(iName, iDesc, iVis, iCarry, iStart); //returns an item of the indicated item type
         item.setVerbs(getAllVerbs()); //add user's custom verbs to item grammar
 
         if (iStart) {
@@ -79,13 +74,18 @@ public class ItemConfigController {
             tryGiveRoomItem(item); //item starts in a room
         }
 
-        game.updateItem(item);
+        game.updateItem(item); //add item to game structure
         System.out.println(game.getGameItems());
-        closeWindow();
+        closeWindow(); //close this item config window
     }
 
     public void deleteItem() { //remove item from game
-        game.deleteItem(item);
+        try {
+            game.deleteItem(item);
+        }
+        catch (NullPointerException e) {
+            System.out.println("Item was not saved; creation has been cancelled.");
+        }
         closeWindow();
     }
 
@@ -108,6 +108,7 @@ public class ItemConfigController {
         }
         catch(Exception e) {
             itemTypeCbx.setValue("Default"); //in case of error, set item type to default
+            System.out.println("Error: item type could not be correctly determined (" + e  + ")");
         }
 
         isVisibleChx.setSelected(item.getIsVisible());
@@ -127,6 +128,7 @@ public class ItemConfigController {
     }
 
     public Item readType(String iName, String iDesc, boolean iVis, boolean iCarry, boolean iStart) {
+        boolean isOverwrite = (item != null); //true if existing item is being edited
         //produces a new item dependent on the subclass of item selected
         switch (itemTypeCbx.getValue()) {
             case "Consumable":
@@ -135,6 +137,8 @@ public class ItemConfigController {
                 TextField cUses = (TextField) paramsVbox.lookup("#numUsesField");
                 int cUse = Integer.parseInt(cUses.getText());
 
+                if (isOverwrite)
+                    return new Consumable(item.getId(), iName, iDesc, iVis, iCarry, iStart, hpRest, cUse);
                 return new Consumable(iName, iDesc, iVis, iCarry, iStart, hpRest, cUse);
             case "Light":
                 ComboBox<String> state = (ComboBox<String>) paramsVbox.lookup("#lStateCbx");
@@ -142,16 +146,23 @@ public class ItemConfigController {
                 TextField nUses = (TextField) paramsVbox.lookup("#lNumUsesField");
                 int nUse = Integer.parseInt(nUses.getText());
 
+                if (isOverwrite)
+                    return new Light(item.getId(), iName, iDesc, iVis, iCarry, iStart, lightState, nUse);
                 return new Light(iName, iDesc, iVis, iCarry, iStart, lightState, nUse);
             case "Key":
                 ComboBox<Container> compList = (ComboBox<Container>) paramsVbox.lookup("#compCbx");
                 ArrayList<Container> comp = new ArrayList<>(compList.getItems());
                 System.out.println("compatibility = " + comp.toString());
+
+                if (isOverwrite)
+                    return new Key(item.getId(), iName, iDesc, iVis, iCarry, iStart, comp);
                 return new Key(iName, iDesc, iVis, iCarry, iStart, comp);
             case "Container":
                 ComboBox<String> cState = (ComboBox<String>) paramsVbox.lookup("#cStateCbx");
                 LockState lockState = LockState.valueOf(cState.getValue());
 
+                if (isOverwrite)
+                    return new Container(item.getId(), iName, iDesc, iVis, iCarry, iStart, new HashMap<>(), lockState);
                 return new Container(iName, iDesc, iVis, iCarry, iStart, new HashMap<>(), lockState);
             case "Weapon":
                 TextField wMight = (TextField) paramsVbox.lookup("#wMightField");
@@ -159,8 +170,12 @@ public class ItemConfigController {
                 TextField wNumUses = (TextField) paramsVbox.lookup("#wNumUsesField");
                 int wNumUse = Integer.parseInt(wNumUses.getText());
 
+                if (isOverwrite)
+                    return new Weapon(item.getId(), iName, iDesc, iVis, iCarry, iStart, might, wNumUse);
                 return new Weapon(iName, iDesc, iVis, iCarry, iStart, might, wNumUse);
             default:
+                if (isOverwrite)
+                    return new Item(item.getId(), iName, iDesc, iVis, iCarry, iStart);
                 return new Item(iName, iDesc, iVis, iCarry, iStart);
         }
     }
@@ -241,7 +256,7 @@ public class ItemConfigController {
 
                 //if item configured already
                 if (item instanceof Light) {
-                    lStateCombo.setValue(String.valueOf(((Light) item).getLightState().name()));
+                    lStateCombo.setValue((((Light) item).getLightState().name()));
                     lNumUsesField.setText(String.valueOf(((Light) item).getNumUses()));
                 }
 
@@ -262,12 +277,6 @@ public class ItemConfigController {
 
                 Class cls = Class.forName(Container.class.getName());
 
-                if (!getAllItemsOfType(cls).isEmpty()) {
-                    containerList.addAll(getAllItemsOfType(cls));
-                    containers.setItems(FXCollections.observableList(containerList));
-                    containers.setValue(containerList.get(0));
-                }
-
                 Button addButton = new Button();
                 addButton.setText("Add");
 
@@ -276,6 +285,25 @@ public class ItemConfigController {
                 containersAdded.setId("compCbx");
                 Button removeButton = new Button();
                 removeButton.setText("Remove");
+
+                //if item configured already
+                if (item instanceof Key) {
+                    ArrayList<Item> addedList = ((Key) item).getCompatibility();
+                    containersAdded.setItems(FXCollections.observableList(addedList));
+                    containersAdded.getSelectionModel().selectFirst();
+
+                    containerList.addAll(getAllItemsOfType(cls));
+                    containerList.removeIf(addedList::contains);
+                    containers.setItems(FXCollections.observableList(containerList));
+                    containers.getSelectionModel().selectFirst();
+                }
+                else {
+                    if (!getAllItemsOfType(cls).isEmpty()) {
+                        containerList.addAll(getAllItemsOfType(cls));
+                        containers.setItems(FXCollections.observableList(containerList));
+                        containers.setValue(containerList.get(0));
+                    }
+                }
 
                 addButton.setOnMouseClicked(event -> {
                     try {
@@ -332,7 +360,7 @@ public class ItemConfigController {
 
                 //TODO
                 if (item instanceof Container) {
-                    cStateCombo.setValue(String.valueOf(((Container) item).getLockState().name()));
+                    cStateCombo.setValue((((Container) item).getLockState().name()));
                 }
 
                 paramsVbox.getChildren().addAll(cCompText, cStateText, cStateCombo);
@@ -373,10 +401,10 @@ public class ItemConfigController {
         TextField tf = new TextField();
         ComboBox<String> cbx = new ComboBox<>();
         cbx.setItems(FXCollections.observableArrayList(
-                new String("Use"),
-                new String("Take"),
-                new String("Drop"),
-                new String("View")));
+                ("Use"),
+                ("Take"),
+                ("Drop"),
+                ("View")));
         cbx.getSelectionModel().selectFirst();
 
         Button delBtn = new Button();
@@ -440,7 +468,7 @@ public class ItemConfigController {
         return items;
     }
 
-    public ArrayList<Item> getAllItemsOfType(Class c) throws ClassNotFoundException {
+    public ArrayList<Item> getAllItemsOfType(Class c) {
         ArrayList<Item> ret = new ArrayList<>();
 
         for (Item i: getAllItems()) {
