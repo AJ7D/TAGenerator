@@ -172,6 +172,15 @@ class Use implements Action {
             item = player.getInventory().findItemByName(wordBuilderComplex(input)[0]);
         }
         if (item == null) {
+            for (Item i : player.getCurrentRoom().getItems()) {
+                if (i.getName().equals(wordBuilder(input)) || i.getName().equals(wordBuilderComplex(input)[0])) {
+                    if (!i.getIsCarry()) {
+                        item = i;
+                    }
+                }
+            }
+        }
+        if (item == null) {
             return "You do not have that item.";
         }
 
@@ -182,6 +191,14 @@ class Use implements Action {
             Item item2 = player.getInventory().findItemByName(wordBuilderComplex(input)[1]);
             if (item2 == null) {
                 item2 = player.getCurrentRoom().findItemByName(wordBuilderComplex(input)[1]);
+            }
+            if (item2 == null && item instanceof Container) {
+                //TODO clean up
+                for (Item i : ((Container) item).getItems()) {
+                    if (i.getName().equalsIgnoreCase(wordBuilderComplex(input)[1])) {
+                        item2 = i;
+                    }
+                }
             }
             if (item2 == null) {
                 return "Cannot find that item.";

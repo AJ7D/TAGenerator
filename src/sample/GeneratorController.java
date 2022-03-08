@@ -315,7 +315,7 @@ public class GeneratorController {
                         });
                         configBtn(b3,40);
                         if (i instanceof Container && !((Container) i).getItems().isEmpty()) {
-                            for (Item j : ((Container) i).getItems().values()) {
+                            for (Item j : ((Container) i).getItems()) {
                                 Button b4 = new Button(j.getName());
                                 b4.setId(String.valueOf(j.getName()));
                                 b4.setOnMouseClicked(event -> {
@@ -344,9 +344,9 @@ public class GeneratorController {
                 });
                 configBtn(b2,20);
                 if (i instanceof Container && !((Container) i).getItems().isEmpty()) {
-                    for (Item j : ((Container) i).getItems().values()) {
+                    for (Item j : ((Container) i).getItems()) {
                         Button b4 = new Button(j.getName());
-                        b4.setId(String.valueOf(j.getName()));
+                        b4.setId(String.valueOf(j.getId()));
                         b4.setOnMouseClicked(event -> {
                             try {
                                 updateItem(event);
@@ -458,5 +458,13 @@ public class GeneratorController {
         //simulate button click to update ui, call from external window
         Button button = (Button) objectAnchorPane.lookup("#" +string);
         buttonClick(button);
+    }
+
+    public void validateAllItems() {
+        for (Item i : newGame.getGameItems()) {
+            if (i instanceof Key) {
+                ((Key) i).getCompatibility().removeIf(j -> !(j instanceof Container));
+            }
+        }
     }
 }

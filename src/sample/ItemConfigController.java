@@ -35,21 +35,19 @@ public class ItemConfigController {
     public CheckBox isVisibleChx;
     public CheckBox isCarryChx;
     public CheckBox startWithChx;
-    public ComboBox<Room> roomSelCbx;
     public VBox paramsVbox;
 
     public VBox verbsVbox;
+    public ComboBox<String> locSelectCbx;
+    public HBox locHbox;
 
     Game game = GeneratorController.getNewGame();
-    public Room oldRoom;
 
     @FXML
     private void initialize() {
-        UITools uit = new UITools();
-        uit.configureComboboxRoom(roomSelCbx);
+        locSelectCbx.getSelectionModel().selectFirst();
+        updateHolderCbx();
         itemTypeCbx.getSelectionModel().selectFirst();
-        roomSelCbx.getItems().setAll(GeneratorController.getNewGame().getGameMap());
-        roomSelCbx.getSelectionModel().selectFirst(); //add room list to combobox values
     }
 
     public void saveItem() {
@@ -68,10 +66,10 @@ public class ItemConfigController {
         item.setVerbs(getAllVerbs()); //add user's custom verbs to item grammar
 
         if (iStart) {
-            tryGivePlayerItem(item); //player starts with item
+            tryGiveCharacterItem(game.getPlayer(), item); //player starts with item
         }
         else {
-            tryGiveRoomItem(item); //item starts in a room
+            tryPlaceItem(item); //item starts in a room
         }
 
         game.updateItem(item); //add item to game structure
@@ -116,20 +114,25 @@ public class ItemConfigController {
         startWithChx.setSelected(item.getStartWith());
 
         if (!item.getStartWith()) { //find item's location
-            Room r = game.findItemLoc(item);
-            if (r != null) {
-                roomSelCbx.getSelectionModel().select(r);
+            Entity e = game.findItemInstance(item);
+            if (e != null) {
+                locSelectCbx.getSelectionModel().select(e.getClass().getSimpleName());
+                updateHolderCbx();
+                ComboBox<Entity> cbx = (ComboBox<Entity>) locHbox.getChildren().get(0);
+                cbx.getSelectionModel().select(e);
             }
             else {
-                roomSelCbx.getSelectionModel().selectFirst();
+                locSelectCbx.getSelectionModel().selectFirst();
             }
-            oldRoom = r;
         }
     }
 
     public Item readType(String iName, String iDesc, boolean iVis, boolean iCarry, boolean iStart) {
         boolean isOverwrite = (item != null); //true if existing item is being edited
         //produces a new item dependent on the subclass of item selected
+        if (item instanceof Container && !itemTypeCbx.getValue().equals("Container")) {
+            game.emptyContainer((Container) item);
+        }
         switch (itemTypeCbx.getValue()) {
             case "Consumable":
                 TextField hp = (TextField) paramsVbox.lookup("#cHpField");
@@ -160,10 +163,15 @@ public class ItemConfigController {
             case "Container":
                 ComboBox<String> cState = (ComboBox<String>) paramsVbox.lookup("#cStateCbx");
                 LockState lockState = LockState.valueOf(cState.getValue());
+                HashMap<Long, Item> items = new HashMap<>();
 
-                if (isOverwrite)
-                    return new Container(item.getId(), iName, iDesc, iVis, iCarry, iStart, new HashMap<>(), lockState);
-                return new Container(iName, iDesc, iVis, iCarry, iStart, new HashMap<>(), lockState);
+                if (isOverwrite) {
+                    if (item instanceof Container) {
+                        return new Container(item.getId(), iName, iDesc, iVis, iCarry, iStart, ((Container) item).getItems(), lockState);
+                    }
+                    return new Container(item.getId(), iName, iDesc, iVis, iCarry, iStart, new ArrayList<>(), lockState);
+                }
+                return new Container(iName, iDesc, iVis, iCarry, iStart, new ArrayList<>(), lockState);
             case "Weapon":
                 TextField wMight = (TextField) paramsVbox.lookup("#wMightField");
                 int might = Integer.parseInt(wMight.getText());
@@ -180,32 +188,33 @@ public class ItemConfigController {
         }
     }
 
-    public void tryGivePlayerItem(Item item) {
+    public void tryGiveCharacterItem(Character c, Item item) {
         //gives item to player, if permitted
-        Player p = game.getPlayer();
-        if (!p.getInventory().containsItem(item)) {
-            if (oldRoom != null) {
-                oldRoom.deleteItem(item);
-            }
-            p.give(item);
-            System.out.println(p.getInventory());
+        if (!c.getInventory().containsItem(item)) {
+            game.deleteItemInsances(item);
+            c.getInventory().addItem(item);
+            System.out.println(c.getInventory());
             return;
         }
         System.out.println("Player already has item.");
     }
 
-    public void tryGiveRoomItem(Item item) {
-        //adds item to room, if permitted
-        Room r = roomSelCbx.getValue();
-        List<Item> inventory = game.getPlayer().getInventory().getContents();
-        if (!r.containsItem(item)) {
-            if (oldRoom != null) {
-                oldRoom.deleteItem(item);
-            }
-            inventory.remove(item);
-
-            r.addItem(item);
-            System.out.println(r);
+    public void tryPlaceItem(Item item) {
+        game.deleteItemInsances(item);
+        ComboBox cbx = (ComboBox) locHbox.getChildren().get(0);
+        switch (locSelectCbx.getValue().toString()) {
+            case "Room":
+                Room r = (Room) cbx.getValue();
+                r.addItem(item);
+                break;
+            case "Enemy":
+                Enemy e = (Enemy) cbx.getValue();
+                e.getInventory().addItem(item);
+                break;
+            case "Container":
+                Container c = (Container) cbx.getValue();
+                c.addItem(item);
+                break;
         }
     }
 
@@ -479,7 +488,47 @@ public class ItemConfigController {
         return ret;
     }
 
-    public void setGeneratorController(GeneratorController gc) { this.generatorController = gc; }
+    public void updateHolderCbx() {
+        UITools uit = new UITools();
+        locHbox.getChildren().clear();
+        switch (locSelectCbx.getValue().toString()) {
+            case "Room":
+                ComboBox<Room> roomCbx = new ComboBox<>();
+                roomCbx.getItems().setAll(GeneratorController.getNewGame().getGameMap());
+                roomCbx.getSelectionModel().selectFirst(); //add room list to combobox values
+                uit.configureComboboxRoom(roomCbx);
+                locHbox.getChildren().add(0, roomCbx);
+                break;
+            case "Enemy":
+                ComboBox<Enemy> enemyCbx = new ComboBox<>();
+                try {
+                    enemyCbx.getItems().setAll(GeneratorController.getNewGame().getGameEnemies().values());
+                    enemyCbx.getSelectionModel().selectFirst();
+                }
+                catch (NullPointerException e) {
+                    System.out.println("No enemies in game to display.");
+                }
+                uit.configureComboboxEnemy(enemyCbx);
+                locHbox.getChildren().add(0, enemyCbx);
+                break;
+            case "Container":
+                ComboBox<Item> contCbx = new ComboBox<>();
+                try {
+                    contCbx.getItems().setAll(GeneratorController.getNewGame().getContainers());
+                    contCbx.getSelectionModel().selectFirst();
+                }
+                catch (NullPointerException e) {
+                    System.out.println("No containers in game to display.");
+                }
+                if (item != null)
+                    contCbx.getItems().remove(item);
+                uit.configureCombobox(contCbx);
+                locHbox.getChildren().add(0, contCbx);
+                break;
+        }
+        locHbox.getChildren().add(locSelectCbx);
+    }
 
+    public void setGeneratorController(GeneratorController gc) { this.generatorController = gc; }
 
 }

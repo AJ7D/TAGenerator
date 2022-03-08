@@ -1,10 +1,9 @@
 package sample;
 
 import java.io.*;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.Map;
 
 public class Game implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -48,6 +47,30 @@ public class Game implements Serializable {
         return gameEnemies;
     }
 
+    public ArrayList<Item> getContainers() {
+        if (this.getGameItems().isEmpty())
+            return null;
+        ArrayList<Item> containers = new ArrayList<>();
+        for (Item i : this.getGameItems()) {
+            if (i instanceof Container) {
+                containers.add(i);
+            }
+        }
+        return containers;
+    }
+
+    public ArrayList<Container> getContainersC() {
+        if (this.getGameItems().isEmpty())
+            return null;
+        ArrayList<Container> containers = new ArrayList<>();
+        for (Item i : this.getGameItems()) {
+            if (i instanceof Container) {
+                containers.add((Container) i);
+            }
+        }
+        return containers;
+    }
+
     public Room getRoom(Long id) {
         for (Room r : this.gameMap) {
             if (id == r.getId()) {
@@ -68,26 +91,6 @@ public class Game implements Serializable {
 
     public Enemy getEnemy(Long id) {
         return this.gameEnemies.get(id);
-    }
-
-    public boolean createRoom(Room room) {
-        gameMap.add(room);
-        return true;
-    }
-
-    public void createRoom(String name, String description, Room[] exits) {
-        Room room = new Room(name, description, exits);
-        gameMap.add(room);
-    }
-
-    public boolean createItem(Item item) {
-        gameItems.add(item);
-        return true;
-    }
-
-    public void createItem(String name, String description, boolean isVisible, boolean isCarry, boolean startWith) {
-        Item item = new Item(name, description, isVisible, isCarry, startWith);
-        gameItems.add(item);
     }
 
     public void updateRoom(Room room) {
@@ -143,6 +146,9 @@ public class Game implements Serializable {
     }
 
     public void deleteItem(Item item) {
+        if (item instanceof Container) {
+            this.emptyContainer((Container) item);
+        }
         gameItems.remove(item);
         Room room = findRoomWithItem(item);
         if (room != null) {
@@ -153,6 +159,10 @@ public class Game implements Serializable {
         if (player.getInventory().getContents().contains(item)) {
             player.getInventory().removeItem(item);
             System.out.println("Deleted " + item + " from player inventory.");
+            return;
+        }
+        for (Container c : this.getContainersC()) {
+            c.getItems().remove(item);
             return;
         }
         System.out.println("Item was not found.");
@@ -203,13 +213,69 @@ public class Game implements Serializable {
         //System.out.println("gameMap contents: " + this.getGameMap());
     }
 
-    public Room findItemLoc(Item item) {
+    public Room findItemLocRoom(Item item) {
         for (Room r : this.gameMap) {
             if (r.containsItem(item)) {
                 return r;
             }
+            for (Item i : r.getItems()) {
+                if (i instanceof Container) {
+                    if (recSearchItemContains((Container) i, item))
+                        return r;
+                }
+            }
         }
         System.out.println("WARNING: Item " + item + " was not found in any room.");
+        return null;
+    }
+
+    public boolean recSearchItemContains(Container rootContainer, Item itemToFind) {
+        if (rootContainer.getItems().isEmpty())
+            return false;
+        for (Item i : rootContainer.getItems()) {
+            if (i.getId() == itemToFind.getId()) {
+                return true;
+            }
+            if (i instanceof Container) {
+                return recSearchItemContains((Container) i, itemToFind);
+            }
+        }
+        return false;
+    }
+
+    public void deleteItemInsances(Item item) {
+        for (Room r : gameMap) {
+            r.getItems().remove(item);
+        }
+        for (Item i : gameItems) {
+            if (i instanceof Container) {
+                ((Container) i).getItems().remove(item);
+            }
+        }
+        for (Enemy e : gameEnemies.values()) {
+            e.getInventory().getContents().remove(item);
+        }
+        player.getInventory().getContents().remove(item);
+    }
+
+    public Entity findItemInstance(Item item) {
+        for (Room r : gameMap) {
+            if (r.getItems().contains(item))
+                return r;
+        }
+        for (Item i : gameItems) {
+            if (i instanceof Container) {
+                if (((Container) i).getItems().contains(item)) {
+                    return i;
+                }
+            }
+        }
+        for (Enemy e : gameEnemies.values()) {
+            if (e.getInventory().getContents().contains(item))
+                return e;
+        }
+        if (player.getInventory().getContents().contains(item))
+            return player;
         return null;
     }
 
@@ -250,14 +316,6 @@ public class Game implements Serializable {
 
     public HashMap<String, Action> getGrammar() {
         return this.grammar;
-    }
-
-    public void addToGrammar(String verb, Action action) {
-        this.grammar.put(verb, action);
-    }
-
-    public void removeFromGrammar(String verb) {
-        this.grammar.remove(verb);
     }
 
     private HashMap<String, Action> defineGrammar() {
@@ -308,8 +366,34 @@ public class Game implements Serializable {
         return g;
     }
 
-    public static void main(String[] args) {
+    public void emptyContainer(Container container) {
+        if (container.getItems().isEmpty())
+            return;
+        this.findItemLocRoom(container).getItems().addAll(container.getItems());
+        container.getItems().clear();
+    }
 
+    public static void main(String[] args) {
+        Container container = new Container();
+        Item item = new Item();
+
+        Game game = new Game();
+        game.gameItems.add(container);
+        game.gameItems.add(item);
+        container.addItem(item);
+        System.out.println(container.getItems().toString());
+        game.deleteItemInsances(item);
+        System.out.println(container.getItems().toString());
+
+        Room room = new Room();
+        Container container2 = new Container();
+        Consumable apple = new Consumable();
+
+        container.addItem(container2);
+        container2.addItem(apple);
+        room.addItem(container);
+        game.getGameMap().add(room);
+        System.out.println(game.findItemLocRoom(apple));
     }
 }
 

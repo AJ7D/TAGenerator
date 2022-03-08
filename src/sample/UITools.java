@@ -23,6 +23,24 @@ public class UITools {
         });
     }
 
+    public void configureComboboxEnemy(ComboBox<Enemy> cbx) {
+        //method to cleanly change an item combobox to display item name
+
+        cbx.setConverter(new StringConverter<Enemy>() {
+
+            @Override
+            public String toString(Enemy cl) {
+                return cl.getName();
+            }
+
+            @Override
+            public Enemy fromString(String string) {
+                return cbx.getItems().stream().filter(ap ->
+                        ap.getName().equals(string)).findFirst().orElse(null);
+            }
+        });
+    }
+
 
     public void configureComboboxRoom(ComboBox<Room> cbx) {
         //method to cleanly change an item combobox to display item name

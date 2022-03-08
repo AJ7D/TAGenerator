@@ -38,10 +38,7 @@
 
     <CheckBox fx:id="startWithChx" layoutX="281.0" layoutY="180.0" text="Start with?" />
 
-    <ComboBox fx:id="roomSelCbx" layoutX="125.0" layoutY="205.0" />
-
     <Button fx:id="saveItemBtn" layoutX="224.0" layoutY="340.0" mnemonicParsing="false" onMouseClicked="#saveItem" text="Save Item" />
-   <Text layoutX="25.0" layoutY="220.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Appears in room:" />
    <VBox fx:id="paramsVbox" layoutX="10.0" layoutY="235.0" prefHeight="100.0" prefWidth="380.0" />
    <Button fx:id="deleteItemBtn" layoutX="15.0" layoutY="340.0" mnemonicParsing="false" onMouseClicked="#deleteItem" text="Delete Item" />
    <Text layoutX="390.0" layoutY="10.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Grammar:" />
@@ -50,7 +47,17 @@
          <VBox fx:id="verbsVbox" prefHeight="95.0" prefWidth="228.0" />
       </content>
    </ScrollPane>
-   <Button fx:id="newVerbBtn" layoutX="513.0" layoutY="17.0" mnemonicParsing="false" text="New verb" onMouseClicked="#genNewVerb"/>
+   <Button fx:id="newVerbBtn" layoutX="513.0" layoutY="17.0" mnemonicParsing="false" onMouseClicked="#genNewVerb" text="New verb" />
+   <ComboBox fx:id="locSelectCbx" layoutX="210.0" layoutY="204.0" onAction="#updateHolderCbx" prefWidth="150.0">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <String fx:value="Room" />
+                <String fx:value="Container" />
+                <String fx:value="Enemy" />
+            </FXCollections>
+        </items>
+   </ComboBox>
+   <HBox fx:id="locHbox" layoutX="23.0" layoutY="202.0" prefHeight="35.0" prefWidth="347.0" />
 
     <stylesheets>
         <URL value="@TAGmain.css" />

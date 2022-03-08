@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Container extends Item {
-    private HashMap<Long, Item> items = new HashMap<>();
+    private ArrayList<Item> items = new ArrayList<>();
     private LockState lockState = LockState.LOCKED;
 
     Container() {
@@ -15,18 +15,18 @@ public class Container extends Item {
         super(name, description, isVisible, isCarry, startWith);
     }
 
-    Container(String name, String description, boolean isVisible, boolean isCarry, boolean startWith, HashMap<Long, Item> items) {
+    Container(String name, String description, boolean isVisible, boolean isCarry, boolean startWith, ArrayList<Item> items) {
         super(name, description, isVisible, isCarry, startWith);
         this.items = items;
     }
 
-    Container(String name, String description, boolean isVisible, boolean isCarry, boolean startWith, HashMap<Long, Item> items, LockState locked) {
+    Container(String name, String description, boolean isVisible, boolean isCarry, boolean startWith, ArrayList<Item> items, LockState locked) {
         super(name, description, isVisible, isCarry, startWith);
         this.items = items;
         this.lockState = locked;
     }
 
-    Container(Long id, String name, String description, boolean isVisible, boolean isCarry, boolean startWith, HashMap<Long, Item> items, LockState locked) {
+    Container(Long id, String name, String description, boolean isVisible, boolean isCarry, boolean startWith, ArrayList<Item> items, LockState locked) {
         super(id, name, description, isVisible, isCarry, startWith);
         this.items = items;
         this.lockState = locked;
@@ -48,8 +48,8 @@ public class Container extends Item {
                     contents = "Nothing.";
                 }
                 else {
-                    for (Long id: items.keySet()) {
-                        contents = contents.concat(items.get(id).getName() + "\n");
+                    for (Item i : this.items) {
+                        contents = contents.concat(i.getName() + "\n");
                     }
                 }
                 return desc + "Contents of " + this.getName() +":\n" + contents;
@@ -65,13 +65,13 @@ public class Container extends Item {
                 return this.getName() + " is locked.";
             }
             case UNLOCKED: {
-                if (this.items.containsKey(item2.getId())) {
+                if (this.items.contains(item2)) {
                     p.give(item2);
-                    this.items.remove(item2.getId());
+                    this.items.remove(item2);
                     return item2.getName() + " was taken from " + this.getName();
                 } else if (p.getInventory().containsItem(item2)) {
                     p.getInventory().removeItem(item2);
-                    this.items.put(item2.getId(), item2);
+                    this.items.add(item2);
                     return item2.getName() + " was placed inside " + this.getName();
                 }
                 return "What item are you talking about?";
@@ -90,11 +90,13 @@ public class Container extends Item {
         this.lockState = lockState;
     }
 
-    public void setItems(HashMap<Long, Item> items) {
+    public void setItems(ArrayList<Item> items) {
         this.items = items;
     }
 
-    public HashMap<Long, Item> getItems() {
+    public void addItem(Item item) { this.items.add(item); }
+
+    public ArrayList<Item> getItems() {
         return items;
     }
 
