@@ -69,6 +69,14 @@ public class Light extends Item{
         this.numUses = numUses;
     }
 
+    @Override
+    public String toString() {
+        return super.toString() +
+                "lightState=" + lightState +
+                ", numUses=" + numUses +
+                '}';
+    }
+
     public static void main(String[] args) {
         Player p = new Player("June");
         Light torch = new Light("Torch", "A good light source.", true, true, true, LightState.OFF, 2);

@@ -59,18 +59,20 @@ public class Player extends Character {
         String item = "items";
         if (inventorySize == 1)
             item = "item";
-        return "YOUR NAME IS " + this.getName() + ".\nYou are carrying " + this.getInventory().countItems()
-                + " " + item + ".";
+        return "YOUR NAME IS " + this.getName() + ".\nCurrent HP: " + this.getHp() + "/" + this.getMaxHp() +
+                "\nYou are carrying " + this.getInventory().countItems() + " " + item + ".";
     }
 
     public String getBearings() {
         return "YOU STAND IN: " + this.getCurrentRoom().getName() + "\n" +
-                this.getCurrentRoom().getDescription();
+                this.getCurrentRoom().getDescription() +"\nThere are exits to the:" +
+                this.getCurrentRoom().listAvailableDirections() + "\n" + checkSurroundings();
     }
 
     public String checkSurroundings() {
         String desc = this.getCurrentRoom().getDescription();
         List<Item> items = this.getCurrentRoom().getVisibleItems();
+        List<Enemy> enemies = (List<Enemy>) this.getCurrentRoom().getEnemies().values();
         String itemsSeen = "You see... ";
         System.out.println(desc);
 
@@ -80,6 +82,17 @@ public class Player extends Character {
 
         for (int i = 0; i < items.size(); i++) {
             itemsSeen = itemsSeen.concat(items.get(i).getName());
+            if (i != (items.size()-1)) {
+                itemsSeen = itemsSeen.concat(", ");
+            }
+            else {
+                itemsSeen = itemsSeen.concat(".");
+            }
+        }
+
+        for (int i = 0; i < enemies.size(); i++) {
+            itemsSeen = itemsSeen.concat("\nThere are enemies: ");
+            itemsSeen = itemsSeen.concat(enemies.get(i).getName());
             if (i != (items.size()-1)) {
                 itemsSeen = itemsSeen.concat(", ");
             }

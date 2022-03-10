@@ -3,7 +3,6 @@ package sample;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class Item extends Entity implements Serializable {
     private static final long serialVersionUID = 1L;

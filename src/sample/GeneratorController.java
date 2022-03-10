@@ -11,13 +11,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +26,8 @@ public class GeneratorController {
     static final int ENEMYWIDTH = 400;
     static final int ENEMYHEIGHT = 400;
 
+    static final int ITEM_LIST_INCREMENT = 20;
+
     public static Stage stage;
     private static Game newGame;
     private int spOffset = 0;
@@ -37,7 +36,6 @@ public class GeneratorController {
     private Room selectedRoom;
 
     @FXML private TextField nameEntryTF;
-    @FXML private Button newRoomBtn;
     @FXML private AnchorPane objectAnchorPane;
     @FXML private Button newItemBtn;
     @FXML private Button newEnemyBtn;
@@ -47,8 +45,6 @@ public class GeneratorController {
     @FXML private Button wExitBtn;
     @FXML private Button editRoomBtn;
     @FXML private Text selectedRoomTxt;
-    @FXML private Button deleteRoomBtn;
-    @FXML private Button saveReturnBtn;
     @FXML private ComboBox<Room> startRoomCbx;
     @FXML private VBox inventoryVbox;
     @FXML private Button exitNoSaveBtn;
@@ -125,7 +121,7 @@ public class GeneratorController {
         if (option.isPresent() && option.get() == ButtonType.OK) {
             newGame.deleteRoom(room);
             callUpdate();
-            if (startRoomCbx.getValue().equals(room.getName())) {
+            if (startRoomCbx.getValue().getName().equals(room.getName())) {
                 startRoomCbx.getSelectionModel().selectFirst();
             }
             String id = objectAnchorPane.getChildren().get(0).getId();
@@ -202,7 +198,6 @@ public class GeneratorController {
         ExitConfigController controller = fxmlLoader.getController();
 
         Button button = ((Button) event.getSource());
-        String buttonId = button.getId();
 
         Direction dir = null;
 
@@ -270,7 +265,7 @@ public class GeneratorController {
             return;
         }
         generateRoomsItems();
-        objectAnchorPane.setPrefHeight(spOffset+20);
+        objectAnchorPane.setPrefHeight(spOffset+ITEM_LIST_INCREMENT);
     }
 
     @FXML
@@ -288,7 +283,7 @@ public class GeneratorController {
             b.setOnMouseClicked(this::roomDisplayBar);
             b.setLayoutY(spOffset);
             b.getStyleClass().add("buttonscroll");
-            spOffset = spOffset + 20;
+            spOffset = spOffset + ITEM_LIST_INCREMENT;
             objectAnchorPane.getChildren().add(b);
 
             for (Enemy en : r.getEnemies().values()) {
@@ -301,7 +296,7 @@ public class GeneratorController {
                         e.printStackTrace();
                     }
                 });
-                configBtn(b2,20);
+                configBtn(b2,ITEM_LIST_INCREMENT);
                 if (!en.getInventory().getContents().isEmpty()) {
                     for (Item i : en.getInventory().getContents()) {
                         Button b3 = new Button(i.getName());
@@ -313,7 +308,7 @@ public class GeneratorController {
                                 e.printStackTrace();
                             }
                         });
-                        configBtn(b3,40);
+                        configBtn(b3,ITEM_LIST_INCREMENT*2);
                         if (i instanceof Container && !((Container) i).getItems().isEmpty()) {
                             for (Item j : ((Container) i).getItems()) {
                                 Button b4 = new Button(j.getName());
@@ -325,7 +320,7 @@ public class GeneratorController {
                                         e.printStackTrace();
                                     }
                                 });
-                                configBtn(b4,60);
+                                configBtn(b4,ITEM_LIST_INCREMENT*3);
                             }
                         }
                     }
@@ -342,7 +337,7 @@ public class GeneratorController {
                         e.printStackTrace();
                     }
                 });
-                configBtn(b2,20);
+                configBtn(b2,ITEM_LIST_INCREMENT);
                 if (i instanceof Container && !((Container) i).getItems().isEmpty()) {
                     for (Item j : ((Container) i).getItems()) {
                         Button b4 = new Button(j.getName());
@@ -354,7 +349,7 @@ public class GeneratorController {
                                 e.printStackTrace();
                             }
                         });
-                        configBtn(b4, 40);
+                        configBtn(b4, ITEM_LIST_INCREMENT*2);
                     }
                 }
             }
@@ -365,7 +360,7 @@ public class GeneratorController {
         btn.setLayoutY(spOffset);
         btn.setLayoutX(xoffset);
         btn.getStyleClass().add("buttonscroll");
-        spOffset = spOffset + 20;
+        spOffset = spOffset + ITEM_LIST_INCREMENT;
         objectAnchorPane.getChildren().add(btn);
     }
     @FXML
@@ -458,13 +453,5 @@ public class GeneratorController {
         //simulate button click to update ui, call from external window
         Button button = (Button) objectAnchorPane.lookup("#" +string);
         buttonClick(button);
-    }
-
-    public void validateAllItems() {
-        for (Item i : newGame.getGameItems()) {
-            if (i instanceof Key) {
-                ((Key) i).getCompatibility().removeIf(j -> !(j instanceof Container));
-            }
-        }
     }
 }

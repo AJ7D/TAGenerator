@@ -14,7 +14,6 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class ItemConfigController {
     public Pane pane;
@@ -163,7 +162,6 @@ public class ItemConfigController {
             case "Container":
                 ComboBox<String> cState = (ComboBox<String>) paramsVbox.lookup("#cStateCbx");
                 LockState lockState = LockState.valueOf(cState.getValue());
-                HashMap<Long, Item> items = new HashMap<>();
 
                 if (isOverwrite) {
                     if (item instanceof Container) {

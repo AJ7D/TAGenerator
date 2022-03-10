@@ -65,4 +65,12 @@ public class Weapon extends Item {
     public int getDurability() {
         return this.durability;
     }
+
+    @Override
+    public String toString() {
+        return super.toString() +
+                "might=" + might +
+                ", durability=" + durability +
+                '}';
+    }
 }

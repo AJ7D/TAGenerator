@@ -1,7 +1,6 @@
 package sample;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class Container extends Item {
     private ArrayList<Item> items = new ArrayList<>();
@@ -98,6 +97,14 @@ public class Container extends Item {
 
     public ArrayList<Item> getItems() {
         return items;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() +
+                "items=" + items +
+                ", lockState=" + lockState +
+                '}';
     }
 
     public static void main(String[] args) {

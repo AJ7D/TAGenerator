@@ -143,6 +143,15 @@ public class Room extends Entity implements Serializable {
 
     public void deleteEnemy(Enemy enemy) { this.getEnemies().remove(enemy.getId());}
 
+    public String listAvailableDirections() {
+        String availableDirections = "";
+        for (int i = 0; i < 4; i++) {
+            if (exits[i]!=null) {
+                availableDirections = availableDirections.concat(" " + Direction.values()[i].name());
+            }
+        }
+        return availableDirections;
+    }
 
     public boolean checkForExit(Direction dir) {
         Room r = this.exits[dir.getValue()];

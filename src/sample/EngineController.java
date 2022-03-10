@@ -50,7 +50,7 @@ public class EngineController {
                 return parseInput(input);
             case GAMEOVER:
                 return "YOU HAVE LOST.\nIf you wish to play again, please load your last save or" +
-                        "start from the beginning.";
+                        "\nstart from the beginning.";
             case WIN:
                 return "YOU HAVE WON.\nPlease load a new game if you wish to play more.";
         }

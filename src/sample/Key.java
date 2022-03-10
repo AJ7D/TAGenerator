@@ -59,4 +59,11 @@ public class Key extends Item{
     public void removeCompatibility(Container container) {
         this.compatibility.remove(container);
     }
+
+    @Override
+    public String toString() {
+        return super.toString() +
+                "compatibility=" + compatibility +
+                '}';
+    }
 }
