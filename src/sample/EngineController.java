@@ -29,6 +29,7 @@ public class EngineController {
     private EngineState state = EngineState.NOT_LOADED;
     private Game game;
     private Player player;
+    private int turn = 0;
 
     @FXML
     private void initialize() {
@@ -95,6 +96,7 @@ public class EngineController {
     }
 
     public String executeCommand(ArrayList<String> args) {
+        turn = player.getTurnCount();
         if (args.size() > 0) {
             if (grammar.get(args.get(0)) != null) {
                 return grammar.get(args.get(0)).process(player, args) + "\n" + processEnemyResponses();
@@ -185,11 +187,10 @@ public class EngineController {
 
     private String processEnemyResponses() {
         String response = "";
-        if (player.getCurrentRoom().getEnemies().isEmpty())
-            return response;
-        for (Enemy e : player.getCurrentRoom().getEnemies().values()) {
-            if (e.isAlive() && e.getState() == EnemyState.AGGRESSIVE) {
-                response = response.concat(e.attack(player) + "\n");
+        if (!player.getCurrentRoom().getEnemies().isEmpty() && player.getTurnCount() > turn) { //process enemy response if player has used a turn
+            turn = player.getTurnCount();
+            for (Enemy e : player.getCurrentRoom().getEnemies()) {
+                response = response.concat(e.processTurn(player) + "\n");
                 if (player.getHp() <= 0) {
                     response = response.concat(player.getName() + " has died.");
                     state = EngineState.GAMEOVER;

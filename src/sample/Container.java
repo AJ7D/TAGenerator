@@ -36,7 +36,7 @@ public class Container extends Item {
         this.lockState = locked;
     }
 
-    public String getDetailedDescription() {
+    public String getDescription() {
         String desc = super.getDescription() + "\n";
         switch(lockState) {
             case LOCKED:
@@ -68,7 +68,7 @@ public class Container extends Item {
                     p.give(item2);
                     this.items.remove(item2);
                     return item2.getName() + " was taken from " + this.getName();
-                } else if (p.getInventory().containsItem(item2)) {
+                } else if (p.getInventory().containsItem(item2) && !(item2.equals(this))) {
                     p.getInventory().removeItem(item2);
                     this.items.add(item2);
                     return item2.getName() + " was placed inside " + this.getName();

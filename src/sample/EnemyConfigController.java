@@ -1,21 +1,11 @@
 package sample;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 public class EnemyConfigController {
@@ -59,7 +49,9 @@ public class EnemyConfigController {
         tryGiveRoomEnemy(enemy);
 
         game.updateEnemy(enemy);
-        System.out.println(game.getGameEnemies());
+        System.out.println(game.getGameEnemies().toString());
+        System.out.println(enemy);
+        System.out.println(enemy.getInventory().getContents());
         closeWindow();
     }
 
@@ -82,7 +74,7 @@ public class EnemyConfigController {
         passiveCheck.setSelected(enemy.getState()==EnemyState.PASSIVE);
         roomSelCbx.getSelectionModel().select(enemy.getCurrentRoom());
 
-        Room r = game.findEnemyLoc(enemy);
+        Room r = enemy.getCurrentRoom();
         if (r != null) {
             roomSelCbx.getSelectionModel().select(r);
         }
@@ -94,7 +86,6 @@ public class EnemyConfigController {
 
     public void tryGiveRoomEnemy(Enemy enemy) {
         Room r = roomSelCbx.getValue();
-        List<Item> inventory = game.getPlayer().getInventory().getContents();
         if (!r.containsEnemy(enemy)) {
             if (oldRoom != null) {
                 oldRoom.deleteEnemy(enemy);

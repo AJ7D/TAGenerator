@@ -500,7 +500,7 @@ public class ItemConfigController {
             case "Enemy":
                 ComboBox<Enemy> enemyCbx = new ComboBox<>();
                 try {
-                    enemyCbx.getItems().setAll(GeneratorController.getNewGame().getGameEnemies().values());
+                    enemyCbx.getItems().setAll(GeneratorController.getNewGame().getGameEnemies());
                     enemyCbx.getSelectionModel().selectFirst();
                 }
                 catch (NullPointerException e) {

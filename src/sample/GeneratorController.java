@@ -286,7 +286,7 @@ public class GeneratorController {
             spOffset = spOffset + ITEM_LIST_INCREMENT;
             objectAnchorPane.getChildren().add(b);
 
-            for (Enemy en : r.getEnemies().values()) {
+            for (Enemy en : r.getEnemies()) {
                 Button b2 = new Button(en.getName());
                 b2.setId(String.valueOf(en.getId()));
                 b2.setOnMouseClicked(event -> {
@@ -312,7 +312,7 @@ public class GeneratorController {
                         if (i instanceof Container && !((Container) i).getItems().isEmpty()) {
                             for (Item j : ((Container) i).getItems()) {
                                 Button b4 = new Button(j.getName());
-                                b4.setId(String.valueOf(j.getName()));
+                                b4.setId(String.valueOf(j.getId()));
                                 b4.setOnMouseClicked(event -> {
                                     try {
                                         updateItem(event);
@@ -426,9 +426,10 @@ public class GeneratorController {
 
     @FXML
     private void loadGameConfig() throws IOException, ClassNotFoundException {
-        newGame = gameManager.loadGameFile(stage);
+        Game loaded = gameManager.loadGameFile(stage);
 
-        if (newGame != null) {
+        if (loaded != null) {
+            newGame = loaded;
             nameEntryTF.setText(newGame.getTitle());
             callUpdate();
         }

@@ -28,7 +28,7 @@ public class GameManager {
         return false;
     }
 
-    public Game loadGameFile(Stage stage) throws IOException, ClassNotFoundException {
+    public Game loadGameFile(Stage stage) throws IOException {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Game file", "*.txt"));
@@ -38,11 +38,10 @@ public class GameManager {
         if (selectedFile == null) {
             return null;
         }
-        Game game = readGameData(selectedFile);
-        return game;
+        return readGameData(selectedFile);
     }
 
-    private Game readGameData(File file) throws IOException, ClassNotFoundException {
+    private Game readGameData(File file) throws IOException {
         FileInputStream fileInputStream
                 = new FileInputStream(file);
         try {

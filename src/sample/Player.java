@@ -1,8 +1,10 @@
 package sample;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Player extends Character {
+    private int turnCount = 0;
 
     Player(String n) {
         super(n);
@@ -12,10 +14,19 @@ public class Player extends Character {
         super(name, currentRoom);
     }
 
+    public int getTurnCount() {
+        return turnCount;
+    }
+
+    public void incrementTurnCount() {
+        turnCount++;
+    }
+
     public String acquire(String item) {
         for (Item i : this.getCurrentRoom().getItems()) {
             if (i.canBeTaken() && i.getName().equalsIgnoreCase(item)) {
                 this.getCurrentRoom().deleteItem(i);
+                this.incrementTurnCount();
                 return this.getInventory().addItem(i);
             }
         }
@@ -27,6 +38,7 @@ public class Player extends Character {
             if (i.getName().equalsIgnoreCase(item)) {
                 this.getInventory().removeItem(i);
                 this.getCurrentRoom().addItem(i);
+                incrementTurnCount();
                 return "Dropped " + i.getName() + ".";
             }
         }
@@ -72,9 +84,8 @@ public class Player extends Character {
     public String checkSurroundings() {
         String desc = this.getCurrentRoom().getDescription();
         List<Item> items = this.getCurrentRoom().getVisibleItems();
-        List<Enemy> enemies = (List<Enemy>) this.getCurrentRoom().getEnemies().values();
+        ArrayList<Enemy> enemies = this.getCurrentRoom().getLivingEnemies();
         String itemsSeen = "You see... ";
-        System.out.println(desc);
 
         if (items.size() == 0) {
             itemsSeen = itemsSeen.concat("nothing.");
@@ -90,14 +101,15 @@ public class Player extends Character {
             }
         }
 
-        for (int i = 0; i < enemies.size(); i++) {
-            itemsSeen = itemsSeen.concat("\nThere are enemies: ");
-            itemsSeen = itemsSeen.concat(enemies.get(i).getName());
-            if (i != (items.size()-1)) {
-                itemsSeen = itemsSeen.concat(", ");
-            }
-            else {
-                itemsSeen = itemsSeen.concat(".");
+        if (!enemies.isEmpty()) {
+            itemsSeen = itemsSeen.concat("\nThere are enemies about: ");
+            for (int i = 0; i < enemies.size(); i++) {
+                itemsSeen = itemsSeen.concat(enemies.get(i).getName());
+                if (i != (enemies.size() - 1)) {
+                    itemsSeen = itemsSeen.concat(", ");
+                } else {
+                    itemsSeen = itemsSeen.concat(".");
+                }
             }
         }
         return itemsSeen;

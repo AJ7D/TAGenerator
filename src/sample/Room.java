@@ -14,7 +14,7 @@ public class Room extends Entity implements Serializable {
     private final ArrayList<Item> items = new ArrayList<>();
     private final ArrayList<Character> npcs = new ArrayList<>();
 
-    private HashMap<Long, Enemy> enemies = new HashMap<>();
+    private ArrayList<Enemy> enemies = new ArrayList<>();
 
     private final boolean[] isLocked = new boolean[4];
     private final String[] lockedText = new String[4];
@@ -58,7 +58,7 @@ public class Room extends Entity implements Serializable {
     public ArrayList<Character> getNpcs() { return npcs; }
 
     public Enemy getEnemy(String str) {
-        for (Enemy e : enemies.values()) {
+        for (Enemy e : enemies) {
             if (str.equalsIgnoreCase(e.getName())) {
                 return e;
             }
@@ -111,8 +111,17 @@ public class Room extends Entity implements Serializable {
         return GENERIC_FAILURE;
     }
 
-    public HashMap<Long, Enemy> getEnemies() {
+    public ArrayList<Enemy> getEnemies() {
         return enemies;
+    }
+
+    public ArrayList<Enemy> getLivingEnemies() {
+        ArrayList<Enemy> enemyList = new ArrayList<>();
+        for (Enemy e : enemies) {
+            if (e.isAlive())
+                enemyList.add(e);
+        }
+        return enemyList;
     }
 
     public Room[] getExits() { return this.exits; }
@@ -133,7 +142,7 @@ public class Room extends Entity implements Serializable {
         this.getItems().add(item);
     }
 
-    public void addEnemy(Enemy enemy) { this.getEnemies().put(enemy.getId(), enemy);}
+    public void addEnemy(Enemy enemy) { this.getEnemies().add(enemy);}
 
     public void deleteItem(Item item) { this.getItems().remove(item); }
 
@@ -141,7 +150,7 @@ public class Room extends Entity implements Serializable {
 
     public void deleteNpc(Npc npc) { this.getNpcs().remove(npc); }
 
-    public void deleteEnemy(Enemy enemy) { this.getEnemies().remove(enemy.getId());}
+    public void deleteEnemy(Enemy enemy) { this.getEnemies().remove(enemy);}
 
     public String listAvailableDirections() {
         String availableDirections = "";
@@ -207,7 +216,11 @@ public class Room extends Entity implements Serializable {
     }
 
     public boolean containsEnemy(Enemy enemy) {
-        return (enemies.containsKey(enemy.getId()));
+        for (Enemy e : enemies) {
+            if (e.getId() == enemy.getId())
+                return true;
+        }
+        return false;
     }
 
     public boolean hasItems() {

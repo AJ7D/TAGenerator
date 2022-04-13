@@ -185,7 +185,7 @@ class Use implements Action {
         }
 
         if (item instanceof Key || item instanceof Container) {
-            if (input.size() == 1) {
+            if (input.size() == 2) {
                 return "What are you using " + item.getName() + " on?";
             }
             Item item2 = player.getInventory().findItemByName(wordBuilderComplex(input)[1]);
