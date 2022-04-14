@@ -15,6 +15,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,10 +53,11 @@ public class GeneratorController {
 
     @FXML
     private void initialize() {
+        //Initialise default configuration - empty game
         newGame = new Game("New game");
         nameEntryTF.setText(newGame.getTitle());
 
-        callUpdate();
+        updateInterfaceParameters();
 
         UITools uit = new UITools();
         uit.configureComboboxRoom(startRoomCbx);
@@ -120,7 +123,7 @@ public class GeneratorController {
 
         if (option.isPresent() && option.get() == ButtonType.OK) {
             newGame.deleteRoom(room);
-            callUpdate();
+            updateInterfaceParameters();
             if (startRoomCbx.getValue().getName().equals(room.getName())) {
                 startRoomCbx.getSelectionModel().selectFirst();
             }
@@ -276,7 +279,6 @@ public class GeneratorController {
 
     @FXML
     private void generateRoomsItems() {
-        //TODO fix this mess
         for (Room r : newGame.getGameMap()) {
             Button b = new Button(r.getName());
             b.setId(String.valueOf(r.getId()));
@@ -286,71 +288,44 @@ public class GeneratorController {
             spOffset = spOffset + ITEM_LIST_INCREMENT;
             objectAnchorPane.getChildren().add(b);
 
-            for (Enemy en : r.getEnemies()) {
-                Button b2 = new Button(en.getName());
-                b2.setId(String.valueOf(en.getId()));
-                b2.setOnMouseClicked(event -> {
-                    try {
-                        updateEnemy(event);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-                configBtn(b2,ITEM_LIST_INCREMENT);
-                if (!en.getInventory().getContents().isEmpty()) {
-                    for (Item i : en.getInventory().getContents()) {
-                        Button b3 = new Button(i.getName());
-                        b3.setId(String.valueOf(i.getId()));
-                        b3.setOnMouseClicked(event -> {
-                            try {
-                                updateItem(event);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        });
-                        configBtn(b3,ITEM_LIST_INCREMENT*2);
-                        if (i instanceof Container && !((Container) i).getItems().isEmpty()) {
-                            for (Item j : ((Container) i).getItems()) {
-                                Button b4 = new Button(j.getName());
-                                b4.setId(String.valueOf(j.getId()));
-                                b4.setOnMouseClicked(event -> {
-                                    try {
-                                        updateItem(event);
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                });
-                                configBtn(b4,ITEM_LIST_INCREMENT*3);
-                            }
-                        }
-                    }
-                }
-            }
+            recItemSearch(r.getEntities(), 1);
+        }
+    }
 
-            for (Item i : r.getItems()) {
-                Button b2 = new Button(i.getName());
-                b2.setId(String.valueOf(i.getId()));
-                b2.setOnMouseClicked(event -> {
+    private void recItemSearch(Collection<? extends Entity> entityList, int depth) {
+        for (Entity e : entityList) {
+            if (e instanceof Item) {
+                Button b = new Button(e.getName());
+                b.setId(String.valueOf(e.getId()));
+                b.setOnMouseClicked(event -> {
                     try {
                         updateItem(event);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    } catch (IOException exception) {
+                        exception.printStackTrace();
                     }
                 });
-                configBtn(b2,ITEM_LIST_INCREMENT);
-                if (i instanceof Container && !((Container) i).getItems().isEmpty()) {
-                    for (Item j : ((Container) i).getItems()) {
-                        Button b4 = new Button(j.getName());
-                        b4.setId(String.valueOf(j.getId()));
-                        b4.setOnMouseClicked(event -> {
-                            try {
-                                updateItem(event);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        });
-                        configBtn(b4, ITEM_LIST_INCREMENT*2);
+                configBtn(b, ITEM_LIST_INCREMENT*depth);
+            }
+            else if (e instanceof Enemy) {
+                Button b = new Button(e.getName());
+                b.setId(String.valueOf(e.getId()));
+                b.setOnMouseClicked(event -> {
+                    try {
+                        updateEnemy(event);
+                    } catch (IOException exception) {
+                        exception.printStackTrace();
                     }
+                });
+                configBtn(b, ITEM_LIST_INCREMENT);
+                List<Item> inventory = ((Enemy) e).getInventory().getContents();
+                if (!inventory.isEmpty()) {
+                    recItemSearch(inventory, depth+1);
+                }
+            }
+            if (e instanceof Container) {
+                ArrayList<Item> inventory = ((Container) e).getItems();
+                if (!inventory.isEmpty()) {
+                    recItemSearch(inventory, depth+1);
                 }
             }
         }
@@ -431,7 +406,7 @@ public class GeneratorController {
         if (loaded != null) {
             newGame = loaded;
             nameEntryTF.setText(newGame.getTitle());
-            callUpdate();
+            updateInterfaceParameters();
         }
     }
 
@@ -441,7 +416,7 @@ public class GeneratorController {
         newGame.setStartingRoom(startRoomCbx.getValue());
     }
 
-    public void callUpdate() {
+    public void updateInterfaceParameters() {
         //update ui when new data is added
         populateScrollPane();
         populateStartingRoomCombo();

@@ -134,7 +134,16 @@ public class Player extends Character {
         if (i == null) {
             return "That item cannot be found.";
         }
-        return i.getDescription();
+        return i.getDetailedDescription();
+    }
+
+    public ArrayList<Item> getInteractables() {
+        ArrayList<Item> interactables = new ArrayList<>(this.getInventory().getContents());
+        for (Item i : getCurrentRoom().getItems()) {
+            if (!i.getIsCarry())
+                interactables.add(i);
+        }
+        return interactables;
     }
 
     public boolean allTrue(boolean[] ar) {

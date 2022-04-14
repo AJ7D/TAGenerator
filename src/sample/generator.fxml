@@ -7,7 +7,7 @@
 <?import javafx.scene.text.*?>
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500" prefWidth="800" styleClass="mainPane" stylesheets="@TAGmain.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.GeneratorController">
-   <Pane layoutX="200.0" layoutY="-8.0" prefHeight="349.0" prefWidth="215.0" style="-fx-background-color: #634f49;" />
+   <Pane layoutX="200.0" layoutY="-8.0" prefHeight="349.0" prefWidth="215.0" style="-fx-background-color: #d9d9d9;" />
     <Text layoutX="210.0" layoutY="19.0" styleClass="textDefault" text="Game title: " />
     <TextField fx:id="nameEntryTF" layoutX="210.0" layoutY="27.0" prefHeight="32.0" prefWidth="190.0" styleClass="textDefault" />
 
@@ -19,7 +19,7 @@
             <ToolBar orientation="VERTICAL" prefHeight="500.0" prefWidth="200.0" AnchorPane.topAnchor="0.0" />
         </AnchorPane>
     </ScrollPane>
-   <Pane prefHeight="200.0" prefWidth="200.0" scaleX="3.0" scaleY="0.8" style="-fx-background-color: #6B9080; -fx-border-color: #634f49; -fx-border-width: 2,2,5,5;;" translateX="400.0" translateY="320.0" />
+   <Pane prefHeight="200.0" prefWidth="200.0" scaleX="3.0" scaleY="0.8" style="-fx-background-color: #6B9080; -fx-border-color: #000000; -fx-border-width: 2,2,5,5;" translateX="400.0" translateY="320.0" />
    <Button fx:id="nExitBtn" layoutX="643.0" layoutY="335.0" mnemonicParsing="false" styleClass="buttonscroll" text="None" />
    <Button fx:id="eExitBtn" layoutX="727.0" layoutY="397.0" mnemonicParsing="false" styleClass="buttonscroll" text="None" />
    <Button fx:id="sExitBtn" layoutX="643.0" layoutY="467.0" mnemonicParsing="false" styleClass="buttonscroll" text="None" />
@@ -47,7 +47,7 @@
    <Text layoutX="210.0" layoutY="134.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDefault" text="Starting inventory:" />
    <Button layoutX="672.0" layoutY="48.0" mnemonicParsing="false" onMouseClicked="#loadGameConfig" text="Load Game" />
    <Button fx:id="exitNoSaveBtn" layoutX="554.0" layoutY="6.0" mnemonicParsing="false" onMouseClicked="#quitWithWarning" styleClass="buttonExit" text="Exit" />
-   <Button fx:id="newEnemyBtn" layoutX="666.0" layoutY="300.0" mnemonicParsing="false" text="New Enemy" onMouseClicked="#updateEnemy"/>
+   <Button fx:id="newEnemyBtn" layoutX="666.0" layoutY="300.0" mnemonicParsing="false" onMouseClicked="#updateEnemy" text="New Enemy" />
     <stylesheets>
         <URL value="@TAGmain.css" />
     </stylesheets>

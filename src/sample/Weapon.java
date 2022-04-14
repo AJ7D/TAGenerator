@@ -27,7 +27,7 @@ public class Weapon extends Item {
     }
 
     @Override
-    public String getDescription() {
+    public String getDetailedDescription() {
         return super.getDescription() + "\nMight: " + this.getMight() + "\nRemaining durability: " + this.getDurability();
     }
 

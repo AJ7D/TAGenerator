@@ -46,7 +46,7 @@ public class RoomConfigController {
 
     private void closeWindow(){
         Stage stage = (Stage) saveRoomBtn.getScene().getWindow();
-        generatorController.callUpdate();
+        generatorController.updateInterfaceParameters();
         stage.close();
     }
     

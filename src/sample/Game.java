@@ -59,18 +59,6 @@ public class Game implements Serializable {
         return containers;
     }
 
-    public ArrayList<Container> getContainersC() {
-        if (this.getGameItems().isEmpty())
-            return new ArrayList<>();
-        ArrayList<Container> containers = new ArrayList<>();
-        for (Item i : this.getGameItems()) {
-            if (i instanceof Container) {
-                containers.add((Container) i);
-            }
-        }
-        return containers;
-    }
-
     public Room getRoom(Long id) {
         for (Room r : this.gameMap) {
             if (id == r.getId()) {
@@ -182,15 +170,6 @@ public class Game implements Serializable {
             return;
         }
         System.out.println("Enemy was not found.");
-    }
-
-    public Room findRoomWithItem(Item item) {
-        for (Room r : gameMap) {
-            if (r.containsItem(item)) {
-                return r;
-            }
-        }
-        return null;
     }
 
     public void connectRooms(Room r1, Direction dir, Room r2) {

@@ -51,7 +51,7 @@ public class ExitConfigController {
 
     private void closeWindow(){
         Stage stage = (Stage) saveExitBtn.getScene().getWindow();
-        generatorController.callUpdate();
+        generatorController.updateInterfaceParameters();
         stage.close();
     }
     

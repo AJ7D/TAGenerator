@@ -57,6 +57,12 @@ public class Room extends Entity implements Serializable {
 
     public ArrayList<Character> getNpcs() { return npcs; }
 
+    public ArrayList<Entity> getEntities() {
+        ArrayList<Entity> entityList = new ArrayList<>(this.enemies);
+        entityList.addAll(this.items);
+        return entityList;
+    }
+
     public Enemy getEnemy(String str) {
         for (Enemy e : enemies) {
             if (str.equalsIgnoreCase(e.getName())) {

@@ -29,19 +29,6 @@ public class Character extends Entity implements Serializable {
         this.hp = this.maxHp;
     }
 
-    Character(String n, Room cr, int h) {
-        this.name = n;
-        this.currentRoom = cr;
-        this.maxHp = h;
-        this.hp = this.maxHp;
-    }
-
-    Character(String n, int h) {
-        this.name = n;
-        this.maxHp = h;
-        this.hp = this.maxHp;
-    }
-
     public String getName() { return this.name; }
 
     public void setName(String newName) { this.name = newName; }

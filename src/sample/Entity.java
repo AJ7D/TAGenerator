@@ -4,7 +4,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class Entity {
-    static final AtomicLong NEXT_ID = new AtomicLong(0);
+    static final AtomicLong NEXT_ID = new AtomicLong(0); //generate unique identifiers
     long id;
     private String name;
 
@@ -24,8 +24,16 @@ public class Entity {
         this.id = id;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(Object o) { //entity identified by its id
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Entity entity = (Entity) o;

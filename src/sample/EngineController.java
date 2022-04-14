@@ -9,6 +9,7 @@ import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -33,11 +34,12 @@ public class EngineController {
 
     @FXML
     private void initialize() {
+        //takes user input and appends it to the game's visual event log
         textEntryTa.setOnKeyPressed(event -> {
             if(event.getCode().equals(KeyCode.ENTER)) {
                 String text = textEntryTa.getText();
                 gameTextTa.appendText(text + "\n");
-                gameTextTa.appendText(engineControl(text) +"\n\n");
+                gameTextTa.appendText(engineControl(text) +"\n");
                 textEntryTa.clear();
             }
         });
@@ -59,12 +61,13 @@ public class EngineController {
     }
 
     public String parseInput(String input) {
-        String[] split = input.split(" ");
+        //take user input and determine an action, if legal
+        String[] split = input.split(" "); //split input into list of words on " " delimiter
 
         ArrayList<String> command = new ArrayList<>();
         for (String s : split) {
             if (!stopwords.contains(s) && !s.equals("")) {
-                command.add(s);
+                command.add(s); //remove stopwords and whitespace
             }
         }
 
@@ -96,9 +99,10 @@ public class EngineController {
     }
 
     public String executeCommand(ArrayList<String> args) {
-        turn = player.getTurnCount();
+        turn = player.getTurnCount(); //update number of turns in current game
         if (args.size() > 0) {
             if (grammar.get(args.get(0)) != null) {
+                //process actions of player and other npcs
                 return grammar.get(args.get(0)).process(player, args) + "\n" + processEnemyResponses();
             }
             else {
@@ -171,27 +175,53 @@ public class EngineController {
         return items;
     }
 
-    private Item validateItem(ArrayList<String> input) {
-        Item item = player.getInventory().findItemByName(wordBuilder(input));
-        if (item == null) {
-            item = player.getInventory().findItemByName(wordBuilderComplex(input)[0]);
+    private ArrayList<ArrayList<String>> wordBuilderComplexer(ArrayList<String> input) {
+        ArrayList<ArrayList<String>> combinations = new ArrayList<>();
+        //concat all words into an item query, ignoring action
+
+        for (int i = 1; i < input.size(); i++) {
+            StringBuilder item = new StringBuilder();
+            StringBuilder item2 = new StringBuilder();
+            for (int j = 0; j < i; j++) {
+                item.append(input.get(j));
+                item.append(" ");
+            }
+            for (int j = i; j < input.size(); j++) {
+                item2.append(input.get(j));
+                item2.append(" ");
+            }
+            ArrayList<String> combi = new ArrayList<>();
+            combi.add(item.toString().trim());
+            combi.add(item2.toString().trim());
+            combinations.add(combi);
         }
-        if (item == null) {
-            item = player.getCurrentRoom().findItemByName(wordBuilder(input));
-            if (item == null) {
-                item = player.getCurrentRoom().findItemByName(wordBuilderComplex(input)[0]);
+        return combinations;
+    }
+
+    private Item validateItem(ArrayList<String> input) {
+        ArrayList<String> args = new ArrayList<>(input);
+        args.remove(0);
+        for (Item i : player.getInteractables()) {
+            for (ArrayList<String> combi : wordBuilderComplexer(args)) {
+                for (String string : combi) {
+                    System.out.println(string);
+                    if (string.equalsIgnoreCase(i.getName())) {
+                        return i;
+                    }
+                }
             }
         }
-        return item;
+        return null;
     }
 
     private String processEnemyResponses() {
         String response = "";
-        if (!player.getCurrentRoom().getEnemies().isEmpty() && player.getTurnCount() > turn) { //process enemy response if player has used a turn
+        //process enemy response if player has used a turn
+        if (!player.getCurrentRoom().getEnemies().isEmpty() && player.getTurnCount() > turn) {
             turn = player.getTurnCount();
             for (Enemy e : player.getCurrentRoom().getEnemies()) {
                 response = response.concat(e.processTurn(player) + "\n");
-                if (player.getHp() <= 0) {
+                if (player.getHp() <= 0) { //gameover condition
                     response = response.concat(player.getName() + " has died.");
                     state = EngineState.GAMEOVER;
                     return response;
