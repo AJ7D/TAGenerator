@@ -1,22 +1,11 @@
 package sample;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import javafx.util.converter.IntegerStringConverter;
 
 public class EnemyConfigController {
     public Pane pane;
@@ -38,6 +27,8 @@ public class EnemyConfigController {
     Game game = GeneratorController.getNewGame();
     public Room oldRoom;
 
+    private final int MAX_STRING_LENGTH = 50;
+
     @FXML
     private void initialize() {
         UITools uit = new UITools();
@@ -46,21 +37,32 @@ public class EnemyConfigController {
         roomSelCbx.getSelectionModel().selectFirst();
     }
 
-    public void saveEnemy() {
+    public void saveEnemy() throws InvalidInputException {
         if (enemy == null) {
+            //create new enemy if not updating an existing one
             enemy = new Enemy();
         }
-        enemy.setName(nameEntryTF.getText());
-        enemy.initialiseHp(Integer.parseInt(healthTF.getText()));
-        enemy.setAttack(Integer.parseInt(attackTF.getText()));
-        enemy.setState(determineEnemyState());
-        enemy.setCurrentRoom(roomSelCbx.getValue());
 
-        tryGiveRoomEnemy(enemy);
+        try {
+            validateInputs();
+            //set enemy attributes
+            enemy.setName(nameEntryTF.getText().trim());
+            enemy.initialiseHp(Integer.parseInt(healthTF.getText()));
+            enemy.setAttack(Integer.parseInt(attackTF.getText()));
+            enemy.setState(determineEnemyState());
+            enemy.setCurrentRoom(roomSelCbx.getValue());
 
-        game.updateEnemy(enemy);
-        System.out.println(game.getGameEnemies());
-        closeWindow();
+            tryGiveRoomEnemy(enemy); //place enemy into indicated room
+
+            game.updateEnemy(enemy);
+            System.out.println(game.getGameEnemies().toString());
+            System.out.println(enemy);
+            System.out.println(enemy.getInventory().getContents());
+            closeWindow();
+        }
+        catch (InvalidInputException e) {
+            System.out.println(e.toString());
+        }
     }
 
     public void deleteEnemy() {
@@ -70,7 +72,7 @@ public class EnemyConfigController {
 
     private void closeWindow(){
         Stage stage = (Stage) saveEnemyBtn.getScene().getWindow();
-        generatorController.callUpdate();
+        generatorController.updateInterfaceParameters();
         stage.close();
     }
 
@@ -82,19 +84,20 @@ public class EnemyConfigController {
         passiveCheck.setSelected(enemy.getState()==EnemyState.PASSIVE);
         roomSelCbx.getSelectionModel().select(enemy.getCurrentRoom());
 
-        Room r = game.findEnemyLoc(enemy);
+        Room r = enemy.getCurrentRoom();
         if (r != null) {
             roomSelCbx.getSelectionModel().select(r);
         }
         else {
+            //if enemy room is not set, get first room in list of rooms
             roomSelCbx.getSelectionModel().selectFirst();
         }
-        oldRoom = r;
+        oldRoom = r; //record old room so we can remove the enemy from it if changed
     }
 
     public void tryGiveRoomEnemy(Enemy enemy) {
+        //gets selected room from combobox and adds enemy to it
         Room r = roomSelCbx.getValue();
-        List<Item> inventory = game.getPlayer().getInventory().getContents();
         if (!r.containsEnemy(enemy)) {
             if (oldRoom != null) {
                 oldRoom.deleteEnemy(enemy);
@@ -109,6 +112,27 @@ public class EnemyConfigController {
         if (passiveCheck.isSelected())
             return EnemyState.PASSIVE;
         return EnemyState.AGGRESSIVE;
+    }
+
+    public void validateInputs() throws InvalidInputException {
+        if (nameEntryTF.getText().trim().length() > MAX_STRING_LENGTH ||
+            nameEntryTF.getText().trim().length() == 0) {
+            throw new InvalidInputException("Please enter a name between 0-50 characters.");
+        }
+
+        try {
+            Integer.parseInt(healthTF.getText());
+        }
+        catch (NumberFormatException e) {
+            throw new InvalidInputException("Please enter a valid number for HP (e.g. 20).");
+        }
+
+        try {
+            Integer.parseInt(attackTF.getText());
+        }
+        catch (NumberFormatException e) {
+            throw new InvalidInputException("Please enter a valid number for attack damage (e.g. 5).");
+        }
     }
 
     public void setGeneratorController(GeneratorController gc) { this.generatorController = gc; }

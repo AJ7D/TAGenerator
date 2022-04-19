@@ -38,6 +38,7 @@ public class Consumable extends Item{
         else {
             feedback = "Eating the " + this.getName() + " has dealt " + this.hpRestore + " damage." + feedback;
         }
+        p.incrementTurnCount();
         return feedback;
     }
 

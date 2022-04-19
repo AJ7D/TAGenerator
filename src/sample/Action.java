@@ -63,6 +63,29 @@ public interface Action extends Serializable {
         System.out.println(Arrays.toString(items));
         return items;
     }
+
+    default ArrayList<ArrayList<String>> wordBuilderComplexer(ArrayList<String> input) {
+        ArrayList<ArrayList<String>> combinations = new ArrayList<>();
+        //concat all words into an item query, ignoring action
+
+        for (int i = 0; i < input.size(); i++) {
+            StringBuilder item = new StringBuilder();
+            StringBuilder item2 = new StringBuilder();
+            for (int j = 0; j < i; j++) {
+                item.append(input.get(j));
+                item.append(" ");
+            }
+            for (int j = i; j < input.size(); j++) {
+                item2.append(input.get(j));
+                item2.append(" ");
+            }
+            ArrayList<String> combi = new ArrayList<>();
+            combi.add(item.toString().trim());
+            combi.add(item2.toString().trim());
+            combinations.add(combi);
+        }
+        return combinations;
+    }
 }
 
 class Take implements Action {
@@ -167,36 +190,51 @@ class Help implements Action {
 class Use implements Action {
     @Override
     public String process(Player player, ArrayList<String> input) {
-        Item item = player.getInventory().findItemByName(wordBuilder(input));
-        if (item == null) {
-            item = player.getInventory().findItemByName(wordBuilderComplex(input)[0]);
-        }
-        if (item == null) {
-            for (Item i : player.getCurrentRoom().getItems()) {
-                if (i.getName().equals(wordBuilder(input)) || i.getName().equals(wordBuilderComplex(input)[0])) {
-                    if (!i.getIsCarry()) {
+        input.remove(0);
+        Item item = null;
+        ArrayList<String> remaining = new ArrayList<>();
+        for (Item i : player.getInteractables()) {
+            for (ArrayList<String> combi : wordBuilderComplexer(input)) {
+                for (String string : combi) {
+                    if (string.equalsIgnoreCase(i.getName())) {
                         item = i;
+                        remaining = combi;
+                        remaining.remove(string);
+                        break;
                     }
                 }
             }
         }
+
         if (item == null) {
             return "You do not have that item.";
         }
 
         if (item instanceof Key || item instanceof Container) {
-            if (input.size() == 1) {
-                return "What are you using " + item.getName() + " on?";
+            if (remaining.isEmpty()) {
+                return "What are you trying to do with " + item.getName() + "?";
             }
-            Item item2 = player.getInventory().findItemByName(wordBuilderComplex(input)[1]);
-            if (item2 == null) {
-                item2 = player.getCurrentRoom().findItemByName(wordBuilderComplex(input)[1]);
+            Item item2 = null;
+            for (Item i : player.getInteractables()) {
+                for (ArrayList<String> combi : wordBuilderComplexer(remaining)) {
+                    for (String string : combi) {
+                        if (string.equalsIgnoreCase(i.getName())) {
+                            item2 = i;
+                            break;
+                        }
+                    }
+                }
             }
             if (item2 == null && item instanceof Container) {
                 //TODO clean up
                 for (Item i : ((Container) item).getItems()) {
-                    if (i.getName().equalsIgnoreCase(wordBuilderComplex(input)[1])) {
-                        item2 = i;
+                    for (ArrayList<String> combi : wordBuilderComplexer(remaining)) {
+                        for (String string : combi) {
+                            if (string.equalsIgnoreCase(i.getName())) {
+                                item2 = i;
+                                break;
+                            }
+                        }
                     }
                 }
             }
@@ -207,10 +245,20 @@ class Use implements Action {
         }
 
         if (item instanceof Weapon) {
-            if (input.size() == 1) {
+            if (remaining.isEmpty()) {
                 return "What are you using " + item.getName() + " on?";
             }
-            Enemy enemy = player.getCurrentRoom().getEnemy(wordBuilderComplex(input)[1]);
+            Enemy enemy = null;
+            for (Enemy e : player.getCurrentRoom().getEnemies()) {
+                for (ArrayList<String> combi : wordBuilderComplexer(remaining)) {
+                    for (String string : combi) {
+                        if (string.equalsIgnoreCase(e.getName())) {
+                            enemy = e;
+                            break;
+                        }
+                    }
+                }
+            }
             if (enemy == null) {
                 return "Cannot find that enemy.";
             }

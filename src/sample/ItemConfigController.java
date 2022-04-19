@@ -1,5 +1,7 @@
 package sample;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -42,38 +44,59 @@ public class ItemConfigController {
 
     Game game = GeneratorController.getNewGame();
 
+    private final int MAX_STRING_LENGTH = 50;
+
     @FXML
     private void initialize() {
         locSelectCbx.getSelectionModel().selectFirst();
         updateHolderCbx();
         itemTypeCbx.getSelectionModel().selectFirst();
+
+        isVisibleChx.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            //cannot carry or start with item if not visible, update checkbox to prove
+            if (!newValue) {
+                isCarryChx.setSelected(false);
+                startWithChx.setSelected(false);
+            }
+        });
+
+        isCarryChx.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            //cannot start with item if item cannot be carried, update checkbox to prove
+            if (!newValue) {
+                startWithChx.setSelected(false);
+            }
+        });
     }
 
     public void saveItem() {
-        //get item parameters from user interface
-        String iName = nameEntryTF.getText();
-        String iDesc = itemDescTA.getText();
-        boolean iVis = isVisibleChx.isSelected();
-        boolean iCarry = isCarryChx.isSelected();
-        boolean iStart = startWithChx.isSelected();
+        try {
+            //get item parameters from user interface
+            validateInputs();
+            String iName = nameEntryTF.getText();
+            String iDesc = itemDescTA.getText();
+            boolean iVis = isVisibleChx.isSelected();
+            boolean iCarry = isCarryChx.isSelected();
+            boolean iStart = startWithChx.isSelected();
 
-        //returns an item of the indicated item type
-        if (item != null) { //if editing an item, delete the old version
-            game.deleteItem(item);
-        }
-        item = readType(iName, iDesc, iVis, iCarry, iStart); //returns an item of the indicated item type
-        item.setVerbs(getAllVerbs()); //add user's custom verbs to item grammar
+            if (item != null) { //if editing an item, delete the old version
+                game.deleteItem(item);
+            }
+            item = readType(iName, iDesc, iVis, iCarry, iStart); //returns an item of the indicated item type
+            item.setVerbs(getAllVerbs()); //add user's custom verbs to item grammar
 
-        if (iStart) {
-            tryGiveCharacterItem(game.getPlayer(), item); //player starts with item
-        }
-        else {
-            tryPlaceItem(item); //item starts in a room
-        }
+            if (iStart) {
+                tryGiveCharacterItem(game.getPlayer(), item); //player starts with item
+            } else {
+                tryPlaceItem(item); //item starts in a room
+            }
 
-        game.updateItem(item); //add item to game structure
-        System.out.println(game.getGameItems());
-        closeWindow(); //close this item config window
+            game.updateItem(item); //add item to game structure
+            System.out.println(game.getGameItems());
+            closeWindow(); //close this item config window
+        }
+        catch (InvalidInputException e) {
+            System.out.println(e.toString());
+        }
     }
 
     public void deleteItem() { //remove item from game
@@ -88,7 +111,7 @@ public class ItemConfigController {
 
     private void closeWindow(){ //close this item window
         Stage stage = (Stage) saveItemBtn.getScene().getWindow();
-        generatorController.callUpdate();
+        generatorController.updateInterfaceParameters();
         stage.close();
     }
     
@@ -434,12 +457,15 @@ public class ItemConfigController {
         verbsVbox.getChildren().remove(btn.getParent());
     }
 
-    private HashMap<String, Action> getAllVerbs() {
+    private HashMap<String, Action> getAllVerbs() throws InvalidInputException {
         HashMap<String, Action> verbs = new HashMap<>();
         for (Node n : verbsVbox.getChildren()) {
             HBox h = (HBox) n;
             TextField t = (TextField) h.getChildren().get(0);
             String verb = t.getText();
+            if (verb.trim().length() == 0 ) {
+                throw new InvalidInputException("Please ensure all action verbs are filled/not blank.");
+            }
             ComboBox<String> cbx = (ComboBox<String>) h.getChildren().get(1);
             String action = cbx.getValue();
             verbs.put(verb, Action.stringToAction(action));
@@ -500,7 +526,7 @@ public class ItemConfigController {
             case "Enemy":
                 ComboBox<Enemy> enemyCbx = new ComboBox<>();
                 try {
-                    enemyCbx.getItems().setAll(GeneratorController.getNewGame().getGameEnemies().values());
+                    enemyCbx.getItems().setAll(GeneratorController.getNewGame().getGameEnemies());
                     enemyCbx.getSelectionModel().selectFirst();
                 }
                 catch (NullPointerException e) {
@@ -525,6 +551,21 @@ public class ItemConfigController {
                 break;
         }
         locHbox.getChildren().add(locSelectCbx);
+    }
+
+    public void validateInputs() throws InvalidInputException {
+        if (nameEntryTF.getText().trim().length() > MAX_STRING_LENGTH ||
+                nameEntryTF.getText().trim().length() == 0) {
+            throw new InvalidInputException("Please enter a name between 0-50 characters.");
+        }
+
+        if (itemDescTA.getText().trim().length() == 0) {
+            throw new InvalidInputException("Please enter a description.");
+        }
+
+        if (((ComboBox) locHbox.getChildren().get(0)).getValue() == null) {
+            throw new InvalidInputException("Please select a valid location.");
+        }
     }
 
     public void setGeneratorController(GeneratorController gc) { this.generatorController = gc; }

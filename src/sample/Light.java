@@ -33,10 +33,12 @@ public class Light extends Item{
         switch (lightState) {
             case ON:
                 this.numUses--;
+                p.incrementTurnCount();
                 lightState = LightState.OFF;
                 return this.getName() + " is now off.";
             case OFF:
                 this.numUses--;
+                p.incrementTurnCount();
                 lightState = LightState.ON;
                 return this.getName() + " is now on.";
             default:

@@ -57,6 +57,8 @@ public class Item extends Entity implements Serializable {
 
     public void setDescription(String d) { this.description = d; }
 
+    public String getDetailedDescription() { return this.description; }
+
     public Type getType() {
         return this.type;
     }

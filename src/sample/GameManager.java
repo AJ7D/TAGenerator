@@ -5,10 +5,7 @@ import javafx.scene.control.ButtonType;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.util.Optional;
 
 public class GameManager {
@@ -28,7 +25,7 @@ public class GameManager {
         return false;
     }
 
-    public Game loadGameFile(Stage stage) throws IOException, ClassNotFoundException {
+    public Game loadGameFile(Stage stage) throws IOException {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Game file", "*.txt"));
@@ -38,11 +35,10 @@ public class GameManager {
         if (selectedFile == null) {
             return null;
         }
-        Game game = readGameData(selectedFile);
-        return game;
+        return readGameData(selectedFile);
     }
 
-    private Game readGameData(File file) throws IOException, ClassNotFoundException {
+    private Game readGameData(File file) throws IOException {
         FileInputStream fileInputStream
                 = new FileInputStream(file);
         try {
@@ -72,5 +68,59 @@ public class GameManager {
             System.out.println("ERROR: Cannot read game file. (" + exception + ")");
             return null;
         }
+    }
+
+    public void saveGameState(Game initial, Game state, Stage stage) throws IOException {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+        fileChooser.setInitialFileName(initial.getTitle() + " SAVE.txt");
+        fileChooser.setTitle("Save Game State");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Game save file", "*.txt"));
+
+        File selectedFile = fileChooser.showSaveDialog(stage);
+        if (selectedFile != null) {
+            FileOutputStream fileOutputStream
+                    = new FileOutputStream(selectedFile);
+            ObjectOutputStream objectOutputStream
+                    = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(new GameSaveFile(initial, state));
+            objectOutputStream.flush();
+            objectOutputStream.close();
+        }
+    }
+
+    public Game loadGameState(Game game, Stage stage) throws IOException {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Game save file", "*.txt"));
+
+        File selectedFile = fileChooser.showOpenDialog(stage);
+
+        if (selectedFile == null) {
+            return null;
+        }
+
+        Game loadedState = null;
+        FileInputStream fileInputStream
+                = new FileInputStream(selectedFile);
+        try {
+            ObjectInputStream objectInputStream
+                    = new ObjectInputStream(fileInputStream);
+            GameSaveFile gameSaveFile = (GameSaveFile) objectInputStream.readObject();
+            objectInputStream.close();
+
+            if (gameSaveFile == null) {
+                return null;
+            }
+
+            if (!gameSaveFile.verifyState(gameSaveFile.getInitialConfig(), game)) {
+                throw new IllegalSaveStateException("Save file is not for this game.");
+            }
+            loadedState = gameSaveFile.getSavedConfig();
+            System.out.println("LOADEDSTATE = " + loadedState);
+        } catch (ClassNotFoundException | IllegalSaveStateException e) {
+            e.printStackTrace();
+        }
+        return loadedState;
     }
 }

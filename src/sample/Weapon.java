@@ -27,7 +27,7 @@ public class Weapon extends Item {
     }
 
     @Override
-    public String getDescription() {
+    public String getDetailedDescription() {
         return super.getDescription() + "\nMight: " + this.getMight() + "\nRemaining durability: " + this.getDurability();
     }
 
@@ -43,6 +43,7 @@ public class Weapon extends Item {
     public String use(Player p, Enemy enemy) {
         String message = "";
         if (enemy.isAlive()) {
+            p.incrementTurnCount();
             enemy.setHp(enemy.getHp() - this.getMight());
             if (enemy.getState() == EnemyState.PASSIVE) {
                 enemy.setState(EnemyState.AGGRESSIVE);
@@ -50,9 +51,6 @@ public class Weapon extends Item {
 
             message = p.getName() + " attacked " + enemy.getName() + ", dealing " + this.getMight() + " damage.";
 
-            if (!enemy.isAlive()) {
-                message = message.concat("\n" + enemy.getName() + " was slain.");
-            }
             return message;
         }
         return enemy.getName() + " was already slain.";

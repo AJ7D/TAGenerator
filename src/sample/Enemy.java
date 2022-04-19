@@ -2,7 +2,6 @@ package sample;
 
 public class Enemy extends Character {
     private int attack = 10;
-    private String passiveText = this.getName() + " does not attack.";
     private EnemyState state = EnemyState.PASSIVE;
 
     Enemy() {super();}
@@ -45,9 +44,7 @@ public class Enemy extends Character {
                 else
                     return this.dropInventory(); //dead
             case PASSIVE:
-                if (this.isAlive())
-                    return this.passiveText;
-                else
+                if (!this.isAlive())
                     return this.dropInventory();
             default:
                 return "";
@@ -55,6 +52,7 @@ public class Enemy extends Character {
     }
 
     public String dropInventory() {
+        //set enemy to dead and drop inventory contents, if any
         this.state = EnemyState.DEAD;
         if (this.getInventory().getContents().isEmpty())
             return this.getName() + " was slain.";
@@ -69,6 +67,7 @@ public class Enemy extends Character {
     }
 
     public String attack(Character character) {
+        //remove hp from character proportional to this enemy's attack stat
         character.setHp(character.getHp()-this.getAttack());
         return this.getName() + " attacked " + character.getName() + ", dealing " + this.getAttack() + " damage.";
     }

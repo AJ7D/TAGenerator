@@ -65,10 +65,12 @@ public class Container extends Item {
             }
             case UNLOCKED: {
                 if (this.items.contains(item2)) {
+                    //player takes item from container
                     p.give(item2);
                     this.items.remove(item2);
                     return item2.getName() + " was taken from " + this.getName();
-                } else if (p.getInventory().containsItem(item2)) {
+                } else if (p.getInventory().containsItem(item2) && !(item2.equals(this))) {
+                    //player places item into container
                     p.getInventory().removeItem(item2);
                     this.items.add(item2);
                     return item2.getName() + " was placed inside " + this.getName();
