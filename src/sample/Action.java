@@ -2,12 +2,12 @@ package sample;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public interface Action extends Serializable {
     String process(Player player, ArrayList<String> input);
 
     static Action stringToAction(String s) {
+        //interpret string as an action
         switch (s) {
             case "Use":
                 return new Use();
@@ -22,109 +22,49 @@ public interface Action extends Serializable {
         }
     }
 
-    default String wordBuilder(ArrayList<String> input) {
-        StringBuilder item = new StringBuilder();
-
-        //concat all words into an item query, ignoring action
-        for (int i = 1; i < input.size(); i++) {
-            item.append(input.get(i));
-            if (i != input.size()-1) {
-                item.append(" ");
-            }
-        }
-        System.out.println(item.toString());
-        return item.toString();
-    }
-
-    default String[] wordBuilderComplex(ArrayList<String> input) {
-        //temp function for handling 2 items
-        String[] items = new String[2];
-        items[1] = input.get(input.size() - 1);
-
-        StringBuilder item = new StringBuilder();
-        //concat all words into an item query, ignoring action
-        for (int i = 1; i < input.size() - 1; i++) {
-            item.append(input.get(i));
-            if (i != input.size()-1) {
-                item.append(" ");
-            }
-        }
-
-        for (int i = item.length()-1; i > 0; i--) {
-            if (item.charAt(i) == ' ') {
-                item.deleteCharAt(i);
-            }
-            else {
-                break;
-            }
-        }
-
-        items[0] = item.toString();
-        System.out.println(Arrays.toString(items));
-        return items;
-    }
-
-    default ArrayList<ArrayList<String>> wordBuilderComplexer(ArrayList<String> input) {
-        ArrayList<ArrayList<String>> combinations = new ArrayList<>();
-        //concat all words into an item query, ignoring action
-
-        for (int i = 0; i < input.size(); i++) {
-            StringBuilder item = new StringBuilder();
-            StringBuilder item2 = new StringBuilder();
-            for (int j = 0; j < i; j++) {
-                item.append(input.get(j));
-                item.append(" ");
-            }
-            for (int j = i; j < input.size(); j++) {
-                item2.append(input.get(j));
-                item2.append(" ");
-            }
-            ArrayList<String> combi = new ArrayList<>();
-            combi.add(item.toString().trim());
-            combi.add(item2.toString().trim());
-            combinations.add(combi);
-        }
-        return combinations;
-    }
 }
 
 class Take implements Action {
+    //if successful, adds indicated item to player's inventory
     @Override
     public String process(Player player, ArrayList<String> input) {
-        if (input.size() == 1) {
+        if (input.size() == 1) { //player has not provided an item to take
             return "What do you want to take?";
         }
         else {
-            return player.acquire(wordBuilder(input));
+            return player.acquire(WordBuilderTools.buildSimple(input));
         }
     }
 }
 
 class Drop implements Action {
+    //if successful, removes indicated item from player's inventory
     @Override
     public String process(Player player, ArrayList<String> input) {
-        if (input.size() == 1) {
+        if (input.size() == 1) { //player has not provided an item to drop
             return "What do you want to drop?";
         }
         else {
-            return player.drop(wordBuilder(input));
+            return player.drop(WordBuilderTools.buildSimple(input));
         }
     }
 }
 
 class View implements Action {
+    //if successful, shows player the item's description
     @Override
     public String process(Player player, ArrayList<String> input) {
-        if (input.size() == 1) {
+        if (input.size() == 1) { //player has not provided an item to view
             return "What do you want to view?";
         }
         else {
-            return player.viewItem(wordBuilder(input));
+            return player.viewItem(WordBuilderTools.buildSimple(input));
         }
     }
 }
 
 class Travel implements Action {
+    //transfers the player to room in indicated direction from player's current room
     @Override
     public String process(Player player, ArrayList<String> input) {
         int index = input.size()-1;
@@ -138,15 +78,16 @@ class Travel implements Action {
             case "south": case "s":
                 return player.travel(Direction.SOUTH);
             default:
-                if (index == 0) {
+                if (index == 0) { //not indicated a direction, only to travel
                     return "Where do you want to go?";
-                }
+                } //no such direction exists
                 return "You cannot go that way.";
         }
     }
 }
 
 class ItemCheck implements Action {
+    //displays player's inventory information
     @Override
     public String process(Player player, ArrayList<String> input) {
         return player.checkInventory();
@@ -154,6 +95,7 @@ class ItemCheck implements Action {
 }
 
 class LocationCheck implements Action {
+    //displays the current room name and description
     @Override
     public String process(Player player, ArrayList<String> input) {
         return player.getBearings();
@@ -161,6 +103,7 @@ class LocationCheck implements Action {
 }
 
 class SurroundingCheck implements Action {
+    //displays current room and items/enemies within it
     @Override
     public String process(Player player, ArrayList<String> input) {
         return player.checkSurroundings();
@@ -168,6 +111,7 @@ class SurroundingCheck implements Action {
 }
 
 class SelfCheck implements Action {
+    //displays player's information, such as name and HP
     @Override
     public String process(Player player, ArrayList<String> input) {
         return player.viewSelf();
@@ -175,6 +119,7 @@ class SelfCheck implements Action {
 }
 
 class Help implements Action {
+    //displays some help information for the player
     @Override
     public String process(Player player, ArrayList<String> input) {
         return "Welcome to the help section! Be sure to enter\n" +
@@ -188,35 +133,39 @@ class Help implements Action {
 }
 
 class Use implements Action {
+    //identifies the type of input (single or multi item) and returns the appropriate use method
     @Override
     public String process(Player player, ArrayList<String> input) {
-        input.remove(0);
-        Item item = null;
-        ArrayList<String> remaining = new ArrayList<>();
+        input.remove(0); //remove action string from input, as it is no longer needed
+        Item item = null; //item to find
+        ArrayList<String> remaining = new ArrayList<>(); //for storing unused input arguments
         for (Item i : player.getInteractables()) {
-            for (ArrayList<String> combi : wordBuilderComplexer(input)) {
+            for (ArrayList<String> combi : WordBuilderTools.buildComplex(input)) {
                 for (String string : combi) {
                     if (string.equalsIgnoreCase(i.getName())) {
+                        //if current combination of user input matches the name of a player interactable, assign it
                         item = i;
                         remaining = combi;
-                        remaining.remove(string);
+                        System.out.println("remaining = " + remaining);
+                        remaining.remove(string); //store any remaining input to test for multi item action
+                        System.out.println("remaining after removal = " + remaining);
                         break;
                     }
                 }
             }
         }
 
-        if (item == null) {
+        if (item == null) { //no item could be found from user input
             return "You do not have that item.";
         }
+        if (remaining.isEmpty()) //attempt to use item by itself
+            return item.use(player);
 
         if (item instanceof Key || item instanceof Container) {
-            if (remaining.isEmpty()) {
-                return "What are you trying to do with " + item.getName() + "?";
-            }
+            //need to try locating a second item
             Item item2 = null;
             for (Item i : player.getInteractables()) {
-                for (ArrayList<String> combi : wordBuilderComplexer(remaining)) {
+                for (ArrayList<String> combi : WordBuilderTools.buildComplex(remaining)) {
                     for (String string : combi) {
                         if (string.equalsIgnoreCase(i.getName())) {
                             item2 = i;
@@ -226,9 +175,9 @@ class Use implements Action {
                 }
             }
             if (item2 == null && item instanceof Container) {
-                //TODO clean up
+                //extra check for container items, if player is trying to take an item from container
                 for (Item i : ((Container) item).getItems()) {
-                    for (ArrayList<String> combi : wordBuilderComplexer(remaining)) {
+                    for (ArrayList<String> combi : WordBuilderTools.buildComplex(remaining)) {
                         for (String string : combi) {
                             if (string.equalsIgnoreCase(i.getName())) {
                                 item2 = i;
@@ -245,12 +194,10 @@ class Use implements Action {
         }
 
         if (item instanceof Weapon) {
-            if (remaining.isEmpty()) {
-                return "What are you using " + item.getName() + " on?";
-            }
+            //must specifically find an enemy for weapon
             Enemy enemy = null;
             for (Enemy e : player.getCurrentRoom().getEnemies()) {
-                for (ArrayList<String> combi : wordBuilderComplexer(remaining)) {
+                for (ArrayList<String> combi : WordBuilderTools.buildComplex(remaining)) {
                     for (String string : combi) {
                         if (string.equalsIgnoreCase(e.getName())) {
                             enemy = e;
@@ -265,6 +212,5 @@ class Use implements Action {
             return item.use(player, enemy);
         }
         return item.use(player);
-        //TODO
     }
 }

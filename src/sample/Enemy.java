@@ -2,7 +2,7 @@ package sample;
 
 public class Enemy extends Character {
     private int attack = 10;
-    private EnemyState state = EnemyState.PASSIVE;
+    private EnemyState state = EnemyState.PASSIVE; //indicates if enemy attacks player
 
     Enemy() {super();}
 
@@ -40,14 +40,14 @@ public class Enemy extends Character {
         switch (this.state) {
             case AGGRESSIVE:
                 if (this.isAlive())
-                    return this.attack(p);
+                    return this.attack(p); //attack player
                 else
-                    return this.dropInventory(); //dead
+                    return this.dropInventory(); //newly dead, drop inventory
             case PASSIVE:
                 if (!this.isAlive())
                     return this.dropInventory();
             default:
-                return "";
+                return ""; //no action to be reported at this time
         }
     }
 

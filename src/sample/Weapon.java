@@ -40,6 +40,11 @@ public class Weapon extends Item {
     }
 
     @Override
+    public String use(Player p) {
+        return "What are you trying to attack with " + this.getName() + "?";
+    }
+
+    @Override
     public String use(Player p, Enemy enemy) {
         String message = "";
         if (enemy.isAlive()) {

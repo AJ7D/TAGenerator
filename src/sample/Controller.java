@@ -21,11 +21,14 @@ public class Controller {
     public Text titleTxt;
 
     public void switchScene(MouseEvent event) throws IOException {
+        //main menu
         String fxml;
         if (event.getSource().equals(generatorBtn))
-            fxml = "generator.fxml";
+            fxml = "generator.fxml"; //get generator fxml for designing games
         else
-            fxml = "engine.fxml";
+            fxml = "engine.fxml"; //get engine fxml for play
+
+        //load given fxml and apply to stage, then show
         Parent root = FXMLLoader.load(getClass().getResource(fxml));
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(root, 800, 500);

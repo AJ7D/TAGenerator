@@ -5,16 +5,17 @@ import java.util.ArrayList;
 
 public class GameSaveFile implements Serializable {
     private static final long serialVersionUID = 1L;
-    private Game initialConfig;
-    private Game savedConfig;
+    private Game initialConfig; //game file's initial configuration
+    private Game savedConfig; //updated game parameters
 
     public GameSaveFile(Game initial, Game state) {
         this.initialConfig = initial;
         this.savedConfig = state;
+        //ascertain that saved config is a legal reconfiguration of the initial game configuration
         try {
             verifyState(initialConfig, savedConfig);
         } catch (IllegalSaveStateException e) {
-            e.printStackTrace();
+            e.printStackTrace(); //save file cannot be created, configuration is not legal
         }
     }
 
@@ -27,6 +28,7 @@ public class GameSaveFile implements Serializable {
     }
 
     public boolean verifyState(Game initial, Game state) throws IllegalSaveStateException {
+        //checks essential parameters to find any discrepancies that lead to incompatibility
         if (!initial.getTitle().equals(state.getTitle()))
             throw new IllegalSaveStateException("Game data does not match (title).");
         if (!initial.getGameMap().equals(state.getGameMap()))
@@ -40,6 +42,6 @@ public class GameSaveFile implements Serializable {
             System.out.println(state.getGrammar().keySet());
             throw new IllegalSaveStateException("Game data does not match (grammar).");
         }
-        return true;
+        return true; //data is compatible
     }
 }

@@ -5,7 +5,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.util.converter.IntegerStringConverter;
 
 public class EnemyConfigController {
     public Pane pane;
@@ -31,10 +30,10 @@ public class EnemyConfigController {
 
     @FXML
     private void initialize() {
-        UITools uit = new UITools();
-        uit.configureComboboxRoom(roomSelCbx);
-        roomSelCbx.getItems().setAll(GeneratorController.getNewGame().getGameMap());
-        roomSelCbx.getSelectionModel().selectFirst();
+        UITools uit = new UITools(); //provides some methods for cleaner javafx node config
+        uit.configureComboboxRoom(roomSelCbx); //set roomselcbx to contain room object references
+        roomSelCbx.getItems().setAll(GeneratorController.getNewGame().getGameMap()); //all valid rooms in gamemap
+        roomSelCbx.getSelectionModel().selectFirst(); //select first room in gamemap by default
     }
 
     public void saveEnemy() throws InvalidInputException {
@@ -44,7 +43,7 @@ public class EnemyConfigController {
         }
 
         try {
-            validateInputs();
+            validateInputs(); //validates all user input to ensure it is safe for storage
             //set enemy attributes
             enemy.setName(nameEntryTF.getText().trim());
             enemy.initialiseHp(Integer.parseInt(healthTF.getText()));
@@ -55,28 +54,26 @@ public class EnemyConfigController {
             tryGiveRoomEnemy(enemy); //place enemy into indicated room
 
             game.updateEnemy(enemy);
-            System.out.println(game.getGameEnemies().toString());
-            System.out.println(enemy);
-            System.out.println(enemy.getInventory().getContents());
             closeWindow();
         }
-        catch (InvalidInputException e) {
-            System.out.println(e.toString());
+        catch (InvalidInputException e) { //prompt user to correct any invalid input
+            System.out.println(e.toString()); //for debugging if needed
         }
     }
 
-    public void deleteEnemy() {
+    public void deleteEnemy() { //delete enemy of current window and close window
         game.deleteEnemy(enemy);
         closeWindow();
     }
 
     private void closeWindow(){
+        //closes this window instance and updates generator window to show any changes
         Stage stage = (Stage) saveEnemyBtn.getScene().getWindow();
-        generatorController.updateInterfaceParameters();
+        generatorController.updateInterfaceDisplay();
         stage.close();
     }
 
-    public void loadEnemy(String str) {
+    public void loadEnemy(String str) { //finds and loads an enemy based on given string id
         enemy = game.getEnemy(Long.parseLong(str));
         nameEntryTF.setText(enemy.getName());
         healthTF.setText(String.valueOf(enemy.getMaxHp()));
@@ -86,13 +83,13 @@ public class EnemyConfigController {
 
         Room r = enemy.getCurrentRoom();
         if (r != null) {
-            roomSelCbx.getSelectionModel().select(r);
+            roomSelCbx.getSelectionModel().select(r); //set selected room to enemy's room
         }
         else {
             //if enemy room is not set, get first room in list of rooms
             roomSelCbx.getSelectionModel().selectFirst();
         }
-        oldRoom = r; //record old room so we can remove the enemy from it if changed
+        oldRoom = r; //record old room so we can easily remove the enemy from it if changed
     }
 
     public void tryGiveRoomEnemy(Enemy enemy) {
@@ -104,11 +101,11 @@ public class EnemyConfigController {
             }
 
             r.addEnemy(enemy);
-            System.out.println(r);
         }
     }
 
     public EnemyState determineEnemyState() {
+        //quick conversion of checkbox selection -> EnemyState
         if (passiveCheck.isSelected())
             return EnemyState.PASSIVE;
         return EnemyState.AGGRESSIVE;

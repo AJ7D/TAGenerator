@@ -43,7 +43,10 @@ public class Character extends Entity implements Serializable {
         return this.getInventory().viewItems();
     }
 
-    public void initialiseHp(int mh) {this.maxHp = mh; this.hp = mh;}
+    public void initialiseHp(int mh) {
+        //updates both character's max health and current health to given value
+        this.maxHp = mh; this.hp = mh;
+    }
 
     public void setMaxHp(int mh) {
         this.maxHp = mh;
@@ -63,9 +66,11 @@ public class Character extends Entity implements Serializable {
 
     public void giveHp(int hpToGive) {
         if (this.hp + hpToGive > this.maxHp) {
+            //hp cannot go above max hp
             this.hp = maxHp;
         }
         else if (this.hp + hpToGive < 0) {
+            //cannot reduce character's hp below 0
             this.hp = 0;
         }
         else {

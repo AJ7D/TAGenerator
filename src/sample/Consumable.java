@@ -23,22 +23,22 @@ public class Consumable extends Item{
     @Override
     public String use(Player p) {
         String feedback = "";
-        p.giveHp(this.hpRestore);
+        p.giveHp(this.hpRestore); //restore or remove player health by consumable's hp value
         this.numUses--;
-        if (this.numUses <= 0) {
+        if (this.numUses <= 0) { //max uses reached, take consumable from player
             p.getInventory().removeItem(this);
             feedback = feedback.concat("\nThe " + this.getName() + " was no more.");
         }
-        if (this.hpRestore > 0) {
+        if (this.hpRestore > 0) { //consumable restores hp, report to player
             feedback = "Eating the " + this.getName() + " has restored " + this.hpRestore + " health." + feedback;
         }
-        else if (this.hpRestore == 0) {
+        else if (this.hpRestore == 0) { //consumable is ineffective
             feedback = "Eating the " + this.getName() + " has restored no health." + feedback;
         }
-        else {
+        else { //consumable deals damage to player
             feedback = "Eating the " + this.getName() + " has dealt " + this.hpRestore + " damage." + feedback;
         }
-        p.incrementTurnCount();
+        p.incrementTurnCount(); //successful action increments player's turn count
         return feedback;
     }
 

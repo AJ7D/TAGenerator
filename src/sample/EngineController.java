@@ -9,7 +9,6 @@ import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -38,21 +37,22 @@ public class EngineController {
     private void initialize() {
         //takes user input and appends it to the game's visual event log
         textEntryTa.setOnKeyPressed(event -> {
-            if(event.getCode().equals(KeyCode.ENTER)) {
+            if(event.getCode().equals(KeyCode.ENTER)) { //user has entered input
                 String text = textEntryTa.getText();
-                gameTextTa.appendText(text + "\n");
-                gameTextTa.appendText(engineControl(text) +"\n");
-                textEntryTa.clear();
+                gameTextTa.appendText(text + "\n"); //show user's command in game log
+                gameTextTa.appendText(engineControl(text) +"\n"); //show game response in game log
+                textEntryTa.clear(); //clear player's command entry
             }
         });
     }
 
     public String engineControl(String input) {
+        //engine handling, returns game log output based on engine state
         switch (state) {
             case NOT_LOADED:
                 return "NO GAME LOADED.\nPlease load a game to play.";
             case PLAYING:
-                return parseInput(input);
+                return parseInput(input); //handle user's command
             case GAMEOVER:
                 return "YOU HAVE LOST.\nIf you wish to play again, please load your last save or" +
                         "\nstart from the beginning.";
@@ -73,10 +73,7 @@ public class EngineController {
             }
         }
 
-        System.out.println(command);
-
         if (command.size() == 1) {
-            System.out.println("Doing single word command.");
             return executeCommand(command);
         }
         else {
@@ -84,15 +81,13 @@ public class EngineController {
             ArrayList<String> singleCommand = new ArrayList<>();
             for (String s : command) {
                 if (s.equals("and")) {
-                    //process all of command until now, add to a list of events if valid
+                    //process all of command until now, add to events if valid
                     displayText = displayText.concat(executeCommand(singleCommand) + "\n");
                     singleCommand.clear();
-                    System.out.println("AND detected. Separating commands.");
                 }
                 else {
                     //if word is in object dictionary, check action is applicable
                     singleCommand.add(s);
-                    System.out.println("Doing multiple word command.");
                 }
             }
             displayText = displayText.concat(executeCommand(singleCommand) + "\n");
@@ -108,9 +103,9 @@ public class EngineController {
                 return grammar.get(args.get(0)).process(player, args) + "\n" + processEnemyResponses();
             }
             else {
-                Item i = validateItem(args);
+                Item i = validateItem(args); //find item for grammar checking
                 if (i != null) {
-                    if (i.getVerbs().get(args.get(0)) != null) {
+                    if (i.getVerbs().get(args.get(0)) != null) { //grammar is applicable action, return action
                         return i.getVerbs().get(args.get(0)).process(player, args) + "\n" + processEnemyResponses();
                     }
                 }
@@ -119,13 +114,13 @@ public class EngineController {
         return "Command " + args.toString() + " not recognised.";
     }
 
-    public void loadGame() throws IOException, ClassNotFoundException {
+    public void loadGame() throws IOException {
         Stage stage = (Stage) loadGameBtn.getScene().getWindow();
-        game = gameManager.loadGameFile(stage);
-        oldGame = new Game(game);
+        game = gameManager.loadGameFile(stage); //opens file selection and loads selected file
+        oldGame = new Game(game); //store a copy of the original game parameters
         player = game.getPlayer();
 
-        if (game != null ) {
+        if (game != null ) { //a game has been loaded
             grammar = game.getGrammar();
             gameTextTa.appendText("Game loaded successfully. Enjoy playing " + game.getTitle() + "!\n" +
                     "Enter !help for additional information.");
@@ -140,8 +135,6 @@ public class EngineController {
         switch (state) {
             case PLAYING: {
                 gameManager.saveGameState(oldGame, game, stage);
-                System.out.println("SAVED OLDGAME: " + oldGame);
-                System.out.println("SAVED CURGAME: " + game);
                 break;
             }
             case NOT_LOADED: {
@@ -153,84 +146,26 @@ public class EngineController {
     }
 
     public void loadGameState() throws IOException {
-        game = gameManager.loadGameState(oldGame, stage);
+        game = gameManager.loadGameState(oldGame, stage); //try to load a game state
         player = game.getPlayer();
-    }
-
-    private String wordBuilder(ArrayList<String> input) {
-        StringBuilder item = new StringBuilder();
-
-        //concat all words into an item query, ignoring action
-        for (int i = 1; i < input.size(); i++) {
-            item.append(input.get(i));
-            if (i != input.size()-1) {
-                item.append(" ");
-            }
-        }
-        System.out.println(item.toString());
-        return item.toString();
-    }
-
-    private String[] wordBuilderComplex(ArrayList<String> input) {
-        //temp function for handling 2 items
-        String[] items = new String[2];
-        items[1] = input.get(input.size() - 1);
-
-        StringBuilder item = new StringBuilder();
-        //concat all words into an item query, ignoring action
-        for (int i = 1; i < input.size() - 1; i++) {
-            item.append(input.get(i));
-            if (i != input.size()-1) {
-                item.append(" ");
-            }
-        }
-
-        for (int i = item.length()-1; i > 0; i--) {
-            if (item.charAt(i) == ' ') {
-                item.deleteCharAt(i);
-            }
-            else {
-                break;
-            }
-        }
-
-        items[0] = item.toString();
-        System.out.println(Arrays.toString(items));
-        return items;
-    }
-
-    private ArrayList<ArrayList<String>> wordBuilderComplexer(ArrayList<String> input) {
-        ArrayList<ArrayList<String>> combinations = new ArrayList<>();
-        //concat all words into an item query, ignoring action
-
-        for (int i = 1; i < input.size(); i++) {
-            StringBuilder item = new StringBuilder();
-            StringBuilder item2 = new StringBuilder();
-            for (int j = 0; j < i; j++) {
-                item.append(input.get(j));
-                item.append(" ");
-            }
-            for (int j = i; j < input.size(); j++) {
-                item2.append(input.get(j));
-                item2.append(" ");
-            }
-            ArrayList<String> combi = new ArrayList<>();
-            combi.add(item.toString().trim());
-            combi.add(item2.toString().trim());
-            combinations.add(combi);
-        }
-        return combinations;
     }
 
     private Item validateItem(ArrayList<String> input) {
         ArrayList<String> args = new ArrayList<>(input);
-        args.remove(0);
-        for (Item i : player.getInteractables()) {
-            for (ArrayList<String> combi : wordBuilderComplexer(args)) {
-                for (String string : combi) {
-                    System.out.println(string);
-                    if (string.equalsIgnoreCase(i.getName())) {
-                        return i;
+        args.remove(0); //remove action to parse item only
+        if (args.size() == 1) { //single word item, no need for word building
+            for (Item i : player.getInteractables()) {
+                if (args.get(0).equalsIgnoreCase(i.getName())) //item found
+                    return i;
+            }
+        }
+        else {
+            for (Item i : player.getInteractables()) {
+                for (ArrayList<String> combi : WordBuilderTools.buildComplex(args)) { //get potential word combinations
+                    for (String string : combi) {
+                        if (string.equalsIgnoreCase(i.getName())) {
+                            return i;
+                        }
                     }
                 }
             }
@@ -240,9 +175,9 @@ public class EngineController {
 
     private String processEnemyResponses() {
         String response = "";
-        //process enemy response if player has used a turn
+        //process enemy response if enemy present and player has used a turn
         if (!player.getCurrentRoom().getEnemies().isEmpty() && player.getTurnCount() > turn) {
-            turn = player.getTurnCount();
+            turn = player.getTurnCount(); //update turn count
             for (Enemy e : player.getCurrentRoom().getEnemies()) {
                 response = response.concat(e.processTurn(player) + "\n");
                 if (player.getHp() <= 0) { //gameover condition

@@ -1,7 +1,5 @@
 package sample;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -111,7 +109,7 @@ public class ItemConfigController {
 
     private void closeWindow(){ //close this item window
         Stage stage = (Stage) saveItemBtn.getScene().getWindow();
-        generatorController.updateInterfaceParameters();
+        generatorController.updateInterfaceDisplay();
         stage.close();
     }
     
@@ -212,7 +210,7 @@ public class ItemConfigController {
     public void tryGiveCharacterItem(Character c, Item item) {
         //gives item to player, if permitted
         if (!c.getInventory().containsItem(item)) {
-            game.deleteItemInsances(item);
+            game.deleteItemInstances(item);
             c.getInventory().addItem(item);
             System.out.println(c.getInventory());
             return;
@@ -221,7 +219,7 @@ public class ItemConfigController {
     }
 
     public void tryPlaceItem(Item item) {
-        game.deleteItemInsances(item);
+        game.deleteItemInstances(item);
         ComboBox cbx = (ComboBox) locHbox.getChildren().get(0);
         switch (locSelectCbx.getValue().toString()) {
             case "Room":

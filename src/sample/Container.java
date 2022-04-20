@@ -37,11 +37,13 @@ public class Container extends Item {
     }
 
     public String getDetailedDescription() {
+        //takes player's custom description and adds additional information
+        //about the weapon's stats for output in the game engine
         String desc = super.getDescription() + "\n";
         switch(lockState) {
-            case LOCKED:
+            case LOCKED: //locked, cannot display item contents
                 return desc + this.getName() + " is locked.";
-            case UNLOCKED:
+            case UNLOCKED: //unlocked, display item contents if any
                 String contents = "";
                 if (items.isEmpty()) {
                     contents = "Nothing.";
@@ -52,9 +54,14 @@ public class Container extends Item {
                     }
                 }
                 return desc + "Contents of " + this.getName() +":\n" + contents;
-            default:
+            default: //if not LOCKED or UNLOCKED, container is JAMMED, report to player
                 return desc + this.getName() + " can no longer be opened.";
         }
+    }
+
+    @Override
+    public String use(Player p) { //containers must be used with another item
+        return "What are you trying to do with " + this.getName() + "?";
     }
 
     @Override
@@ -77,7 +84,7 @@ public class Container extends Item {
                 }
                 return "What item are you talking about?";
             }
-            default: {
+            default: { //container is JAMMED
                 return this.getName() + " is locked and can no longer be opened.";
             }
         }

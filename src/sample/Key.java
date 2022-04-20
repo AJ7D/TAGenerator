@@ -25,6 +25,12 @@ public class Key extends Item{
         this.compatibility = comp;
     }
 
+
+    @Override
+    public String use(Player p) {
+        return "What are you trying to do with " + this.getName() + "?";
+    }
+
     @Override
     public String use(Player p, Item item2) {
         boolean valid = this.compatibility.contains(item2);

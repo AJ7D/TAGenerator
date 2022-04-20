@@ -28,7 +28,7 @@ public class GeneratorController {
     static final int ENEMYWIDTH = 400;
     static final int ENEMYHEIGHT = 400;
 
-    static final int ITEM_LIST_INCREMENT = 20;
+    static final int ENTITY_INCREMENTAL_OFFSET = 20;
 
     public static Stage stage;
     private static Game newGame;
@@ -57,14 +57,17 @@ public class GeneratorController {
         newGame = new Game("New game");
         nameEntryTF.setText(newGame.getTitle());
 
-        updateInterfaceParameters();
+        updateInterfaceDisplay();
 
-        UITools uit = new UITools();
-        uit.configureComboboxRoom(startRoomCbx);
-        startRoomCbx.getSelectionModel().selectFirst();
-        Button but = (Button) objectAnchorPane.getChildren().get(0);
-        buttonClick(but);
+        UITools uit = new UITools(); //methods for configuring javafx nodes cleanly
+        uit.configureComboboxRoom(startRoomCbx); //configure startroomcbx to hold room references
+        startRoomCbx.getSelectionModel().selectFirst(); //select first element for starting room by default
+
+        Button room1Button = (Button) objectAnchorPane.getChildren().get(0);
+        simulateButtonClick(room1Button); //simulate button click to update display
+
         selectedRoom = newGame.getRoom(Long.parseLong(objectAnchorPane.getChildren().get(0).getId()));
+        //set selected room to the default empty room created on new game creation
     }
 
     //TODO potentially merge these 3 functions
@@ -123,7 +126,7 @@ public class GeneratorController {
 
         if (option.isPresent() && option.get() == ButtonType.OK) {
             newGame.deleteRoom(room);
-            updateInterfaceParameters();
+            updateInterfaceDisplay();
             if (startRoomCbx.getValue().getName().equals(room.getName())) {
                 startRoomCbx.getSelectionModel().selectFirst();
             }
@@ -268,7 +271,7 @@ public class GeneratorController {
             return;
         }
         generateRoomsItems();
-        objectAnchorPane.setPrefHeight(spOffset+ITEM_LIST_INCREMENT);
+        objectAnchorPane.setPrefHeight(spOffset+ ENTITY_INCREMENTAL_OFFSET);
     }
 
     @FXML
@@ -285,7 +288,7 @@ public class GeneratorController {
             b.setOnMouseClicked(this::roomDisplayBar);
             b.setLayoutY(spOffset);
             b.getStyleClass().add("buttonscroll");
-            spOffset = spOffset + ITEM_LIST_INCREMENT;
+            spOffset = spOffset + ENTITY_INCREMENTAL_OFFSET;
             objectAnchorPane.getChildren().add(b);
 
             recItemSearch(r.getEntities(), 1);
@@ -304,7 +307,7 @@ public class GeneratorController {
                         exception.printStackTrace();
                     }
                 });
-                configBtn(b, ITEM_LIST_INCREMENT*depth);
+                configBtn(b, ENTITY_INCREMENTAL_OFFSET *depth);
             }
             else if (e instanceof Enemy) {
                 Button b = new Button(e.getName());
@@ -316,7 +319,7 @@ public class GeneratorController {
                         exception.printStackTrace();
                     }
                 });
-                configBtn(b, ITEM_LIST_INCREMENT);
+                configBtn(b, ENTITY_INCREMENTAL_OFFSET);
                 List<Item> inventory = ((Enemy) e).getInventory().getContents();
                 if (!inventory.isEmpty()) {
                     recItemSearch(inventory, depth+1);
@@ -335,7 +338,7 @@ public class GeneratorController {
         btn.setLayoutY(spOffset);
         btn.setLayoutX(xoffset);
         btn.getStyleClass().add("buttonscroll");
-        spOffset = spOffset + ITEM_LIST_INCREMENT;
+        spOffset = spOffset + ENTITY_INCREMENTAL_OFFSET;
         objectAnchorPane.getChildren().add(btn);
     }
     @FXML
@@ -358,7 +361,7 @@ public class GeneratorController {
     }
 
     @FXML
-    private void buttonClick(Button but) {
+    private void simulateButtonClick(Button but) {
         //simulate button click for button arg
         but.fireEvent(new MouseEvent(MouseEvent.MOUSE_CLICKED, but.getLayoutX(), but.getLayoutY(), but.getLayoutX(), but.getLayoutY(),
                 MouseButton.PRIMARY, 1, true, true, true, true, true,
@@ -406,7 +409,7 @@ public class GeneratorController {
         if (loaded != null) {
             newGame = loaded;
             nameEntryTF.setText(newGame.getTitle());
-            updateInterfaceParameters();
+            updateInterfaceDisplay();
         }
     }
 
@@ -416,11 +419,11 @@ public class GeneratorController {
         newGame.setStartingRoom(startRoomCbx.getValue());
     }
 
-    public void updateInterfaceParameters() {
+    public void updateInterfaceDisplay() {
         //update ui when new data is added
-        populateScrollPane();
-        populateStartingRoomCombo();
-        populateInventoryItems();
+        populateScrollPane(); //updates scrollpane to show any new entities added/deleted
+        populateStartingRoomCombo(); //update combobox list of valid starting rooms
+        populateInventoryItems(); //update user's starting items display
     }
 
     public static Game getNewGame() { return newGame; }
@@ -428,6 +431,6 @@ public class GeneratorController {
     public void newRoomDisplay(String string) {
         //simulate button click to update ui, call from external window
         Button button = (Button) objectAnchorPane.lookup("#" +string);
-        buttonClick(button);
+        simulateButtonClick(button);
     }
 }
