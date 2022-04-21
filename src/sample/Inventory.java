@@ -44,14 +44,6 @@ public class Inventory implements Serializable {
         System.out.println(itemToRemove + " was not found.");
     }
 
-    public String viewItem(Item itemToView) {
-        for (Item i : contents) {
-            if (i.getId() == itemToView.getId())
-                return i.getDescription();
-        }
-        return "Item not found.";
-    }
-
     public Item findItemByName(String item) {
         for (Item i : contents) {
             if (i.getName().equalsIgnoreCase(item)) {
@@ -62,6 +54,7 @@ public class Inventory implements Serializable {
     }
 
     public String viewItems() {
+        //display all items in this inventory
         String output = "";
         output = output.concat("YOUR INVENTORY CONTAINS:\n");
         if (contents.size() == 0) {
@@ -89,6 +82,7 @@ public class Inventory implements Serializable {
     }
 
     public String getContentsString() {
+        //method for returning all items in inventory as a comma separated string for display purposes
         String s = "";
         for (int i = 0; i < this.getContents().size(); i++) {
             if (i == this.getContents().size()-1) {

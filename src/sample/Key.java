@@ -15,43 +15,40 @@ public class Key extends Item{
         this.compatibility = new ArrayList<>();
     }
 
-    Key(String name, String description, boolean isVisible, boolean isCarry, boolean startWith, ArrayList comp) {
+    Key(String name, String description, boolean isVisible, boolean isCarry, boolean startWith, ArrayList<Item> comp) {
         super(name, description, isVisible, isCarry, startWith);
         this.compatibility = comp;
     }
 
-    Key(Long id, String name, String description, boolean isVisible, boolean isCarry, boolean startWith, ArrayList comp) {
+    Key(Long id, String name, String description, boolean isVisible, boolean isCarry, boolean startWith, ArrayList<Item> comp) {
         super(id, name, description, isVisible, isCarry, startWith);
         this.compatibility = comp;
     }
 
 
     @Override
-    public String use(Player p) {
+    public String use(Player p) { //key items must be used with another entity
         return "What are you trying to do with " + this.getName() + "?";
     }
 
     @Override
     public String use(Player p, Item item2) {
-        boolean valid = this.compatibility.contains(item2);
-        System.out.println(this.compatibility.toString());
-        System.out.println(item2.getId());
-        Container container = (Container) p.getCurrentRoom().findItemById(item2.getId());
-        if (valid) {
-            System.out.println("key is valid");
+        boolean valid = this.compatibility.contains(item2); //check if key is compatible with indicated item
+        Container container = (Container) item2;
+        if (valid) { //key is compatible
             if (container.getLockState() == LockState.LOCKED) {
-                container.setLockState(LockState.UNLOCKED);
+                container.setLockState(LockState.UNLOCKED); //unlock if item is locked
                 return item2.getName() + " has been unlocked. ";
             }
             else if (container.getLockState() == LockState.UNLOCKED) {
-                container.setLockState(LockState.LOCKED);
+                container.setLockState(LockState.LOCKED); //lock if item is unlocked
                 return item2.getName() + " has been locked. ";
             }
             else {
-                return item2.getName() + " can no longer be opened.";
+                return item2.getName() + " can no longer be opened."; //cannot be locked/unlocked anymore
             }
         }
-        return this.getName() + " is ineffective on " + item2.getName(); //TODO
+        return this.getName() + " is ineffective on " + item2.getName();
     }
 
     public ArrayList<Item> getCompatibility() {

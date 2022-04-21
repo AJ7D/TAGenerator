@@ -9,16 +9,12 @@ public class Item extends Entity implements Serializable {
 
     private String name;
     private String description;
-    private Type type;
     private boolean isVisible;
     private boolean isCarry;
     private boolean startWith;
 
     private ArrayList<String> aliases = new ArrayList<>();
     private HashMap<String, Action> verbs = new HashMap<>();
-
-    //A paired array of items and their applicable actions, events will be determined by
-    //parsing the combination of item/application and looked up e.g. eat apple --> EAT_APPLE
 
     Item() {
         this.name = "Perfectly Generic Object";
@@ -59,12 +55,6 @@ public class Item extends Entity implements Serializable {
 
     public String getDetailedDescription() { return this.description; }
 
-    public Type getType() {
-        return this.type;
-    }
-
-    public void setType(Type t) {this.type = t; }
-
     public boolean getIsVisible() {
         return isVisible;
     }
@@ -99,7 +89,6 @@ public class Item extends Entity implements Serializable {
                 "id=" + id +
                 ", name='" + name  +
                 ", description='" + description +
-                ", type=" + type +
                 ", isVisible=" + isVisible +
                 ", isCarry=" + isCarry +
                 ", startWith=" + startWith +
@@ -108,6 +97,7 @@ public class Item extends Entity implements Serializable {
                 '}';
     }
 
+    //items of generic type cannot be used
     public String use(Player p) {
         return "You cannot use " + this.name + ".";
     }

@@ -5,7 +5,7 @@ import javafx.util.StringConverter;
 
 public class UITools {
 
-    public void configureCombobox(ComboBox<Item> cbx) {
+    public static void configureCombobox(ComboBox<Item> cbx) {
         //method to cleanly change an item combobox to display item name
 
         cbx.setConverter(new StringConverter<Item>() {
@@ -23,7 +23,7 @@ public class UITools {
         });
     }
 
-    public void configureComboboxEnemy(ComboBox<Enemy> cbx) {
+    public static void configureComboboxEnemy(ComboBox<Enemy> cbx) {
         //method to cleanly change an item combobox to display item name
 
         cbx.setConverter(new StringConverter<Enemy>() {
@@ -42,7 +42,7 @@ public class UITools {
     }
 
 
-    public void configureComboboxRoom(ComboBox<Room> cbx) {
+    public static void configureComboboxRoom(ComboBox<Room> cbx) {
         //method to cleanly change an item combobox to display item name
 
         cbx.setConverter(new StringConverter<Room>() {

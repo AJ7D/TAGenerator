@@ -63,9 +63,9 @@ public class GameManager { //methods for saving/loading game configuration/save 
             Optional<ButtonType> option = alert.showAndWait(); //wait for user response
 
             if (option.isPresent() && option.get() == ButtonType.OK) {
+                System.out.println("ERROR: Cannot read game file. (" + exception + ")");
                 return null; //user has acknowledged error message
             }
-            System.out.println("ERROR: Cannot read game file. (" + exception + ")");
             return null;
         }
     }

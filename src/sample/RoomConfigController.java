@@ -21,6 +21,8 @@ public class RoomConfigController {
 
     public GeneratorController generatorController;
 
+    private int MAX_STRING_LENGTH = 50;
+
     @FXML
     private void initialize() {
 
@@ -30,18 +32,20 @@ public class RoomConfigController {
         String rName = nameEntryTF.getText();
         String rDesc = roomDescTA.getText();
 
-        if (room == null) {
-            room = new Room(rName, rDesc);
-        }
-        else {
-            room.setName(rName);
-            room.setDescription(rDesc);
-        }
-        GeneratorController.getNewGame().updateRoom(room);
+        try {
+            validateInputs();
+            if (room == null) {
+                room = new Room(rName, rDesc);
+            } else {
+                room.setName(rName);
+                room.setDescription(rDesc);
+            }
+            GeneratorController.getNewGame().updateRoom(room);
 
-        System.out.println(room);
-        System.out.println(GeneratorController.getNewGame().getGameMap());
-        closeWindow();
+            closeWindow();
+        } catch (InvalidInputException e) {
+            System.out.println(e.toString()); //for debugging if needed
+        }
     }
 
     private void closeWindow(){
@@ -54,6 +58,17 @@ public class RoomConfigController {
         room = GeneratorController.getNewGame().getRoom(id);
         nameEntryTF.setText(room.getName());
         roomDescTA.setText(room.getDescription());
+    }
+
+    public void validateInputs() throws InvalidInputException {
+        if (nameEntryTF.getText().trim().length() > MAX_STRING_LENGTH ||
+                nameEntryTF.getText().trim().length() == 0) {
+            throw new InvalidInputException("Please enter a name between 0-50 characters.");
+        }
+
+        if (roomDescTA.getText().trim().length() == 0) {
+            throw new InvalidInputException("Please enter a description.");
+        }
     }
 
     public void setGeneratorController(GeneratorController gc) { this.generatorController = gc; }

@@ -29,8 +29,7 @@ public class ExitConfigController {
 
     @FXML
     private void initialize() {
-        UITools uit = new UITools(); //methods for clean configuring javafx nodes
-        uit.configureComboboxRoom(roomSelCbx); //set roomselcbx to contain room references
+        UITools.configureComboboxRoom(roomSelCbx); //set roomselcbx to contain room references
         roomSelCbx.getSelectionModel().selectFirst(); //get first room in room list
         isLockedChx.setOnAction(eventHandler);
     }
@@ -81,12 +80,7 @@ public class ExitConfigController {
         @Override
         public void handle(ActionEvent event) {
             if (event.getSource().equals(isLockedChx)) {
-                if (isLockedChx.isSelected()) {
-                    newReqBtn.setDisable(false);
-                }
-                else {
-                    newReqBtn.setDisable(true);
-                }
+                newReqBtn.setDisable(!isLockedChx.isSelected());
             }
         }
     };

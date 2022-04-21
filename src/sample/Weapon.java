@@ -1,7 +1,5 @@
 package sample;
 
-import java.util.HashMap;
-
 public class Weapon extends Item {
     private int might = 5;
     private int durability = Integer.MAX_VALUE;
@@ -27,7 +25,7 @@ public class Weapon extends Item {
     }
 
     @Override
-    public String getDetailedDescription() {
+    public String getDetailedDescription() { //get designer description + details about weapon stats
         return super.getDescription() + "\nMight: " + this.getMight() + "\nRemaining durability: " + this.getDurability();
     }
 
@@ -40,23 +38,20 @@ public class Weapon extends Item {
     }
 
     @Override
-    public String use(Player p) {
+    public String use(Player p) { //weapon must be used with another entity
         return "What are you trying to attack with " + this.getName() + "?";
     }
 
     @Override
     public String use(Player p, Enemy enemy) {
-        String message = "";
-        if (enemy.isAlive()) {
-            p.incrementTurnCount();
-            enemy.setHp(enemy.getHp() - this.getMight());
-            if (enemy.getState() == EnemyState.PASSIVE) {
+        if (enemy.isAlive()) { //enemy can be attacked
+            p.incrementTurnCount(); //successful action, increment player turn
+            enemy.setHp(enemy.getHp() - this.getMight()); //update enemy hp
+            if (enemy.getState() == EnemyState.PASSIVE) { //a passive enemy becomes aggressive when attacks
                 enemy.setState(EnemyState.AGGRESSIVE);
             }
 
-            message = p.getName() + " attacked " + enemy.getName() + ", dealing " + this.getMight() + " damage.";
-
-            return message;
+            return p.getName() + " attacked " + enemy.getName() + ", dealing " + this.getMight() + " damage.";
         }
         return enemy.getName() + " was already slain.";
     }

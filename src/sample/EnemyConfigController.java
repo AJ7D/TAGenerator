@@ -30,13 +30,12 @@ public class EnemyConfigController {
 
     @FXML
     private void initialize() {
-        UITools uit = new UITools(); //provides some methods for cleaner javafx node config
-        uit.configureComboboxRoom(roomSelCbx); //set roomselcbx to contain room object references
+        UITools.configureComboboxRoom(roomSelCbx); //set roomselcbx to contain room object references
         roomSelCbx.getItems().setAll(GeneratorController.getNewGame().getGameMap()); //all valid rooms in gamemap
         roomSelCbx.getSelectionModel().selectFirst(); //select first room in gamemap by default
     }
 
-    public void saveEnemy() throws InvalidInputException {
+    public void saveEnemy()  {
         if (enemy == null) {
             //create new enemy if not updating an existing one
             enemy = new Enemy();

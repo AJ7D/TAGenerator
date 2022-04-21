@@ -2,7 +2,6 @@ package sample;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class Room extends Entity implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -19,8 +18,6 @@ public class Room extends Entity implements Serializable {
     private final boolean[] isLocked = new boolean[4];
     private final String[] lockedText = new String[4];
     private Room[] exits = new Room[4];
-
-    //for when no passage exists, as opposed to a locked passage
 
     public Room() {
         this.name = "Room1";
@@ -63,36 +60,9 @@ public class Room extends Entity implements Serializable {
         return entityList;
     }
 
-    public Enemy getEnemy(String str) {
-        for (Enemy e : enemies) {
-            if (str.equalsIgnoreCase(e.getName())) {
-                return e;
-            }
-        }
-        return null;
-    }
-
-    public Character getNpc(Character character) {
-        for (Character c : this.getNpcs()) {
-            if (c == character) {
-                return c;
-            }
-        }
-        return null;
-    }
-
-    public Character getNpc(String character) {
-        for (Character c : this.getNpcs()) {
-            if (c.getName().equals(character)) {
-                return c;
-            }
-        }
-        return null;
-    }
-
     public boolean[] getIsLocked() { return this.isLocked; }
 
-    public String[] getExitNames() {
+    public String[] getExitNames() { //return exit names as list of strings
         String[] rooms = new String[4];
         int i = 0;
         for (Room r : this.exits ) {
@@ -114,14 +84,14 @@ public class Room extends Entity implements Serializable {
         if (this.lockedText[dir.getValue()] != null) {
             return this.lockedText[dir.getValue()];
         }
-        return GENERIC_FAILURE;
+        return GENERIC_FAILURE; //if no custom locked text has been set, use generic message
     }
 
     public ArrayList<Enemy> getEnemies() {
         return enemies;
     }
 
-    public ArrayList<Enemy> getLivingEnemies() {
+    public ArrayList<Enemy> getLivingEnemies() { //only return enemies where isAlive = true
         ArrayList<Enemy> enemyList = new ArrayList<>();
         for (Enemy e : enemies) {
             if (e.isAlive())
@@ -152,13 +122,9 @@ public class Room extends Entity implements Serializable {
 
     public void deleteItem(Item item) { this.getItems().remove(item); }
 
-    public void addNpc(Npc npc) { this.getNpcs().add(npc); }
-
-    public void deleteNpc(Npc npc) { this.getNpcs().remove(npc); }
-
     public void deleteEnemy(Enemy enemy) { this.getEnemies().remove(enemy);}
 
-    public String listAvailableDirections() {
+    public String listAvailableDirections() { //given a room, list all directions with rooms set
         String availableDirections = "";
         for (int i = 0; i < 4; i++) {
             if (exits[i]!=null) {
@@ -168,17 +134,17 @@ public class Room extends Entity implements Serializable {
         return availableDirections;
     }
 
-    public boolean checkForExit(Direction dir) {
+    public boolean checkForExit(Direction dir) { //check that exit is assigned to this room in given direction
         Room r = this.exits[dir.getValue()];
         return r != null;
     }
 
-    public void deleteExit(Direction dir) {
-        if (this.checkForExit(dir)) {
+    public void deleteExit(Direction dir) { //delete room information at given direction from this room
+        if (this.checkForExit(dir)) { //ensure a room exists at direction
             Room other = this.exits[dir.getValue()];
-            this.exits[dir.getValue()] = null;
+            this.exits[dir.getValue()] = null; //remove room reference from exits list
             System.out.println("Connection " + this.getName() + "-" + dir + "->" + other.getName() + " deleted.");
-            other.deleteExit(dir.inverseDir());
+            other.deleteExit(dir.inverseDir()); //remove this reference from other room's exit at inverse direction
         }
         else {
             System.out.println("No more connections left. Finished at " + this.getName());
@@ -199,7 +165,9 @@ public class Room extends Entity implements Serializable {
                 '}';
     }
 
-    public boolean addExit(Direction dir, Room roomToConnect) {
+    public boolean addExit(Direction dir, Room roomToConnect) throws IllegalRoomConnection {
+        if (this.getId() == roomToConnect.getId())
+            throw new IllegalRoomConnection("Room cannot be connected to itself.");
         if (this.checkForExit(dir)) {
             this.deleteExit(dir);
         }
@@ -212,7 +180,7 @@ public class Room extends Entity implements Serializable {
         return true;
     }
 
-    public boolean containsItem(Item item) {
+    public boolean containsItem(Item item) { //check if room contains given item
         for (Item i : this.items) {
             if (i.compareItem(item)) {
                 return true;
@@ -221,7 +189,7 @@ public class Room extends Entity implements Serializable {
         return false;
     }
 
-    public boolean containsEnemy(Enemy enemy) {
+    public boolean containsEnemy(Enemy enemy) { //check if room contains given enemy
         for (Enemy e : enemies) {
             if (e.getId() == enemy.getId())
                 return true;
@@ -231,10 +199,6 @@ public class Room extends Entity implements Serializable {
 
     public boolean hasItems() {
         return this.items.size() > 0;
-    }
-
-    public boolean compareRoom(Room room) {
-        return room.getId() == this.getId();
     }
 
     public Item findItemByName(String item) {

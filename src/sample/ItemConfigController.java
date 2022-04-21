@@ -46,6 +46,7 @@ public class ItemConfigController {
 
     @FXML
     private void initialize() {
+        //set all elements to default values
         locSelectCbx.getSelectionModel().selectFirst();
         updateHolderCbx();
         itemTypeCbx.getSelectionModel().selectFirst();
@@ -69,7 +70,7 @@ public class ItemConfigController {
     public void saveItem() {
         try {
             //get item parameters from user interface
-            validateInputs();
+            validateInputs(); //validate all input to check if item can be saved
             String iName = nameEntryTF.getText();
             String iDesc = itemDescTA.getText();
             boolean iVis = isVisibleChx.isSelected();
@@ -129,20 +130,22 @@ public class ItemConfigController {
             System.out.println("Error: item type could not be correctly determined (" + e  + ")");
         }
 
+        //update nodes to reflect item attribute values
         isVisibleChx.setSelected(item.getIsVisible());
         isCarryChx.setSelected(item.getIsCarry());
         startWithChx.setSelected(item.getStartWith());
 
         if (!item.getStartWith()) { //find item's location
-            Entity e = game.findItemInstance(item);
-            if (e != null) {
+            Entity e = game.findItemInstance(item); //find entity that holds item
+            if (e != null) { //entity found, continue
+                //determine type of entity, update combo box to select entity type
                 locSelectCbx.getSelectionModel().select(e.getClass().getSimpleName());
                 updateHolderCbx();
-                ComboBox<Entity> cbx = (ComboBox<Entity>) locHbox.getChildren().get(0);
-                cbx.getSelectionModel().select(e);
+                ComboBox<Entity> cbx = (ComboBox<Entity>) locHbox.getChildren().get(0); //retrieve updated combo box
+                cbx.getSelectionModel().select(e); //set combo box selection to this entity
             }
             else {
-                locSelectCbx.getSelectionModel().selectFirst();
+                locSelectCbx.getSelectionModel().selectFirst(); //if entity can't be identified, set to default value
             }
         }
     }
@@ -151,18 +154,18 @@ public class ItemConfigController {
         boolean isOverwrite = (item != null); //true if existing item is being edited
         //produces a new item dependent on the subclass of item selected
         if (item instanceof Container && !itemTypeCbx.getValue().equals("Container")) {
-            game.emptyContainer((Container) item);
+            game.emptyContainer((Container) item); //place container items into its room if will no longer be container
         }
-        switch (itemTypeCbx.getValue()) {
+        switch (itemTypeCbx.getValue()) { //read parameters based on item type
             case "Consumable":
                 TextField hp = (TextField) paramsVbox.lookup("#cHpField");
                 int hpRest = Integer.parseInt(hp.getText());
                 TextField cUses = (TextField) paramsVbox.lookup("#numUsesField");
                 int cUse = Integer.parseInt(cUses.getText());
 
-                if (isOverwrite)
+                if (isOverwrite) //update item, using item's orginal id
                     return new Consumable(item.getId(), iName, iDesc, iVis, iCarry, iStart, hpRest, cUse);
-                return new Consumable(iName, iDesc, iVis, iCarry, iStart, hpRest, cUse);
+                return new Consumable(iName, iDesc, iVis, iCarry, iStart, hpRest, cUse); //create new item with new id
             case "Light":
                 ComboBox<String> state = (ComboBox<String>) paramsVbox.lookup("#lStateCbx");
                 LightState lightState = LightState.valueOf(state.getValue());
@@ -174,7 +177,7 @@ public class ItemConfigController {
                 return new Light(iName, iDesc, iVis, iCarry, iStart, lightState, nUse);
             case "Key":
                 ComboBox<Container> compList = (ComboBox<Container>) paramsVbox.lookup("#compCbx");
-                ArrayList<Container> comp = new ArrayList<>(compList.getItems());
+                ArrayList<Item> comp = new ArrayList<>(compList.getItems());
                 System.out.println("compatibility = " + comp.toString());
 
                 if (isOverwrite)
@@ -200,7 +203,7 @@ public class ItemConfigController {
                 if (isOverwrite)
                     return new Weapon(item.getId(), iName, iDesc, iVis, iCarry, iStart, might, wNumUse);
                 return new Weapon(iName, iDesc, iVis, iCarry, iStart, might, wNumUse);
-            default:
+            default: //is a default item type, no specific parameters generated dynamically
                 if (isOverwrite)
                     return new Item(item.getId(), iName, iDesc, iVis, iCarry, iStart);
                 return new Item(iName, iDesc, iVis, iCarry, iStart);
@@ -218,21 +221,21 @@ public class ItemConfigController {
         System.out.println("Player already has item.");
     }
 
-    public void tryPlaceItem(Item item) {
-        game.deleteItemInstances(item);
-        ComboBox cbx = (ComboBox) locHbox.getChildren().get(0);
+    public void tryPlaceItem(Item item) { //try to place item based on current combo box selection
+        game.deleteItemInstances(item); //remove any instances first
+        ComboBox cbx = (ComboBox) locHbox.getChildren().get(0); //locate combo box for reading
         switch (locSelectCbx.getValue().toString()) {
             case "Room":
                 Room r = (Room) cbx.getValue();
-                r.addItem(item);
+                r.addItem(item); //add item to room
                 break;
             case "Enemy":
                 Enemy e = (Enemy) cbx.getValue();
-                e.getInventory().addItem(item);
+                e.getInventory().addItem(item); //add item to enemy inventory
                 break;
             case "Container":
                 Container c = (Container) cbx.getValue();
-                c.addItem(item);
+                c.addItem(item); //add item to container
                 break;
         }
     }
@@ -242,25 +245,25 @@ public class ItemConfigController {
         switch (itemTypeCbx.getValue()) {
             case "Consumable":
                 paramsVbox.getChildren().clear();
-                Text cHpText = new Text();
+                Text cHpText = new Text(); //hp text indicator
                 cHpText.setText("HP restore:");
-                TextField cHpField = new TextField();
+                TextField cHpField = new TextField(); //text field for hp input entry
                 cHpField.setText("0");
                 cHpField.setId("cHpField");
 
-                Text numUses = new Text();
+                Text numUses = new Text(); //number of uses text indicator
                 numUses.setText("Number of uses:");
-                TextField numUsesField = new TextField();
+                TextField numUsesField = new TextField(); //number of uses input entry
                 numUsesField.setText("1");
                 numUsesField.setId("numUsesField");
 
-                //if item configured already
+                //if item configured already, set values
                 if (item instanceof Consumable) {
                     cHpField.setText(String.valueOf(((Consumable) item).getHpRestore()));
                     numUsesField.setText(String.valueOf(((Consumable) item).getNumUses()));
                 }
 
-                paramsVbox.getChildren().addAll(cHpText, cHpField, numUses, numUsesField);
+                paramsVbox.getChildren().addAll(cHpText, cHpField, numUses, numUsesField); //update display
                 return;
                 //hp restore, uses
             case "Light":
@@ -269,7 +272,7 @@ public class ItemConfigController {
                 lStateText.setText("Start state:");
                 ComboBox<String> lStateCombo = new ComboBox<>();
                 ArrayList<String> lightStates = new ArrayList<>();
-                for (LightState l : LightState.values()) {
+                for (LightState l : LightState.values()) { //make list of all possible light states
                     lightStates.add(l.name());
                 }
                 lStateCombo.setItems(FXCollections.observableList(lightStates));
@@ -306,7 +309,7 @@ public class ItemConfigController {
                 Class cls = Class.forName(Container.class.getName());
 
                 Button addButton = new Button();
-                addButton.setText("Add");
+                addButton.setText("Add"); //for adding new compatible items
 
                 HBox removeHbox = new HBox();
                 ComboBox<Item> containersAdded = new ComboBox<>();
@@ -314,9 +317,9 @@ public class ItemConfigController {
                 Button removeButton = new Button();
                 removeButton.setText("Remove");
 
-                //if item configured already
+                //if item configured already, set values
                 if (item instanceof Key) {
-                    ArrayList<Item> addedList = ((Key) item).getCompatibility();
+                    ArrayList<Item> addedList = (ArrayList<Item>) ((Key) item).getCompatibility();
                     containersAdded.setItems(FXCollections.observableList(addedList));
                     containersAdded.getSelectionModel().selectFirst();
 
@@ -325,7 +328,7 @@ public class ItemConfigController {
                     containers.setItems(FXCollections.observableList(containerList));
                     containers.getSelectionModel().selectFirst();
                 }
-                else {
+                else { //set generic values
                     if (!getAllItemsOfType(cls).isEmpty()) {
                         containerList.addAll(getAllItemsOfType(cls));
                         containers.setItems(FXCollections.observableList(containerList));
@@ -333,7 +336,7 @@ public class ItemConfigController {
                     }
                 }
 
-                addButton.setOnMouseClicked(event -> {
+                addButton.setOnMouseClicked(event -> { //add current container to compatibility when clicked
                     try {
                         Item c = containers.getValue();
                         containers.getItems().remove(c);
@@ -346,7 +349,7 @@ public class ItemConfigController {
                     }
                 });
 
-                removeButton.setOnMouseClicked(event -> {
+                removeButton.setOnMouseClicked(event -> { //remove current container to compatibility when clicked
                     try {
                         Item c = containersAdded.getValue();
                         containersAdded.getItems().remove(c);
@@ -359,9 +362,8 @@ public class ItemConfigController {
                     }
                 });
 
-                UITools uit = new UITools();
-                uit.configureCombobox(containers);
-                uit.configureCombobox(containersAdded);
+                UITools.configureCombobox(containers); //configure combo box to hold container references
+                UITools.configureCombobox(containersAdded);
 
                 addHbox.getChildren().addAll(containers, addButton);
                 removeHbox.getChildren().addAll(containersAdded, removeButton);
@@ -369,7 +371,6 @@ public class ItemConfigController {
                 paramsVbox.getChildren().addAll(kCompText, addHbox, removeHbox);
 
                 return;
-                //compatible with
             case "Container":
                 paramsVbox.getChildren().clear();
                 Text cCompText = new Text();
@@ -386,7 +387,6 @@ public class ItemConfigController {
                 cStateCombo.setValue(lockStates.get(0));
                 cStateCombo.setId("cStateCbx");
 
-                //TODO
                 if (item instanceof Container) {
                     cStateCombo.setValue((((Container) item).getLockState().name()));
                 }
@@ -394,7 +394,6 @@ public class ItemConfigController {
                 paramsVbox.getChildren().addAll(cCompText, cStateText, cStateCombo);
 
                 return;
-                //items, start state
             case "Weapon":
                 paramsVbox.getChildren().clear();
                 Text wMightText = new Text();
@@ -417,17 +416,18 @@ public class ItemConfigController {
 
                 paramsVbox.getChildren().addAll(wMightText, wMightField, wNumUses, wNumUsesField);
                 return;
-                //might, durability
             default:
                 paramsVbox.getChildren().clear();
                 //none
         }
     }
 
-    public void genNewVerb() {
+    public void genNewVerb() { //adds a new verb component to the verb list
+        //intialise nodes
         HBox nbx = new HBox();
         TextField tf = new TextField();
         ComboBox<String> cbx = new ComboBox<>();
+        //applicable actions for user to configure
         cbx.setItems(FXCollections.observableArrayList(
                 ("Use"),
                 ("Take"),
@@ -437,7 +437,7 @@ public class ItemConfigController {
 
         Button delBtn = new Button();
         delBtn.setText("Delete");
-        delBtn.setOnMouseClicked(event -> {
+        delBtn.setOnMouseClicked(event -> { //create button event for deleting this verb
             try {
                 removeVerb(event);
             } catch (IOException e) {
@@ -445,43 +445,44 @@ public class ItemConfigController {
             }
         });
 
-        nbx.getChildren().addAll(tf,cbx,delBtn);
-        verbsVbox.getChildren().add(nbx);
+        nbx.getChildren().addAll(tf,cbx,delBtn); //add all components to nbx node
+        verbsVbox.getChildren().add(nbx); //add nbx node to v box holding all verbs
     }
 
     @FXML
-    private void removeVerb(MouseEvent event) throws IOException {
+    private void removeVerb(MouseEvent event) throws IOException { //remove verb associated with button event
         Button btn = (Button) event.getSource();
         verbsVbox.getChildren().remove(btn.getParent());
     }
 
     private HashMap<String, Action> getAllVerbs() throws InvalidInputException {
+        //generate hashmap of grammar to apply directly to item creation
         HashMap<String, Action> verbs = new HashMap<>();
         for (Node n : verbsVbox.getChildren()) {
             HBox h = (HBox) n;
-            TextField t = (TextField) h.getChildren().get(0);
-            String verb = t.getText();
-            if (verb.trim().length() == 0 ) {
+            TextField t = (TextField) h.getChildren().get(0); //get textfield with user input
+            String verb = t.getText(); //get verb word input by user
+            if (verb.trim().length() == 0 ) { //catch any verb components that are not filled
                 throw new InvalidInputException("Please ensure all action verbs are filled/not blank.");
             }
             ComboBox<String> cbx = (ComboBox<String>) h.getChildren().get(1);
             String action = cbx.getValue();
-            verbs.put(verb, Action.stringToAction(action));
+            verbs.put(verb, Action.stringToAction(action)); //add word/associated action to hashmap
         }
         return verbs;
     }
 
-    private TextField getVerbTf(int index) {
+    private TextField getVerbTf(int index) { //get text field associated with verb index
         HBox h = (HBox) verbsVbox.getChildren().get(index);
         return (TextField) h.getChildren().get(0);
     }
 
-    private ComboBox<String> getActionCbx(int index) {
+    private ComboBox<String> getActionCbx(int index) { //get action selection associated with verb index
         HBox h = (HBox) verbsVbox.getChildren().get(index);
         return (ComboBox<String>) h.getChildren().get(1);
     }
 
-    private void loadVerbs(Item item) {
+    private void loadVerbs(Item item) { //load item verb hashmap into interface display
         HashMap<String, Action> verbs = item.getVerbs();
 
         int i = 0;
@@ -511,14 +512,13 @@ public class ItemConfigController {
     }
 
     public void updateHolderCbx() {
-        UITools uit = new UITools();
         locHbox.getChildren().clear();
         switch (locSelectCbx.getValue().toString()) {
             case "Room":
                 ComboBox<Room> roomCbx = new ComboBox<>();
                 roomCbx.getItems().setAll(GeneratorController.getNewGame().getGameMap());
                 roomCbx.getSelectionModel().selectFirst(); //add room list to combobox values
-                uit.configureComboboxRoom(roomCbx);
+                UITools.configureComboboxRoom(roomCbx);
                 locHbox.getChildren().add(0, roomCbx);
                 break;
             case "Enemy":
@@ -530,7 +530,7 @@ public class ItemConfigController {
                 catch (NullPointerException e) {
                     System.out.println("No enemies in game to display.");
                 }
-                uit.configureComboboxEnemy(enemyCbx);
+                UITools.configureComboboxEnemy(enemyCbx);
                 locHbox.getChildren().add(0, enemyCbx);
                 break;
             case "Container":
@@ -544,7 +544,7 @@ public class ItemConfigController {
                 }
                 if (item != null)
                     contCbx.getItems().remove(item);
-                uit.configureCombobox(contCbx);
+                UITools.configureCombobox(contCbx);
                 locHbox.getChildren().add(0, contCbx);
                 break;
         }

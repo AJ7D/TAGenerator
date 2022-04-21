@@ -27,14 +27,14 @@ public class Light extends Item{
 
     @Override
     public String use(Player p) {
-        if (this.numUses <= 0) {
+        if (this.numUses <= 0) { //light can no longer be used
             lightState = LightState.EXHAUSTED;
         }
         switch (lightState) {
             case ON:
-                this.numUses--;
-                p.incrementTurnCount();
-                lightState = LightState.OFF;
+                this.numUses--; //reduce number of uses
+                p.incrementTurnCount(); //successful action, increment player turn count
+                lightState = LightState.OFF; //update light state
                 return this.getName() + " is now off.";
             case OFF:
                 this.numUses--;
@@ -49,7 +49,7 @@ public class Light extends Item{
     public String addUses(int uses) {
         this.numUses = this.numUses + uses;
         if (numUses > 0 && this.lightState == LightState.EXHAUSTED) {
-            this.lightState = LightState.ON;
+            this.lightState = LightState.ON; //light is usable again, update state and report
             return this.getName() + " can be used once again.";
         }
         return "";

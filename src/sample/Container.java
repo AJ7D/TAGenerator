@@ -68,6 +68,8 @@ public class Container extends Item {
     public String use(Player p, Item item2) {
         switch (lockState) {
             case LOCKED: {
+                if (item2 instanceof Key)
+                    return item2.use(p, this);
                 return this.getName() + " is locked.";
             }
             case UNLOCKED: {
@@ -108,10 +110,17 @@ public class Container extends Item {
         return items;
     }
 
+    public ArrayList<String> getItemNames() {
+        ArrayList<String> itemNames = new ArrayList<>();
+        for (Item i : items)
+            itemNames.add(i.getName());
+        return itemNames;
+    }
+
     @Override
     public String toString() {
         return super.toString() +
-                "items=" + items +
+                "items=" + getItemNames() +
                 ", lockState=" + lockState +
                 '}';
     }
@@ -119,7 +128,7 @@ public class Container extends Item {
     public static void main(String[] args) {
         Player p = new Player("June");
         Container box = new Container();
-        ArrayList<Container> compat = new ArrayList<>();
+        ArrayList<Item> compat = new ArrayList<>();
         compat.add(box);
         Key key = new Key("Key", "A key.", true, true, true, compat);
         System.out.println(box.getDescription());
