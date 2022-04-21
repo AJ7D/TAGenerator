@@ -73,11 +73,11 @@ public class EngineController {
             }
         }
 
+        String displayText = "";
         if (command.size() == 1) {
-            return executeCommand(command);
+            displayText = displayText.concat(executeCommand(command));
         }
         else {
-            String displayText = "";
             ArrayList<String> singleCommand = new ArrayList<>();
             for (String s : command) {
                 if (s.equals("and")) {
@@ -90,9 +90,16 @@ public class EngineController {
                     singleCommand.add(s);
                 }
             }
-            displayText = displayText.concat(executeCommand(singleCommand) + "\n");
-            return displayText;
+            displayText = displayText.concat(executeCommand(singleCommand));
+
         }
+
+        if (game.isWon()) {
+            state = EngineState.WIN;
+            displayText = displayText.concat("YOU HAVE WON!\n");
+        }
+
+        return displayText + "\n";
     }
 
     public String executeCommand(ArrayList<String> args) {
@@ -135,6 +142,7 @@ public class EngineController {
         switch (state) {
             case PLAYING: {
                 gameManager.saveGameState(oldGame, game, stage);
+                gameTextTa.appendText("Game saved successfully.");
                 break;
             }
             case NOT_LOADED: {
@@ -145,9 +153,14 @@ public class EngineController {
         }
     }
 
-    public void loadGameState() throws IOException {
-        game = gameManager.loadGameState(oldGame, stage); //try to load a game state
-        player = game.getPlayer();
+    public void loadGameState() throws IOException, FileNotSelectedException, IllegalSaveStateException {
+        if (state == EngineState.NOT_LOADED) {
+            throw new IllegalSaveStateException("No game loaded, please select a game first.");
+        } else {
+            game = gameManager.loadGameState(oldGame, stage); //try to load a game state
+            player = game.getPlayer();
+            gameTextTa.appendText("Save game loaded successfully. You are in " + player.getCurrentRoom().getName() + "\n\n");
+        }
     }
 
     private Item validateItem(ArrayList<String> input) {

@@ -78,8 +78,10 @@ public class GameManager { //methods for saving/loading game configuration/save 
         fileChooser.setTitle("Save Game State");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Game save file", "*.txt"));
 
-        File selectedFile = fileChooser.showSaveDialog(stage);
-        if (selectedFile != null) {
+        try {
+            File selectedFile = fileChooser.showSaveDialog(stage);
+            if (selectedFile == null)
+                throw new FileNotSelectedException();
             FileOutputStream fileOutputStream
                     = new FileOutputStream(selectedFile);
             ObjectOutputStream objectOutputStream
@@ -87,10 +89,13 @@ public class GameManager { //methods for saving/loading game configuration/save 
             objectOutputStream.writeObject(new GameSaveFile(initial, state));
             objectOutputStream.flush();
             objectOutputStream.close();
+
+        } catch (FileNotSelectedException e) {
+            e.printStackTrace();
         }
     }
 
-    public Game loadGameState(Game game, Stage stage) throws IOException {
+    public Game loadGameState(Game game, Stage stage) throws IOException, FileNotSelectedException, IllegalSaveStateException {
         //load a saved game state
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
@@ -99,7 +104,7 @@ public class GameManager { //methods for saving/loading game configuration/save 
         File selectedFile = fileChooser.showOpenDialog(stage);
 
         if (selectedFile == null) {
-            return null;
+            throw new FileNotSelectedException();
         }
 
         Game loadedState = null;
@@ -112,7 +117,7 @@ public class GameManager { //methods for saving/loading game configuration/save 
             objectInputStream.close();
 
             if (gameSaveFile == null) {
-                return null;
+                throw new IllegalSaveStateException("Failed to load save file.");
             }
 
             if (!gameSaveFile.verifyState(gameSaveFile.getInitialConfig(), game)) {
@@ -121,6 +126,9 @@ public class GameManager { //methods for saving/loading game configuration/save 
             loadedState = gameSaveFile.getSavedConfig();
         } catch (ClassNotFoundException | IllegalSaveStateException e) {
             e.printStackTrace();
+        }
+        catch (ClassCastException e) {
+            throw new IllegalSaveStateException("File selected is not a save file.");
         }
         return loadedState;
     }

@@ -16,6 +16,8 @@ public class Game implements Serializable {
     private Player player = new Player("Player");
     private Room startingRoom = new Room();
 
+    private Room winCondition = startingRoom;
+
     private HashMap<String, Action> grammar = defineGrammar();
 
     public Game() {
@@ -29,6 +31,7 @@ public class Game implements Serializable {
         this.gameEnemies = game.gameEnemies;
         this.player = game.player;
         this.startingRoom = game.startingRoom;
+        this.winCondition = game.winCondition;
         this.grammar = game.grammar;
     }
 
@@ -46,6 +49,18 @@ public class Game implements Serializable {
     public Room getStartingRoom() { return this.startingRoom; }
 
     public void setStartingRoom(Room newRoom) { this.startingRoom = newRoom; }
+
+    public Room getWinCondition() {
+        return winCondition;
+    }
+
+    public void setWinCondition(Room winCondition) {
+        this.winCondition = winCondition;
+    }
+
+    public boolean isWon() {
+        return player.getCurrentRoom() == winCondition;
+    }
 
     public ArrayList<Room> getGameMap() { return this.gameMap; }
 

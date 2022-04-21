@@ -22,13 +22,14 @@ import java.util.Optional;
 
 public class GeneratorController {
 
-    static final int ITEMWIDTH = 631;
-    static final int ITEMHEIGHT = 400;
+    private static final int MAX_STRING_LENGTH = 50;
+    private static final int ITEMWIDTH = 631;
+    private static final int ITEMHEIGHT = 400;
 
-    static final int ENEMYWIDTH = 400;
-    static final int ENEMYHEIGHT = 400;
+    private static final int ENEMYWIDTH = 400;
+    private static final int ENEMYHEIGHT = 400;
 
-    static final int ENTITY_INCREMENTAL_OFFSET = 20;
+    private static final int ENTITY_INCREMENTAL_OFFSET = 20;
 
     public static Stage stage;
     private static Game newGame;
@@ -38,6 +39,7 @@ public class GeneratorController {
     private Room selectedRoom;
 
     @FXML private TextField nameEntryTF;
+    @FXML private TextField playerEntryTF;
     @FXML private AnchorPane objectAnchorPane;
     @FXML private Button newItemBtn;
     @FXML private Button newEnemyBtn;
@@ -48,6 +50,7 @@ public class GeneratorController {
     @FXML private Button editRoomBtn;
     @FXML private Text selectedRoomTxt;
     @FXML private ComboBox<Room> startRoomCbx;
+    @FXML private ComboBox<Room> winRoomCbx;
     @FXML private VBox inventoryVbox;
     @FXML private Button exitNoSaveBtn;
 
@@ -56,11 +59,27 @@ public class GeneratorController {
         //Initialise default configuration - empty game
         newGame = new Game("New game");
         nameEntryTF.setText(newGame.getTitle());
+        playerEntryTF.setText(newGame.getPlayer().getName());
 
         updateInterfaceDisplay();
 
         UITools.configureComboboxRoom(startRoomCbx); //configure startroomcbx to hold room references
         startRoomCbx.getSelectionModel().selectFirst(); //select first element for starting room by default
+        startRoomCbx.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
+            if (newValue != null) {
+                newGame.setStartingRoom(newValue);
+                System.out.println("starting room = " + newGame.getStartingRoom().getName());
+            }
+        }); //update game's starting room when combo box selection is changed
+
+        UITools.configureComboboxRoom(winRoomCbx);
+        winRoomCbx.getSelectionModel().selectFirst();
+        winRoomCbx.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
+            if (newValue != null) {
+                newGame.setWinCondition(newValue);
+                System.out.println("win condition = " + newGame.getWinCondition().getName());
+            }
+        });
 
         Button room1Button = (Button) objectAnchorPane.getChildren().get(0);
         simulateButtonClick(room1Button); //simulate button click to update display
@@ -69,7 +88,6 @@ public class GeneratorController {
         //set selected room to the default empty room created on new game creation
     }
 
-    //TODO potentially merge these 3 functions
     @FXML
     private void updateRoom(MouseEvent event) throws IOException {
         final Stage dialog = new Stage();
@@ -120,10 +138,12 @@ public class GeneratorController {
         if (option.isPresent() && option.get() == ButtonType.OK) { //user agrees to delete room
             newGame.deleteRoom(room);
             updateInterfaceDisplay();
-            if (startRoomCbx.getValue().getName().equals(room.getName())) {
+            if (startRoomCbx.getValue().getId() == room.getId()) {
                 //update combobox to remove room from selection
                 startRoomCbx.getSelectionModel().selectFirst();
             }
+            if (winRoomCbx.getValue().getId() == room.getId())
+                winRoomCbx.getSelectionModel().selectFirst();
             String id = objectAnchorPane.getChildren().get(0).getId();
             newRoomDisplay(id);
             selectedRoom = newGame.getRoom(Long.parseLong(id));
@@ -273,10 +293,13 @@ public class GeneratorController {
     }
 
     @FXML
-    private void populateStartingRoomCombo() {
-        //updates the starting room combo box to show all rooms in game map
+    private void populateRoomCombos() {
+        //updates the room combo boxes to show all rooms in game map
         startRoomCbx.getItems().setAll(newGame.getGameMap());
         startRoomCbx.setValue(newGame.getStartingRoom());
+
+        winRoomCbx.getItems().setAll(newGame.getGameMap());
+        winRoomCbx.setValue(newGame.getWinCondition());
     }
 
     @FXML
@@ -377,12 +400,17 @@ public class GeneratorController {
     @FXML
     private void saveAndQuit(MouseEvent event) throws IOException {
         //save game and quit generator
-        setGameParams();
-        if (!gameManager.saveGameConfig(newGame, stage)) {
-            System.out.println("ERROR: Failed to save.");
-            return;
+        try {
+            validateInputs();
+            setGameParams();
+            if (!gameManager.saveGameConfig(newGame, stage)) {
+                System.out.println("ERROR: Failed to save.");
+                return;
+            }
+            quit();
+        } catch (InvalidInputException e) {
+            System.out.println(e.toString());
         }
-        quit();
     }
 
     private void quit() throws IOException {
@@ -417,6 +445,7 @@ public class GeneratorController {
         if (loaded != null) {
             newGame = loaded;
             nameEntryTF.setText(newGame.getTitle());
+            playerEntryTF.setText(newGame.getPlayer().getName());
             updateInterfaceDisplay();
         }
     }
@@ -425,13 +454,13 @@ public class GeneratorController {
     private void setGameParams() {
         //update generic game parameters on ui
         newGame.setTitle(nameEntryTF.getText());
-        newGame.setStartingRoom(startRoomCbx.getValue());
+        newGame.getPlayer().setName(playerEntryTF.getText());
     }
 
     public void updateInterfaceDisplay() {
         //update ui when new data is added
         populateScrollPane(); //updates scrollpane to show any new entities added/deleted
-        populateStartingRoomCombo(); //update combobox list of valid starting rooms
+        populateRoomCombos(); //update combobox list of valid starting rooms
         populateInventoryItems(); //update user's starting items display
     }
 
@@ -441,5 +470,17 @@ public class GeneratorController {
         //simulate button click to update ui, call from external window
         Button button = (Button) objectAnchorPane.lookup("#" +string);
         simulateButtonClick(button);
+    }
+
+    private void validateInputs() throws InvalidInputException {
+        if (nameEntryTF.getText().trim().length() > MAX_STRING_LENGTH ||
+                nameEntryTF.getText().trim().length() == 0) {
+            throw new InvalidInputException("Please enter a title between 0-50 characters.");
+        }
+
+        if (playerEntryTF.getText().trim().length() > MAX_STRING_LENGTH ||
+                playerEntryTF.getText().trim().length() == 0) {
+            throw new InvalidInputException("Please enter a player name between 0-50 characters.");
+        }
     }
 }
