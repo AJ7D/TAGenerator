@@ -160,7 +160,7 @@ public class EngineController {
             game = gameManager.loadGameState(oldGame, stage); //try to load a game state
             player = game.getPlayer();
             gameTextTa.appendText("\n\nSave game loaded successfully. You are in " + player.getCurrentRoom().getName() + "\n\n");
-            state = state.PLAYING;
+            state = EngineState.PLAYING;
         }
     }
 
