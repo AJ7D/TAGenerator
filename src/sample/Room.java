@@ -3,22 +3,36 @@ package sample;
 import java.io.Serializable;
 import java.util.*;
 
+/** Room class for defining environments that hold non-Room entities. Extends entity.
+ * @see Entity*/
 public class Room extends Entity implements Serializable {
+    /** The serial version UID of the room.*/
     private static final long serialVersionUID = 1L;
 
+    /** Generic error message if a direction is locked. Intended to be updated by player in later versions.*/
     public static String GENERIC_FAILURE = "You are unable to travel that way currently.";
 
+    /** Name of the room.*/
     private String name;
+    /** Description of the room.*/
     private String description;
+    /** ArrayList of Items in the room.*/
     private final ArrayList<Item> items = new ArrayList<>();
+    /** ArrayList of Characters in the room.*/
     private final ArrayList<Character> npcs = new ArrayList<>();
 
+    /** ArrayList of Enemies in the room.*/
     private ArrayList<Enemy> enemies = new ArrayList<>();
 
+    /** Determines if a direction is locked by index. Indexes from Direction values.
+     * @see Direction*/
     private final boolean[] isLocked = new boolean[4];
+    /** Custom locked text for each direction.*/
     private final String[] lockedText = new String[4];
+    /** Rooms connected to this room, indexed by direction.*/
     private Room[] exits = new Room[4];
 
+    /** Default constructor for room. Called on creation of a new game.*/
     public Room() {
         this.name = "Room1";
         this.description = "An empty room.";

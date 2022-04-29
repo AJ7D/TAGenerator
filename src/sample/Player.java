@@ -3,25 +3,39 @@ package sample;
 import java.util.ArrayList;
 import java.util.List;
 
+/** Class for defining the player which acts as the user's interaction with games in the game engine.
+ * @see Game,EngineController*/
 public class Player extends Character {
+    /** The number of turns elapsed by the player in a game.*/
     private int turnCount = 0;
 
+    /** Constructor for creating a player with a name.
+     * @param n The name to be set to the player.*/
     Player(String n) {
         super(n);
     }
 
+    /** Constructor for creating a player with a name and a current room.
+     * @param name The name to be set to the player.
+     * @param currentRoom The room to place the player into by default.*/
     Player(String name, Room currentRoom) {
         super(name, currentRoom);
     }
 
+    /** Returns the number of turns elapsed for the player.
+     * @return int The number of turns elapsed by the player.*/
     public int getTurnCount() {
         return turnCount;
     }
 
+    /** Increments the player's turn count by 1.*/
     public void incrementTurnCount() {
         turnCount++;
     }
 
+    /** Player tries to get a given item by checking if it exists and can be taken.
+     * @param item The item to be added to the player's inventory.
+     * @return Describes if the player gets the item or not.*/
     public String acquire(String item) { //attempt to add item to player inventory
         for (Item i : this.getCurrentRoom().getItems()) {
             if (i.canBeTaken() && i.getName().equalsIgnoreCase(item)) { //find item match and ensure is carryable
@@ -33,6 +47,9 @@ public class Player extends Character {
         return "You could not get that item.";
     }
 
+    /** Player tries to drop a given item by checking if it is in player's inventory.
+     * @param item The item to be removed from the player's inventory.
+     * @return Describes if the player drops the item or not.*/
     public String drop(String item) { //attempt to remove item from player inventory
         for (Item i : this.getInventory().getContents()) {
             if (i.getName().equalsIgnoreCase(item)) {
@@ -45,11 +62,18 @@ public class Player extends Character {
         return "You are not holding that item.";
     }
 
+    /** Gives the player an item directly without relevant output.
+     * @param item Item to be given to player.*/
     public void give(Item item) { //give player a new item
         this.getInventory().addItem(item);
         System.out.println("Gave player " + item);
     }
 
+    /** Tries to relocate the player to the room in the given direction from player's current room.
+     * Fails if no room in that direction or direction is locked.
+     * @param dir Direction to travel to from current room.
+     * @return String Describes if the player successfully travelled.
+     * @see Room,Direction*/
     public String travel(Direction dir) {
         //transfer player to room at indicated direction from current room, if possible
         if (this.getCurrentRoom().checkForExit(dir)) { //ensure there is an exit in this direction
@@ -67,6 +91,8 @@ public class Player extends Character {
         return "There is no exit to the " + dir;
     }
 
+    /** Displays information about the player, such as name, HP and inventory items.
+     * @return String Formatted string of player information.*/
     public String viewSelf() { //return information about the player
         int inventorySize = this.getInventory().countItems();
         String item = "items";
@@ -76,12 +102,18 @@ public class Player extends Character {
                 "\nYou are carrying " + this.getInventory().countItems() + " " + item + ".";
     }
 
+    /** Displays information about the player's current room.
+     * @return String Formatted string of current room information.
+     * @see Room*/
     public String getBearings() { //display limited information about player's current room
         return "YOU STAND IN: " + this.getCurrentRoom().getName() + "\n" +
                 this.getCurrentRoom().getDescription() +"\nThere are exits to the:" +
                 this.getCurrentRoom().listAvailableDirections() + "\n" + checkSurroundings();
     }
 
+    /** Displays more elaborate information about the player's current room.
+     * @return String Formatted string of current room information.
+     * @see Room*/
     public String checkSurroundings() { //display more information about player's current room
         String desc = this.getCurrentRoom().getDescription();
         List<Item> items = this.getCurrentRoom().getVisibleItems();
@@ -116,6 +148,9 @@ public class Player extends Character {
         return itemsSeen;
     }
 
+    /** Displays the detailed description of the given item for use in the engine, NOT THE GENERATOR.
+     * @param item The item to be viewed.
+     * @return String Displays the detailed description of the given item.*/
     public String viewItem(String item) { //view item description
         Item i = this.getInventory().findItemByName(item);
         if (i == null) {
@@ -127,6 +162,9 @@ public class Player extends Character {
         return i.getDetailedDescription(); //get description with more info for engine
     }
 
+    /** Gets an ArrayList of all items that the player can perform actions on.
+     * @return ArrayList The items that the player can interact with.
+     * @see Action*/
     public ArrayList<Item> getInteractables() { //get all items a player can interact with
         ArrayList<Item> interactables = new ArrayList<>(this.getInventory().getContents());
         for (Item i : getCurrentRoom().getItems()) {

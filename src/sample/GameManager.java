@@ -8,8 +8,14 @@ import javafx.stage.Stage;
 import java.io.*;
 import java.util.Optional;
 
+/** Class for handling game writing/reading to and from files.*/
 public class GameManager { //methods for saving/loading game configuration/save states
 
+    /** Saves game configuration as a game file, not to be confused with a game save state.
+     * @param game The game to write to file.
+     * @param stage The stage in which the file chooser will be initialised.
+     * @return boolean Returns true if game file was saved successfully.
+     * @throws IOException if file could not be written to.*/
     public boolean saveGameConfig(Game game, Stage stage) throws IOException {
         FileChooser fileChooser = new FileChooser(); //open new file chooser
         fileChooser.setInitialDirectory(new File(System.getProperty("user.dir"))); //set initial directory for file search
@@ -25,6 +31,10 @@ public class GameManager { //methods for saving/loading game configuration/save 
         return false; //save failed
     }
 
+    /** Loads game configuration into the generator, not to be confused with a game save state.
+     * @param stage The stage in which the file chooser will be initialised.
+     * @return Game The game chosen to be loaded.
+     * @throws IOException if file could not be read.*/
     public Game loadGameFile(Stage stage) throws IOException {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
@@ -38,6 +48,10 @@ public class GameManager { //methods for saving/loading game configuration/save 
         return readGameData(selectedFile);
     }
 
+    /** Loads game configuration into the engine, not to be confused with a game save state.
+     * @param file The file to be read.
+     * @return Game The game chosen to be loaded.
+     * @throws IOException if file could not be read.*/
     private Game readGameData(File file) throws IOException {
         FileInputStream fileInputStream
                 = new FileInputStream(file); //select file as input stream
@@ -70,6 +84,11 @@ public class GameManager { //methods for saving/loading game configuration/save 
         }
     }
 
+    /** Saves game state read from the engine, not to be confused with a game configuration file.
+     * @param stage The stage in which the file chooser will be initialised.
+     * @param state The state of the game.
+     * @param initial The initial configuration of the game, for validating the save state later.
+     * @throws IOException if file could not be written.*/
     public void saveGameState(Game initial, Game state, Stage stage) throws IOException {
         //save the state of a game file for reloading later
         FileChooser fileChooser = new FileChooser();
@@ -95,6 +114,12 @@ public class GameManager { //methods for saving/loading game configuration/save 
         }
     }
 
+    /** Loads game state into the engine, not to be confused with a game configuration file.
+     * @param stage The stage in which the file chooser will be initialised.
+     * @return Game The game state chosen to be loaded.
+     * @throws IOException if file could not be read.
+     * @throws FileNotSelectedException if user did not select a file to load.
+     * @throws IllegalSaveStateException if loaded state does not match loaded game's configuration.*/
     public Game loadGameState(Game game, Stage stage) throws IOException, FileNotSelectedException, IllegalSaveStateException {
         //load a saved game state
         FileChooser fileChooser = new FileChooser();
