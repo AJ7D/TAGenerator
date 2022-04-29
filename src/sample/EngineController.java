@@ -14,25 +14,41 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+/** Class for the engine controller.*/
 public class EngineController {
-
+    /** Area for the user to input text commands.*/
     public TextField textEntryTa;
+    /** Scroll pane for viewing all input/output.*/
     public ScrollPane gameTextSp;
+    /** Text area for holding all user input and engine output.*/
     public TextArea gameTextTa;
+    /** Button for selecting a game file to play.*/
     public Button loadGameBtn;
 
+    /** Game manager provides functions for loading/saving game files/states.*/
     public GameManager gameManager = new GameManager();
+    /** List of stop words to filter out of user input when processing commands.*/
     private final List<String> stopwords = Arrays.asList("i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your", "yours", "yourself", "yourselves", "he", "him", "his", "himself", "she", "her", "hers", "herself", "it", "its", "itself", "they", "them", "their", "theirs", "themselves", "what", "which", "who", "whom", "this", "that", "these", "those", "am", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had", "having", "do", "does", "did", "doing", "a", "an", "the", "but", "if", "or", "because", "as", "until", "while", "of", "at", "by", "for", "with", "about", "against", "between", "into", "through", "during", "before", "after", "above", "below", "to", "from", "up", "down", "in", "out", "on", "off", "over", "under", "again", "further", "then", "once", "here", "there", "when", "where", "why", "how", "all", "any", "both", "each", "few", "more", "most", "other", "some", "such", "no", "nor", "not", "only", "own", "same", "so", "than", "too", "very", "s", "t", "can", "will", "just", "don", "should", "now");
 
+    /** Grammar defined by the currently loaded game, determines valid input.
+     * @see Game*/
     private HashMap<String, Action> grammar = new HashMap<>();
 
+    /** The stage for holding engine nodes.*/
     public static Stage stage;
+    /** Current engine state determining what input is valid.*/
     private EngineState state = EngineState.NOT_LOADED;
+    /** The currently loaded game.*/
     private Game game;
+    /** Copy of loaded game to validate newly loaded states.*/
     private Game oldGame;
+    /** Reference to current game's player.*/
     private Player player;
+    /** Number of turns elapsed in game.*/
     private int turn = 0;
 
+    /** Initialises the window, configuring the interface of the engine. Sets the event of
+     * textEntryTa to process input after ENTER key is pressed.*/
     @FXML
     private void initialize() {
         //takes user input and appends it to the game's visual event log
@@ -46,6 +62,11 @@ public class EngineController {
         });
     }
 
+    /** Determines the output as a result of user input. Return value primarily controlled
+     * by the engine's current state.
+     * @param input The user's command to be processed by the engine.
+     * @return String Describes the effects of the player's command.
+     * @see EngineState*/
     public String engineControl(String input) {
         //engine handling, returns game log output based on engine state
         switch (state) {
@@ -62,6 +83,9 @@ public class EngineController {
         return "ERROR: Unknown state.";
     }
 
+    /** Parses user input using NLP to determine effects on game.
+     * @param input The user's command to be processed.
+     * @return String Describes the effects of the player's command.*/
     public String parseInput(String input) {
         //take user input and determine an action, if legal
         String[] split = input.split(" "); //split input into list of words on " " delimiter
@@ -102,6 +126,9 @@ public class EngineController {
         return displayText + "\n";
     }
 
+    /** Executes a command after initial processing has been completed.
+     * @param args The NL processed user input, transformed into an ArrayList of strings.
+     * @return String Describes the effects of the player's command.*/
     public String executeCommand(ArrayList<String> args) {
         turn = player.getTurnCount(); //update number of turns in current game
         if (args.size() > 0) {
@@ -121,6 +148,9 @@ public class EngineController {
         return "Command " + args.toString() + " not recognised.";
     }
 
+    /** Called when the user clicks the load game button. Passes request to the game manager.
+     * @throws IOException if file cannot be read.
+     * @see GameManager*/
     public void loadGame() throws IOException {
         Stage stage = (Stage) loadGameBtn.getScene().getWindow();
         game = gameManager.loadGameFile(stage); //opens file selection and loads selected file
@@ -138,6 +168,10 @@ public class EngineController {
         }
     }
 
+    /** Called when the user clicks the save game button. Passes request to the game manager.
+     * @throws IllegalSaveStateException if game is in a non-saveable state.
+     * @throws IOException if file cannot be written to.
+     * @see GameManager*/
     public void saveGameState() throws IllegalSaveStateException, IOException {
         switch (state) {
             case PLAYING: {
@@ -153,6 +187,11 @@ public class EngineController {
         }
     }
 
+    /** Called when the user clicks the load state button. Passes request to the game manager.
+     * @throws IOException if file cannot be read.
+     * @throws FileNotSelectedException if user exits without selecting a file.
+     * @throws IllegalSaveStateException if state is not compatible with current game file.
+     * @see GameManager*/
     public void loadGameState() throws IOException, FileNotSelectedException, IllegalSaveStateException {
         if (state == EngineState.NOT_LOADED) {
             throw new IllegalSaveStateException("No game loaded, please select a game first.");
@@ -161,9 +200,15 @@ public class EngineController {
             player = game.getPlayer();
             gameTextTa.appendText("\n\nSave game loaded successfully. You are in " + player.getCurrentRoom().getName() + "\n\n");
             state = EngineState.PLAYING;
+            turn = player.getTurnCount();
         }
     }
 
+    /** Validates if the user has specified a valid item before passing it as an argument.
+     * Uses WordBuilderTools to create a list of possible items in user input.
+     * @return Item The item found by the method. Can be null if not found.
+     * @see WordBuilderTools
+     * @see Item*/
     private Item validateItem(ArrayList<String> input) {
         ArrayList<String> args = new ArrayList<>(input);
         args.remove(0); //remove action to parse item only
@@ -187,6 +232,9 @@ public class EngineController {
         return null;
     }
 
+    /** Checks all enemies in the current room for a response after player turn has incremented.
+     * @return String Describes the actions of each enemy.
+     * @see Enemy*/
     private String processEnemyResponses() {
         String response = "";
         //process enemy response if enemy present and player has used a turn
