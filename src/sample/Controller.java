@@ -12,14 +12,24 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * Class for the main menu of the application.
+ */
 public class Controller {
+    /** Pane for holding main menu nodes.*/
     public Pane pane;
 
+    /** The main menu stage.*/
     public static Stage stage;
+    /** Button that takes the user to the generator screen.*/
     public Button generatorBtn;
+    /** Button that takes the user to the engine screen.*/
     public Button gameBtn;
+    /** Displays the main menu title.*/
     public Text titleTxt;
 
+    /** Handles scene changing when the user clicks the generator or engine button.
+     * @param event Determines the source button of the mouse event.*/
     public void switchScene(MouseEvent event) throws IOException {
         //main menu
         String fxml;

@@ -2,40 +2,66 @@ package sample;
 
 import java.util.ArrayList;
 
+/**
+ * Container class that extends Item with additional functionality for items that hold other items.
+ * @see Item
+ */
 public class Container extends Item {
+    /** The items held by the container.*/
     private ArrayList<Item> items = new ArrayList<>();
+    /** The lock state determines if the container can be accessed by a character.
+     * @see LockState*/
     private LockState lockState = LockState.LOCKED;
 
+    /** Default constructor for a container.*/
     Container() {
         super();
     }
 
+    /** Constructor for a container providing all basic parameters.
+     * @param name The name of the container.
+     * @param description The description of the container.
+     * @param isVisible Determines if players can see the container.
+     * @param isCarry Determines if container can be added to an inventory.
+     * @param startWith Determines if this container starts in the player's inventory.*/
     Container(String name, String description, boolean isVisible, boolean isCarry, boolean startWith) {
         super(name, description, isVisible, isCarry, startWith);
     }
 
+    /** Constructor for a container providing all parameters, including predefined holding items.
+     * @param items The items that should be inside the container.*/
     Container(String name, String description, boolean isVisible, boolean isCarry, boolean startWith, ArrayList<Item> items) {
         super(name, description, isVisible, isCarry, startWith);
         this.items = items;
     }
 
+    /** Constructor for a container providing all parameters, including predefined lock state.
+     * @param locked The lock state of the container.
+     * @see LockState*/
     Container(String name, String description, boolean isVisible, boolean isCarry, boolean startWith, ArrayList<Item> items, LockState locked) {
         super(name, description, isVisible, isCarry, startWith);
         this.items = items;
         this.lockState = locked;
     }
 
+    /** Constructor for a container providing all parameters, including a specific ID for overwriting an existing item.
+     * @param id The ID of the container, for overwriting existing items.*/
     Container(Long id, String name, String description, boolean isVisible, boolean isCarry, boolean startWith, ArrayList<Item> items, LockState locked) {
         super(id, name, description, isVisible, isCarry, startWith);
         this.items = items;
         this.lockState = locked;
     }
 
+    /** Constructor for a container providing all basic parameters, as well as lock state.
+     * @see LockState */
     Container(String name, String description, boolean isVisible, boolean isCarry, boolean startWith, LockState locked) {
         super(name, description, isVisible, isCarry, startWith);
         this.lockState = locked;
     }
 
+    /** Gets a more detailed description of the container than the custom description
+     * input by the game creator. Includes details on items contained if not locked.
+     * @return String A string of the container's description and items contained, if not locked.*/
     public String getDetailedDescription() {
         //takes player's custom description and adds additional information
         //about the weapon's stats for output in the game engine
@@ -59,11 +85,21 @@ public class Container extends Item {
         }
     }
 
+    /** Overrides default item use method for using a container. Containers cannot be used
+     * without supplying an item to take/place, therefore this returns a generic string message.
+     * @param p The player to use the container.
+     * @return String A string indicating that the container must be used with an item.*/
     @Override
     public String use(Player p) { //containers must be used with another item
         return "What are you trying to do with " + this.getName() + "?";
     }
 
+    /** Overrides default item use method for using a consumable with an item.
+     * Takes the item from the container if item is contained in container, otherwise
+     * checks if player has the item to place in the container.
+     * @param p The player to use the container.
+     * @param item2 The item to use with the container.
+     * @return String A string indicating if the action was successful and the effects.*/
     @Override
     public String use(Player p, Item item2) {
         switch (lockState) {
@@ -92,24 +128,41 @@ public class Container extends Item {
         }
     }
 
+    /** Displays the container's current lock state.
+     * @return LockState The current lock state.
+     * @see LockState*/
     public LockState getLockState() {
         return lockState;
     }
 
+    /** Sets the container's current lock state.
+     * @param lockState The lock state to apply to the container.
+     * @see LockState*/
     public void setLockState(LockState lockState) {
         this.lockState = lockState;
     }
 
+    /** Sets the container's contained items.
+     * @param items An ArrayList of items for the container to hold.
+     * @see Item*/
     public void setItems(ArrayList<Item> items) {
         this.items = items;
     }
 
+    /** Adds an item to the container's items.
+     * @param item The item to add to the container's items.
+     * @see Item*/
     public void addItem(Item item) { this.items.add(item); }
 
+    /** Displays the container's current lock state.
+     * @return ArrayList The items contained in the container.*/
     public ArrayList<Item> getItems() {
         return items;
     }
 
+    /** Displays the container's items as a string of item names.
+     * @return ArrayList An arraylist containing item names in the container.
+     * @see Item*/
     public ArrayList<String> getItemNames() {
         ArrayList<String> itemNames = new ArrayList<>();
         for (Item i : items)
@@ -117,6 +170,7 @@ public class Container extends Item {
         return itemNames;
     }
 
+    /** Displays the container's information as a string.*/
     @Override
     public String toString() {
         return super.toString() +

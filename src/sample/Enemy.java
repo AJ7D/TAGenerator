@@ -1,30 +1,48 @@
 package sample;
 
+/** Enemy class for defining game actors that can attack the player, extends Character.
+ * @see Character*/
 public class Enemy extends Character {
+    /** The damage caused to another character when the enemy attacks.*/
     private int attack = 10;
+    /** The state of the enemy. Determines if the enemy attacks the player each turn.
+     * @see EnemyState*/
     private EnemyState state = EnemyState.PASSIVE; //indicates if enemy attacks player
 
+    /** Default constructor for enemy.
+     * @see Character*/
     Enemy() {super();}
 
+    /** Constructor for an enemy provided with a name.*/
     Enemy(String n) {
         super(n);
     }
 
+    /** Constructor for an enemy provided with a name and a room to be set.
+     * @param name The name of the enemy.
+     * @param currentRoom The room to place the enemy into.*/
     Enemy(String name, Room currentRoom) {
         super(name, currentRoom);
     }
 
+    /** Constructor for an enemy provided with a name, room to be set and attack damage.
+     * @param attack The attack damage of the enemy.*/
     Enemy(String name, Room currentRoom, int attack) {
         super(name, currentRoom);
         this.attack = attack;
     }
 
+    /** Constructor for an enemy provided with the current state.
+     * @param enemyState The starting state of the enemy.
+     * @see EnemyState*/
     Enemy(String name, Room currentRoom, int attack, EnemyState enemyState) {
         super(name, currentRoom);
         this.attack = attack;
         this.state = enemyState;
     }
 
+    /** Constructor for an enemy provided with the max HP.
+     * @param hp The max HP of the enemy.*/
     Enemy(String name, Room currentRoom, int hp, int attack, EnemyState enemyState) {
         super(name, currentRoom);
         this.setMaxHp(hp);
@@ -32,10 +50,16 @@ public class Enemy extends Character {
         this.state = enemyState;
     }
 
+    /** Displays the enemy's current state..
+     * @return EnemyState The current state of the enemy.
+     * @see EnemyState*/
     public EnemyState getState() {
         return state;
     }
 
+    /** Determines the enemy's action for a given turn.
+     * @param p The player who may be attacked.
+     * @return String The string describing the action of the enemy for a turn.*/
     public String processTurn(Player p) {
         switch (this.state) {
             case AGGRESSIVE:
@@ -51,6 +75,10 @@ public class Enemy extends Character {
         }
     }
 
+    /** Adds the enemy's inventory to its current room and sets state to DEAD.
+     * @return String The string describing the death and drops of the enemy.
+     * @see EnemyState
+     * @see Inventory*/
     public String dropInventory() {
         //set enemy to dead and drop inventory contents, if any
         this.state = EnemyState.DEAD;
@@ -62,24 +90,35 @@ public class Enemy extends Character {
         return this.getName() + " was slain, dropping " + this.getInventory().getContentsString();
     }
 
+    /** Determines if the enemy is living (HP is above 0).
+     * @return boolean Returns true if the enemy is alive.*/
     public boolean isAlive() {
         return this.getHp() > 0;
     }
 
+    /** Makes the enemy attack the provided character.
+     * @param character The character to take damage from the enemy attack.
+     * @return String The string describing the interaction.*/
     public String attack(Character character) {
         //remove hp from character proportional to this enemy's attack stat
         character.setHp(character.getHp()-this.getAttack());
         return this.getName() + " attacked " + character.getName() + ", dealing " + this.getAttack() + " damage.";
     }
 
+    /** Gets the enemy's attack stat.
+     * @return int The attack stat of the enemy.*/
     public int getAttack() {
         return this.attack;
     }
 
+    /** Sets the enemy's attack stat.
+     * @param attack The attack stat to be applied to the enemy.*/
     public void setAttack(int attack) {
         this.attack = attack;
     }
 
+    /** Sets the enemy's state.
+     * @param state The state to be applied to the enemy.*/
     public void setState(EnemyState state) {
         this.state = state;
     }
