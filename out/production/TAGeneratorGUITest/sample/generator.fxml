@@ -9,7 +9,11 @@
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500" prefWidth="800" styleClass="mainPane" stylesheets="@TAGmain.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.GeneratorController">
    <Pane layoutX="200.0" layoutY="-8.0" prefHeight="349.0" prefWidth="215.0" style="-fx-background-color: #d9d9d9;" />
     <Text layoutX="210.0" layoutY="19.0" styleClass="textDefault" text="Game title: " />
+   <ComboBox fx:id="winRoomCbx" layoutX="210.0" layoutY="308.0" prefWidth="150.0" />
     <TextField fx:id="nameEntryTF" layoutX="210.0" layoutY="27.0" prefHeight="32.0" prefWidth="190.0" styleClass="textDefault" />
+   <Text layoutX="210.0" layoutY="80.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDefault" text="Player name:" />
+   <Text layoutX="210.0" layoutY="300.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDefault" text="Winning room:" />
+   <TextField fx:id="playerEntryTF" layoutX="210.0" layoutY="88.0" prefHeight="32.0" prefWidth="190.0" styleClass="textDefault" />
 
     <Button fx:id="newRoomBtn" layoutX="422.0" layoutY="300.0" mnemonicParsing="false" onMouseClicked="#updateRoom" text="New Room" />
     <Button fx:id="newItemBtn" layoutX="545.0" layoutY="300.0" mnemonicParsing="false" onMouseClicked="#updateItem" text="New Item" />
@@ -37,14 +41,14 @@
    <Button fx:id="editRoomBtn" layoutX="212.0" layoutY="380.0" mnemonicParsing="false" onMouseClicked="#updateRoom" styleClass="buttonRDisplay" text="Edit Room" />
    <Button fx:id="deleteRoomBtn" layoutX="213.0" layoutY="425.0" mnemonicParsing="false" onMouseClicked="#deleteRoom" styleClass="buttonRDisplay" text="Delete Room" />
    <Button fx:id="saveReturnBtn" layoutX="628.0" layoutY="6.0" mnemonicParsing="false" onMouseClicked="#saveAndQuit" text="Save and exit" />
-   <Text layoutX="210.0" layoutY="79.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDefault" text="Starting room:" />
-   <ComboBox fx:id="startRoomCbx" layoutX="210.0" layoutY="89.0" prefWidth="150.0" />
-   <ScrollPane fx:id="inventoryScrollPane" layoutX="210.0" layoutY="140.0" prefHeight="78.0" prefWidth="190.0">
+   <Text layoutX="210.0" layoutY="140.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDefault" text="Starting room:" />
+   <ComboBox fx:id="startRoomCbx" layoutX="210.0" layoutY="148.0" prefWidth="150.0" />
+   <ScrollPane fx:id="inventoryScrollPane" layoutX="210.0" layoutY="205.0" prefHeight="78.0" prefWidth="190.0">
       <content>
          <VBox fx:id="inventoryVbox" prefHeight="55.0" prefWidth="183.0" />
       </content>
    </ScrollPane>
-   <Text layoutX="210.0" layoutY="134.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDefault" text="Starting inventory:" />
+   <Text layoutX="210.0" layoutY="195.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDefault" text="Starting inventory:" />
    <Button layoutX="672.0" layoutY="48.0" mnemonicParsing="false" onMouseClicked="#loadGameConfig" text="Load Game" />
    <Button fx:id="exitNoSaveBtn" layoutX="554.0" layoutY="6.0" mnemonicParsing="false" onMouseClicked="#quitWithWarning" styleClass="buttonExit" text="Exit" />
    <Button fx:id="newEnemyBtn" layoutX="666.0" layoutY="300.0" mnemonicParsing="false" onMouseClicked="#updateEnemy" text="New Enemy" />

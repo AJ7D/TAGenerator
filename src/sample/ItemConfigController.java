@@ -426,6 +426,7 @@ public class ItemConfigController {
         //intialise nodes
         HBox nbx = new HBox();
         TextField tf = new TextField();
+        tf.setPrefWidth(70);
         ComboBox<String> cbx = new ComboBox<>();
         //applicable actions for user to configure
         cbx.setItems(FXCollections.observableArrayList(

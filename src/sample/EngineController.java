@@ -129,12 +129,12 @@ public class EngineController {
 
         if (game != null ) { //a game has been loaded
             grammar = game.getGrammar();
-            gameTextTa.appendText("Game loaded successfully. Enjoy playing " + game.getTitle() + "!\n" +
-                    "Enter !help for additional information.");
+            gameTextTa.appendText("\n\nGame loaded successfully. Enjoy playing " + game.getTitle() + "!\n" +
+                    "Enter !help for additional information.\n\n");
             state = EngineState.PLAYING;
         }
         else {
-            gameTextTa.appendText("Unable to load game. Please check that the file is correct.");
+            gameTextTa.appendText("\n\nUnable to load game. Please check that the file is correct.\n\n");
         }
     }
 
@@ -142,14 +142,14 @@ public class EngineController {
         switch (state) {
             case PLAYING: {
                 gameManager.saveGameState(oldGame, game, stage);
-                gameTextTa.appendText("Game saved successfully.");
+                gameTextTa.appendText("\n\nGame saved successfully.\n\n");
                 break;
             }
             case NOT_LOADED: {
-                throw new IllegalSaveStateException("No game has been loaded to save.");
+                throw new IllegalSaveStateException("\n\nNo game has been loaded to save.\n\n");
             }
             default:
-                throw new IllegalSaveStateException("Game cannot be saved after a win or loss.");
+                throw new IllegalSaveStateException("\n\nGame cannot be saved after a win or loss.\n\n");
         }
     }
 
@@ -159,7 +159,8 @@ public class EngineController {
         } else {
             game = gameManager.loadGameState(oldGame, stage); //try to load a game state
             player = game.getPlayer();
-            gameTextTa.appendText("Save game loaded successfully. You are in " + player.getCurrentRoom().getName() + "\n\n");
+            gameTextTa.appendText("\n\nSave game loaded successfully. You are in " + player.getCurrentRoom().getName() + "\n\n");
+            state = state.PLAYING;
         }
     }
 

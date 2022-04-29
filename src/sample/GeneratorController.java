@@ -23,7 +23,7 @@ import java.util.Optional;
 public class GeneratorController {
 
     private static final int MAX_STRING_LENGTH = 50;
-    private static final int ITEMWIDTH = 631;
+    private static final int ITEMWIDTH = 690;
     private static final int ITEMHEIGHT = 400;
 
     private static final int ENEMYWIDTH = 400;
