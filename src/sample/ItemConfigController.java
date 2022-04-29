@@ -15,35 +15,58 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/** Item configuration controller for customising an item.
+ * @see Item*/
 public class ItemConfigController {
+    /** Pane for holding nodes.*/
     public Pane pane;
 
+    /** The title of the newly generated page.*/
     public Text title;
-    public Text itemIdTxt;
+    /** The text indicating enemy's name entry.*/
     public Text itemNameTxt;
+    /** The text indicating item's description entry.*/
     public Text itemDescTxt;
+    /** The text field for entering enemy's description.*/
     public TextArea itemDescTA;
+    /** The button for saving the item.*/
     public Button saveItemBtn;
+    /** The text field for entering enemy's name.*/
     public TextField nameEntryTF;
 
+    /** The item being created or edited.*/
     public Item item;
 
+    /** Reference to the generator controller for updating display.*/
     public GeneratorController generatorController;
+    /** The combo box for selecting the item's type.
+     * @see Item*/
     public ComboBox<String> itemTypeCbx;
+    /** The text indicating item type entry.*/
     public Text itemTypeTxt;
+    /** The check box for selecting if the item is visible.*/
     public CheckBox isVisibleChx;
+    /** The check box for selecting if the item can be carried.*/
     public CheckBox isCarryChx;
+    /** The check box for selecting if player starts with the item.*/
     public CheckBox startWithChx;
+    /** Vbox for holding additional parameters generated when certain item types are selected.*/
     public VBox paramsVbox;
 
+    /** Vbox for holding generated verb entries.*/
     public VBox verbsVbox;
+    /** Combo box for selecting the type of entity that holds item.*/
     public ComboBox<String> locSelectCbx;
+    /** Hbox for holding location nodes.*/
     public HBox locHbox;
 
+    /** Reference to generator window for updating interface.*/
     Game game = GeneratorController.getNewGame();
 
+    /** Maximum number of characters for item name entry.*/
     private final int MAX_STRING_LENGTH = 50;
 
+    /** Initialises the window, configuring the interface.*/
     @FXML
     private void initialize() {
         //set all elements to default values
@@ -67,6 +90,7 @@ public class ItemConfigController {
         });
     }
 
+    /** Saves the item to the current game if input passes validation.*/
     public void saveItem() {
         try {
             //get item parameters from user interface
@@ -98,6 +122,7 @@ public class ItemConfigController {
         }
     }
 
+    /** Deletes the item from the game and closes the current configuration window.*/
     public void deleteItem() { //remove item from game
         try {
             game.deleteItem(item);
@@ -108,12 +133,15 @@ public class ItemConfigController {
         closeWindow();
     }
 
+    /** Closes this configuration window without saving the item.*/
     private void closeWindow(){ //close this item window
         Stage stage = (Stage) saveItemBtn.getScene().getWindow();
         generatorController.updateInterfaceDisplay();
         stage.close();
     }
-    
+
+    /** Loads an items fields into the configuration window, passed by item's unique ID.
+     * @param str The unique identifier of the item to be loaded, passed as a string.*/
     public void loadItem(String str) {
         item = game.getItem(Long.parseLong(str)); //load item from game items
         //populate item fields based on item parameters
@@ -150,6 +178,15 @@ public class ItemConfigController {
         }
     }
 
+    /** Checks the value of the item type combo box to return a new item instance.
+     * Overwrites an existing item using a special constructor if an item is being edited/cast.
+     * @param iName The name of the item.
+     * @param iDesc The description of the item.
+     * @param iVis Determines if the item is visible to players.
+     * @param iCarry Determines if the item can be carried.
+     * @param iStart Determines if the player starts with the item.
+     * @return Item Returns a newly constructed item of the determined type.
+     * @see Item*/
     public Item readType(String iName, String iDesc, boolean iVis, boolean iCarry, boolean iStart) {
         boolean isOverwrite = (item != null); //true if existing item is being edited
         //produces a new item dependent on the subclass of item selected
@@ -210,6 +247,10 @@ public class ItemConfigController {
         }
     }
 
+    /** Tries to give the specified item to the specified character, unless character
+     * already has the item.
+     * @param c The character to give the item to.
+     * @param item The item to give to the character.*/
     public void tryGiveCharacterItem(Character c, Item item) {
         //gives item to player, if permitted
         if (!c.getInventory().containsItem(item)) {
@@ -221,6 +262,9 @@ public class ItemConfigController {
         System.out.println("Player already has item.");
     }
 
+    /** Tries to give the specified item to the specified entity.
+     * @param item The item to give to the character.
+     * @see Entity*/
     public void tryPlaceItem(Item item) { //try to place item based on current combo box selection
         game.deleteItemInstances(item); //remove any instances first
         ComboBox cbx = (ComboBox) locHbox.getChildren().get(0); //locate combo box for reading

@@ -14,9 +14,9 @@ public class EnemyConfigController {
 
     /** The title of the newly generated page.*/
     public Text title;
-    /** The ID of the enemy currently open.*/
+    /** The text indicating enemy's ID.*/
     public Text enemyIdTxt;
-    /** The name of the enemy currently open.*/
+    /** The text indicating enemy's name entry.*/
     public Text enemyNameTxt;
     /** The button for saving the enemy.*/
     public Button saveEnemyBtn;
@@ -53,7 +53,7 @@ public class EnemyConfigController {
         roomSelCbx.getSelectionModel().selectFirst(); //select first room in gamemap by default
     }
 
-    /** Saves the enemy to the current game.*/
+    /** Saves the enemy to the current game if input passes validation.*/
     public void saveEnemy()  {
         if (enemy == null) {
             //create new enemy if not updating an existing one
@@ -138,7 +138,7 @@ public class EnemyConfigController {
     }
 
     /** Validates all user input before saving the enemy. Throws an exception if any field is invalid.
-     * @throws InvalidInputException*/
+     * @throws InvalidInputException if any validation checks fail.*/
     public void validateInputs() throws InvalidInputException {
         if (nameEntryTF.getText().trim().length() > MAX_STRING_LENGTH ||
             nameEntryTF.getText().trim().length() == 0) {

@@ -3,8 +3,11 @@ package sample;
 import javafx.scene.control.ComboBox;
 import javafx.util.StringConverter;
 
+/** Class that provides helper methods for configuring the interface of JavaFX controllers.*/
 public class UITools {
 
+    /** Configures a combo box node to hold item references, displayed by name.
+     * @param cbx The combo box to configure.*/
     public static void configureCombobox(ComboBox<Item> cbx) {
         //method to cleanly change an item combobox to display item name
 
@@ -23,6 +26,8 @@ public class UITools {
         });
     }
 
+    /** Configures a combo box node to hold enemy references, displayed by name.
+     * @param cbx The combo box to configure.*/
     public static void configureComboboxEnemy(ComboBox<Enemy> cbx) {
         //method to cleanly change an item combobox to display item name
 
@@ -42,6 +47,8 @@ public class UITools {
     }
 
 
+    /** Configures a combo box node to hold room references, displayed by name.
+     * @param cbx The combo box to configure.*/
     public static void configureComboboxRoom(ComboBox<Room> cbx) {
         //method to cleanly change an item combobox to display item name
 

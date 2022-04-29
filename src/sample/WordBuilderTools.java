@@ -2,8 +2,14 @@ package sample;
 
 import java.util.ArrayList;
 
+/** Class for providing additional user input parsing methods used in the game engine.
+ * @see EngineController*/
 public class WordBuilderTools { //methods for parsing user input
 
+    /** Assumes only one item is being taken as input. Builds the passed ArrayList
+     * into a single string for item lookup.
+     * @param input The input to convert to a string.
+     * @return String The formatted string used for lookup.*/
     public static String buildSimple(ArrayList<String> input) {
         //takes user input and reformats it into a multi word string for lookup
         StringBuilder item = new StringBuilder();
@@ -18,6 +24,11 @@ public class WordBuilderTools { //methods for parsing user input
         return item.toString();
     }
 
+    /** Assumes that input can be one item or more, and creates a list of potential combinations.
+     * This way, users can have some flexibility in using words with multiple spaces while
+     * distinguishing numerous items.
+     * @param input The input to be converted to a list of potential string combinations.
+     * @return ArrayList The ArrayList of ArrayLists denoting possible combinations for further lookup.*/
     public static ArrayList<ArrayList<String>> buildComplex(ArrayList<String> input) {
         //takes user input and creates an arraylist of arraylists containing
         //possible string splits to identify two items in an input
