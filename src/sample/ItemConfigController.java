@@ -287,6 +287,7 @@ public class ItemConfigController {
     /** Produces additional nodes dependent on the item type selected by the user. e.g.
      * selecting consumable generates a HP restore field and a number of uses field.
      * Adds the nodes to a pre-existing Vbox for display.
+     * @throws ClassNotFoundException if class could not be found.
      * @see Item*/
     public void produceAdditionalParams() throws ClassNotFoundException {
         //generates different nodes for user input dependent on the item type
@@ -501,7 +502,8 @@ public class ItemConfigController {
         verbsVbox.getChildren().add(nbx); //add nbx node to v box holding all verbs
     }
 
-    /** Event called when the user presses the corresponding delete button on an existing verb.*/
+    /** Event called when the user presses the corresponding delete button on an existing verb.
+     * @param event The MouseEvent associated with the clicked button.*/
     @FXML
     private void removeVerb(MouseEvent event) throws IOException { //remove verb associated with button event
         Button btn = (Button) event.getSource();

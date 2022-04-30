@@ -206,6 +206,7 @@ public class EngineController {
 
     /** Validates if the user has specified a valid item before passing it as an argument.
      * Uses WordBuilderTools to create a list of possible items in user input.
+     * @param input The user input to be searched for and validated.
      * @return Item The item found by the method. Can be null if not found.
      * @see WordBuilderTools
      * @see Item*/

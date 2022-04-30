@@ -13,7 +13,8 @@ public class Enemy extends Character {
      * @see Character*/
     Enemy() {super();}
 
-    /** Constructor for an enemy provided with a name.*/
+    /** Constructor for an enemy provided with a name.
+     * @param n The name of the enemy.*/
     Enemy(String n) {
         super(n);
     }

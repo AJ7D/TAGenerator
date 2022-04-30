@@ -131,6 +131,7 @@ public class Game implements Serializable {
     }
 
     /** Gets a room in the game map by its unique identifier. Can return null.
+     * @param id The ID of the room to find.
      * @return Room The room with the corresponding unique identifier.
      * @see Room*/
     public Room getRoom(Long id) { //find room by unique id
@@ -143,6 +144,7 @@ public class Game implements Serializable {
     }
 
     /** Gets an item in the game's items by its unique identifier. Can return null.
+     * @param id The ID of the item to find.
      * @return Item The item with the corresponding unique identifier.
      * @see Item*/
     public Item getItem(Long id) { //find item by unique id
@@ -155,6 +157,7 @@ public class Game implements Serializable {
     }
 
     /** Gets an enemy in the game's enemies by its unique identifier. Can return null.
+     * @param id The ID of the enemy to find.
      * @return Enemy The enemy with the corresponding unique identifier.
      * @see Enemy*/
     public Enemy getEnemy(Long id) { //find enemy by unique id
@@ -299,7 +302,8 @@ public class Game implements Serializable {
     /** Find the room that an item is contained within. Can return null.
      * @param item The item to find.
      * @return Room The room where the item was found.
-     * @see Room,Item*/
+     * @see Room
+     * @see Item */
     public Room findItemLocRoom(Item item) { //find room of an item, or entity holding item
         for (Room r : this.gameMap) {
             if (r.containsItem(item)) {

@@ -140,7 +140,8 @@ public class Room extends Entity implements Serializable {
 
     /** Gets all the living enemies in the room.
      * @return ArrayList All enemies in the room that are alive.
-     * @see Enemy,EnemyState*/
+     * @see Enemy
+     * @see EnemyState*/
     public ArrayList<Enemy> getLivingEnemies() { //only return enemies where isAlive = true
         ArrayList<Enemy> enemyList = new ArrayList<>();
         for (Enemy e : enemies) {

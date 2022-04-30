@@ -28,12 +28,14 @@ public class GameSaveFile implements Serializable {
         }
     }
 
-    /** Gets the initial configuration of the save file.*/
+    /** Gets the initial configuration of the save file.
+     * @return Game The initial configuration of the save file.*/
     public Game getInitialConfig() {
         return initialConfig;
     }
 
-    /** Gets the updated configuration of the save file.*/
+    /** Gets the updated configuration of the save file.
+     * @return Game The updated configuration of the save file.*/
     public Game getSavedConfig() {
         return savedConfig;
     }

@@ -21,7 +21,7 @@ public class Character extends Entity implements Serializable {
 
     /** The maximum amount of health the character can have at any given time.*/
     private int maxHp = 50;
-    /** The current health of the character, range 0 <--> maxHp.*/
+    /** The current health of the character, range 0 to maxHp.*/
     private int hp;
 
     /** Default constructor for a character.*/

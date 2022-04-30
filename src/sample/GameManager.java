@@ -115,6 +115,7 @@ public class GameManager { //methods for saving/loading game configuration/save 
     }
 
     /** Loads game state into the engine, not to be confused with a game configuration file.
+     * @param game The game to be loaded.
      * @param stage The stage in which the file chooser will be initialised.
      * @return Game The game state chosen to be loaded.
      * @throws IOException if file could not be read.

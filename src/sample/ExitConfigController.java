@@ -106,6 +106,7 @@ public class ExitConfigController {
         }
     };
 
-    /** Gets generator controller reference for updating interface.*/
+    /** Gets generator controller reference for updating interface
+     * @param gc The generator controller to be passed.*/
     public void setGeneratorController(GeneratorController gc) { this.generatorController = gc; }
 }

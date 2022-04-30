@@ -29,6 +29,7 @@ public class Controller {
     public Text titleTxt;
 
     /** Handles scene changing when the user clicks the generator or engine button.
+     * @throws IOException if scene contents cannot be loaded.
      * @param event Determines the source button of the mouse event.*/
     public void switchScene(MouseEvent event) throws IOException {
         //main menu

@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Class for defining the player which acts as the user's interaction with games in the game engine.
- * @see Game,EngineController*/
+ * @see Game
+ * @see EngineController*/
 public class Player extends Character {
     /** The number of turns elapsed by the player in a game.*/
     private int turnCount = 0;
@@ -73,7 +74,8 @@ public class Player extends Character {
      * Fails if no room in that direction or direction is locked.
      * @param dir Direction to travel to from current room.
      * @return String Describes if the player successfully travelled.
-     * @see Room,Direction*/
+     * @see Room
+     * @see Direction*/
     public String travel(Direction dir) {
         //transfer player to room at indicated direction from current room, if possible
         if (this.getCurrentRoom().checkForExit(dir)) { //ensure there is an exit in this direction

@@ -14,6 +14,7 @@ public interface Action extends Serializable {
      * The default Action interface method for processing.
      * @param player The player character performing the action.
      * @param input The string input provided by the player to be processed.
+     * @return String Describes the effects of the action performed.
      */
 
     String process(Player player, ArrayList<String> input);

@@ -114,6 +114,7 @@ public class Item extends Entity implements Serializable {
     public boolean canBeTaken() { return (isVisible && isCarry); }
 
     /** Determines if two items are the same by comparing their unique ID.
+     * @param item The second item to compare to.
      * @return boolean Returns true if items are the same.*/
     public boolean compareItem(Item item) {
         return item.getId() == this.getId();

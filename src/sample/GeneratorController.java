@@ -24,7 +24,8 @@ import java.util.Optional;
  * Provides a user interface for adding rooms, items, enemies, etc. as well as saving
  * game config and loading an existing game file for further editing. Creates games
  * compatible with the engine.
- * @see Game,EngineController*/
+ * @see Game
+ * @see EngineController*/
 public class GeneratorController {
     /** Maximum number of characters for game title.*/
     private static final int MAX_STRING_LENGTH = 50;
@@ -564,7 +565,8 @@ public class GeneratorController {
         simulateButtonClick(button);
     }
 
-    /** Checks that all game input parameters are valid before the game can be saved.*/
+    /** Checks that all game input parameters are valid before the game can be saved.
+     * @throws InvalidInputException if any user input does not meet standards.*/
     private void validateInputs() throws InvalidInputException {
         if (nameEntryTF.getText().trim().length() > MAX_STRING_LENGTH ||
                 nameEntryTF.getText().trim().length() == 0) {
