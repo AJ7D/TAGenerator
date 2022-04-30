@@ -20,40 +20,70 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+/** Generator controller for allowing users to configure a game file for playing.
+ * Provides a user interface for adding rooms, items, enemies, etc. as well as saving
+ * game config and loading an existing game file for further editing. Creates games
+ * compatible with the engine.
+ * @see Game,EngineController*/
 public class GeneratorController {
-
+    /** Maximum number of characters for game title.*/
     private static final int MAX_STRING_LENGTH = 50;
+    /** Fixed width of generated item window.*/
     private static final int ITEMWIDTH = 690;
+    /** Fixed height of generated item window.*/
     private static final int ITEMHEIGHT = 400;
 
+    /** Fixed width of generated enemy window.*/
     private static final int ENEMYWIDTH = 400;
+    /** Fixed height of generated enemy window.*/
     private static final int ENEMYHEIGHT = 400;
 
+    /** Manually determines spacing of entities in the entity tree.*/
     private static final int ENTITY_INCREMENTAL_OFFSET = 20;
 
+    /** The stage that holds JavaFX nodes.*/
     public static Stage stage;
+    /** The game file that is being edited.*/
     private static Game newGame;
+    /** Used to control entity indenting when entities are nested within each other.*/
     private int spOffset = 0;
+    /** Tool used for saving/loading games cleanly.*/
     private final GameManager gameManager = new GameManager();
 
+    /** Hold reference of selected room for displaying room attributes.*/
     private Room selectedRoom;
 
+    /** Text field for user to enter game title.*/
     @FXML private TextField nameEntryTF;
+    /** Text field for user to enter player name.*/
     @FXML private TextField playerEntryTF;
+    /** Anchor pane for holding entity tree.*/
     @FXML private AnchorPane objectAnchorPane;
+    /** Button for creating a new item window.*/
     @FXML private Button newItemBtn;
+    /** Button for creating a new enemy window.*/
     @FXML private Button newEnemyBtn;
+    /** Button for creating an exit to the north of selected room.*/
     @FXML private Button nExitBtn;
+    /** Button for creating an exit to the east of selected room.*/
     @FXML private Button eExitBtn;
+    /** Button for creating an exit to the south of selected room.*/
     @FXML private Button sExitBtn;
+    /** Button for creating an exit to the west of selected room.*/
     @FXML private Button wExitBtn;
+    /** Button to open a window for editing the existing selected room.*/
     @FXML private Button editRoomBtn;
     @FXML private Text selectedRoomTxt;
+    /** Combo box for setting the player's starting location.*/
     @FXML private ComboBox<Room> startRoomCbx;
+    /** Combo box for selecting the room the player must reach to win game.*/
     @FXML private ComboBox<Room> winRoomCbx;
+    /** Vbox for holding all items the player starts with.*/
     @FXML private VBox inventoryVbox;
+    /** Button for exiting the generator without saving the game.*/
     @FXML private Button exitNoSaveBtn;
 
+    /** Initialises the window, configuring the interface.*/
     @FXML
     private void initialize() {
         //Initialise default configuration - empty game
@@ -88,6 +118,11 @@ public class GeneratorController {
         //set selected room to the default empty room created on new game creation
     }
 
+    /** Initialises a new RoomConfigController window for creating/editing a room.
+     * If MouseEvent is the new room button, creates a default window. Otherwise, MouseEvent
+     * should be the edit room button and loads the fields of the room into the new window.
+     * @throws IOException if window elements cannot be loaded.
+     * @param event Determines what button has been clicked.*/
     @FXML
     private void updateRoom(MouseEvent event) throws IOException {
         final Stage dialog = new Stage();
@@ -116,6 +151,9 @@ public class GeneratorController {
         }
     }
 
+    /** Deletes the currently selected room, first displaying a confirmation message.
+     * Currently deletes all entities inside the room when deleted.
+     * @throws InvalidGameConfigError if user is trying to delete the last room in the game.*/
     @FXML
     private void deleteRoom() throws InvalidGameConfigError {
         if (newGame.getGameMap().size() == 1) { //
@@ -153,6 +191,11 @@ public class GeneratorController {
         }
     }
 
+    /** Initialises a new ItemConfigController window for creating/editing an item.
+     * If MouseEvent is the new item button, creates a default window. Otherwise, MouseEvent
+     * should be an existing item from the tree and loads the fields of the item into the new window.
+     * @throws IOException if window elements cannot be loaded.
+     * @param event Determines what button has been clicked.*/
     @FXML
     private void updateItem(MouseEvent event) throws IOException {
         //load fxml and create window
@@ -181,6 +224,11 @@ public class GeneratorController {
         }
     }
 
+    /** Initialises a new EnemyConfigController window for creating/editing an enemy.
+     * If MouseEvent is the new enemy button, creates a default window. Otherwise, MouseEvent
+     * should be an existing enemy in the entity tree and loads the fields of the enemy into the new window.
+     * @throws IOException if window elements cannot be loaded.
+     * @param event Determines what button has been clicked.*/
     @FXML
     private void updateEnemy(MouseEvent event) throws IOException {
         //load fxml and create window
@@ -209,6 +257,11 @@ public class GeneratorController {
         }
     }
 
+    /** Initialises a new ExitConfigController window for editing room connections from the
+     * currently selected room. MouseEvent should be one of four values; there are corresponding
+     * buttons for north, east, west and south.
+     * @throws IOException if window elements cannot be loaded.
+     * @param event Determines what button has been clicked.*/
     @FXML
     private void updateExit(MouseEvent event) throws IOException {
         //load fxml and create window
@@ -252,6 +305,8 @@ public class GeneratorController {
         }
     }
 
+    /** Updates the interface to show attributes of a given room when clicked in the entity tree.
+     * @param event Determines what room has been selected from the entity tree.*/
     @FXML
     private void updateRoomDisplayBar(MouseEvent event) {
         Button btn = (Button) event.getSource(); //get button that was clicked
@@ -280,6 +335,7 @@ public class GeneratorController {
         }
     }
 
+    /** Populates the entity tree and is called whenever an entity is added, edited or removed.*/
     @FXML
     private void populateScrollPane() {
         //populate the scroll pane that displays entities in game
@@ -292,6 +348,7 @@ public class GeneratorController {
         objectAnchorPane.setPrefHeight(spOffset+ ENTITY_INCREMENTAL_OFFSET);
     }
 
+    /** Updates the list values in the room combo boxes to reflect all rooms in the game.*/
     @FXML
     private void populateRoomCombos() {
         //updates the room combo boxes to show all rooms in game map
@@ -302,6 +359,10 @@ public class GeneratorController {
         winRoomCbx.setValue(newGame.getWinCondition());
     }
 
+    /** The main bulk of entity tree generation. Loops through all game rooms and creates
+     * a button for each entity, adding the entity ID to the button ID for loading entities
+     * in their respective ConfigController. Performs recursive calls to search for nested
+     * items and display them indented relative to their level of nesting.*/
     @FXML
     private void generateRoomsItems() {
         //loops through game map to display each room and contained entities
@@ -318,6 +379,10 @@ public class GeneratorController {
         }
     }
 
+    /** The recursive function called in generateRoomItems(). Searches for nested items
+     * to generate buttons with IDs corresponding to the item's unique ID.
+     * @param entityList The collection of entities to be searched, e.g. a container's held items.
+     * @param depth The current nested depth, determines the offset of this item in display.*/
     private void recItemSearch(Collection<? extends Entity> entityList, int depth) {
         //recursive method for displaying all items in a collection, allowing traversal
         //through all item holders in a room, with visual offsets
@@ -361,6 +426,10 @@ public class GeneratorController {
         }
     }
 
+    /** Method for configuring button appearance when generating in the entity tree.
+     * Sets layout, style class, offset. Adds button to the anchor pane for display.
+     * @param btn The button to configure.
+     * @param xoffset The offset that the button should be placed at determined by recursion depth of caller.*/
     public void configBtn(Button btn, int xoffset) {
         //helper method for configuring appearance/placement of buttons generated in generateRoomItems~related methods
         btn.setLayoutY(spOffset);
@@ -370,6 +439,7 @@ public class GeneratorController {
         objectAnchorPane.getChildren().add(btn);
     }
 
+    /** Creates button nodes for all items in the player's starting inventory.*/
     @FXML
     private void populateInventoryItems() {
         inventoryVbox.getChildren().clear();
@@ -389,6 +459,9 @@ public class GeneratorController {
         }
     }
 
+    /** Simulates a user button click for certain cases where we want the interface
+     * to update naturally as it would when the user interacts with it.
+     * @param but The button to simulate a click on. Calls this button's event.*/
     @FXML
     private void simulateButtonClick(Button but) {
         //simulate button click for button arg
@@ -397,6 +470,9 @@ public class GeneratorController {
                 true, true, true, true, true, null));
     }
 
+    /** Passes a request to the game manager to try and save the configured game before exiting generator.
+     * @throws IOException if main menu window elements cannot be loaded.
+     * @param event Determines what button has been clicked.*/
     @FXML
     private void saveAndQuit(MouseEvent event) throws IOException {
         //save game and quit generator
@@ -413,6 +489,8 @@ public class GeneratorController {
         }
     }
 
+    /** Closes the generator and reopens the main menu.
+     * @throws IOException if main menu window elements cannot be loaded.*/
     private void quit() throws IOException {
         //returns to the main menu by loading fxml/setting scene
         String fxml = "sample.fxml";
@@ -424,6 +502,9 @@ public class GeneratorController {
         stage.show();
     }
 
+    /** Called when user tries to exit without saving. Produces a confirmation prompt to ensure
+     * this is what the user wants to do.
+     * @throws IOException if main menu window elements cannot be loaded.*/
     @FXML
     private void quitWithWarning() throws IOException {
         //confirm that user wants to quit before quitting
@@ -438,6 +519,9 @@ public class GeneratorController {
         }
     }
 
+    /** Loads a pre-existing game configuration into the generator, populating all
+     * nodes to display the correct information.
+     * @throws IOException if window elements cannot be loaded.*/
     @FXML
     private void loadGameConfig() throws IOException {
         Game loaded = gameManager.loadGameFile(stage);
@@ -450,6 +534,8 @@ public class GeneratorController {
         }
     }
 
+    /** Updates the game's title and player name with the input values when game is saved,
+     * as they are input through text fields.*/
     @FXML
     private void setGameParams() {
         //update generic game parameters on ui
@@ -457,6 +543,7 @@ public class GeneratorController {
         newGame.getPlayer().setName(playerEntryTF.getText());
     }
 
+    /** Calls all interface element methods that may be updated upon completion of an action.*/
     public void updateInterfaceDisplay() {
         //update ui when new data is added
         populateScrollPane(); //updates scrollpane to show any new entities added/deleted
@@ -464,14 +551,20 @@ public class GeneratorController {
         populateInventoryItems(); //update user's starting items display
     }
 
+    /** For passing the game reference to newly generated windows, providing a constant reference.
+     * @return Game The game file being configured.*/
     public static Game getNewGame() { return newGame; }
 
+    /** Updates the room display to show a particular room. Called when a room is deleted
+     * and was previously selected on the room display.
+     * @param string The room to update the display with.*/
     public void newRoomDisplay(String string) {
         //simulate button click to update ui, call from external window
         Button button = (Button) objectAnchorPane.lookup("#" +string);
         simulateButtonClick(button);
     }
 
+    /** Checks that all game input parameters are valid before the game can be saved.*/
     private void validateInputs() throws InvalidInputException {
         if (nameEntryTF.getText().trim().length() > MAX_STRING_LENGTH ||
                 nameEntryTF.getText().trim().length() == 0) {

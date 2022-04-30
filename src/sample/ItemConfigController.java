@@ -284,6 +284,10 @@ public class ItemConfigController {
         }
     }
 
+    /** Produces additional nodes dependent on the item type selected by the user. e.g.
+     * selecting consumable generates a HP restore field and a number of uses field.
+     * Adds the nodes to a pre-existing Vbox for display.
+     * @see Item*/
     public void produceAdditionalParams() throws ClassNotFoundException {
         //generates different nodes for user input dependent on the item type
         switch (itemTypeCbx.getValue()) {
@@ -466,6 +470,9 @@ public class ItemConfigController {
         }
     }
 
+    /** Generates a new verb input component by creating three nodes for verb input, action type
+     * and a delete button to remove the verb.
+     * @see Action*/
     public void genNewVerb() { //adds a new verb component to the verb list
         //intialise nodes
         HBox nbx = new HBox();
@@ -494,12 +501,18 @@ public class ItemConfigController {
         verbsVbox.getChildren().add(nbx); //add nbx node to v box holding all verbs
     }
 
+    /** Event called when the user presses the corresponding delete button on an existing verb.*/
     @FXML
     private void removeVerb(MouseEvent event) throws IOException { //remove verb associated with button event
         Button btn = (Button) event.getSource();
         verbsVbox.getChildren().remove(btn.getParent());
     }
 
+    /** Reads all the verb data inputted into the user interface and converts into
+     * a HashMap with String keys (verb) and Action values.
+     * @return HashMap The HashMap of verb keys and Action values input by the user.
+     * @throws InvalidInputException if verb entry is blank/whitespace.
+     * @see Action*/
     private HashMap<String, Action> getAllVerbs() throws InvalidInputException {
         //generate hashmap of grammar to apply directly to item creation
         HashMap<String, Action> verbs = new HashMap<>();
@@ -517,16 +530,25 @@ public class ItemConfigController {
         return verbs;
     }
 
+    /** Helper method to get the text field of a verb by its index in the Vbox.
+     * @param index The index of the verb to retrieve from the Vbox.
+     * @return TextField The TextField of the selected verb.*/
     private TextField getVerbTf(int index) { //get text field associated with verb index
         HBox h = (HBox) verbsVbox.getChildren().get(index);
         return (TextField) h.getChildren().get(0);
     }
 
+    /** Helper method to get the combobox of a verb by its index in the Vbox.
+     * @param index The index of the verb to retrieve from the Vbox.
+     * @return ComboBox The ComboBox of the selected verb.*/
     private ComboBox<String> getActionCbx(int index) { //get action selection associated with verb index
         HBox h = (HBox) verbsVbox.getChildren().get(index);
         return (ComboBox<String>) h.getChildren().get(1);
     }
 
+    /** Reads the verb HashMap of a given Item to load values into the user interface.
+     * Called when loading a pre-existing Item and populates verb nodes.
+     * @param item The item to load the HashMap from.*/
     private void loadVerbs(Item item) { //load item verb hashmap into interface display
         HashMap<String, Action> verbs = item.getVerbs();
 
@@ -545,7 +567,10 @@ public class ItemConfigController {
         return items;
     }
 
-    public ArrayList<Item> getAllItemsOfType(Class c) {
+    /** Allows for lookup of all items of a particular class, e.g. containers, weapons, etc.
+     * @param c The class to search for.
+     * @return ArrayList The ArrayList of items found of the given class.*/
+    public ArrayList<Item> getAllItemsOfType(Class<? extends Item> c) {
         ArrayList<Item> ret = new ArrayList<>();
 
         for (Item i: getAllItems()) {
@@ -556,6 +581,9 @@ public class ItemConfigController {
         return ret;
     }
 
+    /** Updates the contents of the possible item holders based on the selected category e.g.
+     * if user selects 'enemy' in the second combobox, the first combobox will update to show
+     * all enemies in the game for selection.*/
     public void updateHolderCbx() {
         locHbox.getChildren().clear();
         switch (locSelectCbx.getValue().toString()) {
@@ -596,6 +624,9 @@ public class ItemConfigController {
         locHbox.getChildren().add(locSelectCbx);
     }
 
+    /** Validates all user input before saving an item, throws an error and does not save
+     * if user needs to update any parameters.
+     * @throws InvalidInputException if any valid does not meet standards.*/
     public void validateInputs() throws InvalidInputException {
         if (nameEntryTF.getText().trim().length() > MAX_STRING_LENGTH ||
                 nameEntryTF.getText().trim().length() == 0) {
@@ -611,6 +642,8 @@ public class ItemConfigController {
         }
     }
 
+    /** Set the generator controller reference for updating the interface.
+     * @param gc The generator controller reference to set.*/
     public void setGeneratorController(GeneratorController gc) { this.generatorController = gc; }
 
 }
