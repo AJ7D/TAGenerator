@@ -84,8 +84,19 @@ public class ItemConfigController {
 
         isCarryChx.selectedProperty().addListener((observable, oldValue, newValue) -> {
             //cannot start with item if item cannot be carried, update checkbox to prove
-            if (!newValue) {
-                startWithChx.setSelected(false);
+            if (newValue) {
+                isVisibleChx.setSelected(newValue);
+            }
+            else {
+                startWithChx.setSelected(newValue);
+            }
+        });
+
+        startWithChx.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            //cannot start with item if item cannot be carried, update checkbox to prove
+            if (newValue) {
+                isCarryChx.setSelected(newValue);
+                startWithChx.setSelected(newValue);
             }
         });
     }

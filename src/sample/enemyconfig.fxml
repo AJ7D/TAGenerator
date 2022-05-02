@@ -8,8 +8,6 @@
 <Pane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400" prefWidth="400.0" style="-fx-background-color: #F0DFAD;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.EnemyConfigController">
     <Text fx:id="title" layoutX="25" layoutY="10" text="Creating a new enemy..." />
 
-    <Text fx:id="enemyIdTxt" layoutX="25" layoutY="50" text="Enemy ID: " />
-
     <Text fx:id="enemyNameTxt" layoutX="25" layoutY="75" text="Enemy Name: " />
     <TextField fx:id="nameEntryTF" layoutX="110" layoutY="55" />
 

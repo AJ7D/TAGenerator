@@ -14,8 +14,6 @@ public class RoomConfigController {
 
     /** The title of the newly generated page.*/
     public Text title;
-    /** The ID of the enemy currently open.*/
-    public Text roomIdTxt;
     /** The text indicating room name entry.*/
     public Text roomNameTxt;
     /** The text indicating room description entry.*/

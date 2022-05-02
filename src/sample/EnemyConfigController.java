@@ -14,8 +14,6 @@ public class EnemyConfigController {
 
     /** The title of the newly generated page.*/
     public Text title;
-    /** The text indicating enemy's ID.*/
-    public Text enemyIdTxt;
     /** The text indicating enemy's name entry.*/
     public Text enemyNameTxt;
     /** The button for saving the enemy.*/
@@ -150,6 +148,10 @@ public class EnemyConfigController {
         }
         catch (NumberFormatException e) {
             throw new InvalidInputException("Please enter a valid number for HP (e.g. 20).");
+        }
+
+        if (Integer.parseInt(healthTF.getText()) <= 0) {
+            throw new InvalidInputException("Please enter a number of HP greater than 0.");
         }
 
         try {

@@ -1,6 +1,9 @@
 package sample;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
@@ -24,6 +27,8 @@ public class EngineController {
     public TextArea gameTextTa;
     /** Button for selecting a game file to play.*/
     public Button loadGameBtn;
+    /** Exit button for returning to the main menu.*/
+    public Button exitBtn;
 
     /** Game manager provides functions for loading/saving game files/states.*/
     public GameManager gameManager = new GameManager();
@@ -243,13 +248,27 @@ public class EngineController {
             turn = player.getTurnCount(); //update turn count
             for (Enemy e : player.getCurrentRoom().getEnemies()) {
                 response = response.concat(e.processTurn(player) + "\n");
-                if (player.getHp() <= 0) { //gameover condition
-                    response = response.concat(player.getName() + " has died.");
-                    state = EngineState.GAMEOVER;
-                    return response;
-                }
             }
         }
+        if (player.getHp() <= 0) { //gameover condition
+            response = response.concat(player.getName() + " has died.");
+            state = EngineState.GAMEOVER;
+            return response;
+        }
         return response;
+    }
+
+    /** Closes the engine and reopens the main menu.
+     * @throws IOException if main menu window elements cannot be loaded.*/
+    @FXML
+    private void quit() throws IOException {
+        //returns to the main menu by loading fxml/setting scene
+        String fxml = "sample.fxml";
+
+        Parent root = FXMLLoader.load(getClass().getResource(fxml));
+        stage = (Stage) exitBtn.getScene().getWindow();
+        Scene scene = new Scene(root, 800, 500);
+        stage.setScene(scene);
+        stage.show();
     }
 }

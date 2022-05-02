@@ -15,5 +15,7 @@ public class InvalidGameConfigError extends Exception {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Invalid Game Parameters");
         alert.setContentText(errorMessage);
+
+        alert.showAndWait();
     }
 }
