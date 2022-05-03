@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @serial
  * @see java.io.Serializable
  */
-public class Character extends Entity implements Serializable {
+public abstract class Character extends Entity implements Serializable {
     /** The serial version UID of the character.*/
     private static final long serialVersionUID = 1L;
 

@@ -28,7 +28,7 @@
             <String fx:value="engineTa" />
          </styleClass></TextArea>
    </ScrollPane>
-   <Button layoutX="722.0" layoutY="8.0" mnemonicParsing="false" styleClass="buttonExit" text="Quit" />
+   <Button fx:id="exitBtn" layoutX="722.0" layoutY="8.0" mnemonicParsing="false" styleClass="buttonExit" text="Quit" onMouseClicked="#quit" />
    <Button fx:id="saveStateBtn" layoutX="410.0" layoutY="8.0" mnemonicParsing="false" onMouseClicked="#saveGameState" text="Save" />
    <Button fx:id="loadStateBtn" layoutX="492.0" layoutY="8.0" mnemonicParsing="false" text="Load" onMouseClicked="#loadGameState"/>
 </AnchorPane>

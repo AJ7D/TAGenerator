@@ -653,6 +653,33 @@ public class ItemConfigController {
         if (((ComboBox) locHbox.getChildren().get(0)).getValue() == null) {
             throw new InvalidInputException("Please select a valid location.");
         }
+
+        switch (itemTypeCbx.getValue()) {
+            case "Consumable": {
+                TextField h = (TextField) paramsVbox.getChildren().get(1);
+                TextField u = (TextField) paramsVbox.getChildren().get(3);
+                String hp = h.getText().trim();
+                String uses = u.getText().trim();
+                ValidationTools.CheckNumeric("HP", hp);
+                ValidationTools.CheckNumericAboveZero("number of uses", uses);
+                break;
+            }
+            case "Light": {
+                TextField u = (TextField) paramsVbox.getChildren().get(3);
+                String uses = u.getText().trim();
+                ValidationTools.CheckNumericAboveZero("number of uses", uses);
+                break;
+            }
+            case "Weapon": {
+                TextField a = (TextField) paramsVbox.getChildren().get(1);
+                TextField u = (TextField) paramsVbox.getChildren().get(3);
+                String attack = a.getText().trim();
+                String uses = u.getText().trim();
+                ValidationTools.CheckNumeric("attack", attack);
+                ValidationTools.CheckNumericAboveZero("number of uses", uses);
+                break;
+            }
+        }
     }
 
     /** Set the generator controller reference for updating the interface.

@@ -150,11 +150,10 @@ public class GameManager { //methods for saving/loading game configuration/save 
                 throw new IllegalSaveStateException("Save file is not for this game.");
             }
             loadedState = gameSaveFile.getSavedConfig();
-        } catch (ClassNotFoundException | IllegalSaveStateException e) {
-            e.printStackTrace();
         }
-        catch (ClassCastException e) {
-            throw new IllegalSaveStateException("File selected is not a save file.");
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new IllegalSaveStateException("File could not be loaded. Please check that it is a save state.");
         }
         return loadedState;
     }

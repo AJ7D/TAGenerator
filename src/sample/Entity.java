@@ -1,13 +1,12 @@
 package sample;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 /** Generic class for defining elements of all entities that can exist within a game file, e.g. item, enemy, player, room.
  * @serial */
-public class Entity implements Serializable {
+public abstract class Entity implements Serializable {
     /** The serial version UID of the entity.*/
     private static final long serialVersionUID = 1L;
     /** Incremented when a new entity is created.*/

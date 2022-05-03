@@ -143,23 +143,8 @@ public class EnemyConfigController {
             throw new InvalidInputException("Please enter a name between 0-50 characters.");
         }
 
-        try {
-            Integer.parseInt(healthTF.getText());
-        }
-        catch (NumberFormatException e) {
-            throw new InvalidInputException("Please enter a valid number for HP (e.g. 20).");
-        }
-
-        if (Integer.parseInt(healthTF.getText()) <= 0) {
-            throw new InvalidInputException("Please enter a number of HP greater than 0.");
-        }
-
-        try {
-            Integer.parseInt(attackTF.getText());
-        }
-        catch (NumberFormatException e) {
-            throw new InvalidInputException("Please enter a valid number for attack damage (e.g. 5).");
-        }
+        ValidationTools.CheckNumericAboveZero("HP", healthTF.getText());
+        ValidationTools.CheckNumericAboveZero("attack damage", attackTF.getText());
     }
 
     /** Sets the generator controller window this window is associated with.
