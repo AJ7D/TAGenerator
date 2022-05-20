@@ -19,9 +19,9 @@ public class GameManager { //methods for saving/loading game configuration/save 
     public boolean saveGameConfig(Game game, Stage stage) throws IOException {
         FileChooser fileChooser = new FileChooser(); //open new file chooser
         fileChooser.setInitialDirectory(new File(System.getProperty("user.dir"))); //set initial directory for file search
-        fileChooser.setInitialFileName(game.getTitle() + ".txt"); //file format type
+        fileChooser.setInitialFileName(game.getTitle() + ".xml"); //file format type
         fileChooser.setTitle("Save Game"); //title indicating purpose of file chooser
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Game file", "*.txt"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Game file", "*.xml"));
 
         File selectedFile = fileChooser.showSaveDialog(stage);
         if (selectedFile != null) { //user selected a file, didn't terminate process
@@ -38,7 +38,7 @@ public class GameManager { //methods for saving/loading game configuration/save 
     public Game loadGameFile(Stage stage) throws IOException {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Game file", "*.txt"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Game file", "*.xml"));
 
         File selectedFile = fileChooser.showOpenDialog(stage);
 
@@ -93,9 +93,9 @@ public class GameManager { //methods for saving/loading game configuration/save 
         //save the state of a game file for reloading later
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
-        fileChooser.setInitialFileName(initial.getTitle() + " SAVE.txt");
+        fileChooser.setInitialFileName(initial.getTitle() + " SAVE.xml");
         fileChooser.setTitle("Save Game State");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Game save file", "*.txt"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Game save file", "*.xml"));
 
         try {
             File selectedFile = fileChooser.showSaveDialog(stage);
@@ -125,7 +125,7 @@ public class GameManager { //methods for saving/loading game configuration/save 
         //load a saved game state
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Game save file", "*.txt"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Game save file", "*.xml"));
 
         File selectedFile = fileChooser.showOpenDialog(stage);
 

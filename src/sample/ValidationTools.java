@@ -16,7 +16,7 @@ public class ValidationTools {
         try {
             if (Integer.parseInt(value) <= 0) {
                 throw new InvalidInputException("Please enter a value for " + argName + " that is greater than 0 (e.g. 5).");
-            };
+            }
         }
         catch (NumberFormatException e) {
             throw new InvalidInputException("Please enter a valid number for " + argName + " (e.g. 5).");
