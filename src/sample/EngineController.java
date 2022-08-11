@@ -120,7 +120,6 @@ public class EngineController {
                 }
             }
             displayText = displayText.concat(executeCommand(singleCommand));
-
         }
 
         if (game.isWon()) {
@@ -224,18 +223,7 @@ public class EngineController {
                     return i;
             }
         }
-        else {
-            for (Item i : player.getInteractables()) {
-                for (ArrayList<String> combi : WordBuilderTools.buildComplex(args)) { //get potential word combinations
-                    for (String string : combi) {
-                        if (string.equalsIgnoreCase(i.getName())) {
-                            return i;
-                        }
-                    }
-                }
-            }
-        }
-        return null;
+        return (Item) WordBuilderTools.determineEntityFromInput(player.getInteractables(), args);
     }
 
     /** Checks all enemies in the current room for a response after player turn has incremented.
@@ -253,7 +241,6 @@ public class EngineController {
         if (player.getHp() <= 0) { //gameover condition
             response = response.concat(player.getName() + " has died.");
             state = EngineState.GAMEOVER;
-            return response;
         }
         return response;
     }

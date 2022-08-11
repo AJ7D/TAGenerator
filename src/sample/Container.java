@@ -104,8 +104,8 @@ public class Container extends Item {
     public String use(Player p, Item item2) {
         switch (lockState) {
             case LOCKED: {
-                if (item2 instanceof Key)
-                    return item2.use(p, this);
+                if (item2.compatibleWithItem() && p.getInventory().containsItem(item2))
+                    return this.getName() + " is locked.\n" + item2.use(p, this);
                 return this.getName() + " is locked.";
             }
             case UNLOCKED: {
