@@ -115,13 +115,7 @@ public abstract class Character extends Entity implements Serializable {
             //hp cannot go above max hp
             this.hp = maxHp;
         }
-        else if (this.hp + hpToGive < 0) {
-            //cannot reduce character's hp below 0
-            this.hp = 0;
-        }
-        else {
-            this.hp = this.hp + hpToGive;
-        }
+        else this.hp = Math.max(this.hp + hpToGive, 0); //if hp change is less than 0 set to 0
     }
 }
 

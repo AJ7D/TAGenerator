@@ -120,6 +120,20 @@ public class Item extends Entity implements Serializable {
         return item.getId() == this.getId();
     }
 
+    /** Determines if the item can be used with another item, e.g. a key needs a container to open.
+     * Default items are not compatible with a second item. Override to true in item subclasses that are.
+     * @return boolean Returns true if second item is applicable. */
+    public boolean compatibleWithItem() {
+        return false;
+    }
+
+    /** Determines if the item can be used with an enemy, e.g. a weapon needs an enemy to attack.
+     * Default items are not compatible with an enemy. Override to true in item subclasses that are.
+     * @return boolean Returns true if enemy is applicable. */
+    public boolean compatibleWithEnemy() {
+        return false;
+    }
+
     /** Gets the item's applicable verbs.
      * @return HashMap Returns a HashMap of applicable verbs.
      * @see Action*/
@@ -151,7 +165,7 @@ public class Item extends Entity implements Serializable {
     }
 
     //items of generic type cannot be used
-    /** Use functio for the item. Generic items cannot be used, but subclasses can.
+    /** Use function for the item. Generic items cannot be used, but subclasses can.
      * @param p The player trying to perform the action.
      * @return String The results of trying to use the item.*/
     public String use(Player p) {

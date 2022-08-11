@@ -176,12 +176,10 @@ public class Game implements Serializable {
         for (Room r : gameMap) {
             if (r.getId() == (room.getId())) {
                 r = room;
-                System.out.println("Room " + r + " was updated.");
                 return;
             }
         }
         gameMap.add(room); //room wasn't found, so add it
-        System.out.println("Room " + room + "was added.");
     }
 
     /** Updates an existing item with the data of the given item.
@@ -191,12 +189,10 @@ public class Game implements Serializable {
         for (Item i : gameItems) {
             if (i.getId() == (item.getId())) {
                 i = item;
-                System.out.println("Item " + i + " was updated.");
                 return;
             }
         }
         gameItems.add(item); //item wasn't found, so add it
-        System.out.println("Item " + item + "was added.");
     }
 
     /** Updates an existing enemy with the data of the given enemy.
@@ -206,12 +202,10 @@ public class Game implements Serializable {
         for (Enemy e : gameEnemies) {
             if (e.getId() == (enemy.getId())) {
                 e = enemy;
-                System.out.println("Enemy " + e + " was updated.");
                 return;
             }
         }
         gameEnemies.add(enemy); //enemy wasn't found, so add it
-        System.out.println("Enemy " + enemy + "was added.");
     }
 
     /** Delete a given room from the game's map.
@@ -221,18 +215,15 @@ public class Game implements Serializable {
         for (Room r : gameMap) {
             if (r.getId() == room.getId()) {
                 for (Item i : r.getItems()) { //delete all items attached to this room
-                    System.out.println("Deleted item: " + i.getId() + i.getName());
                     gameItems.remove(i);
                 }
                 for (Direction dir : Direction.values()) { //sever all room connections before deletion
                     r.deleteExit(dir);
                 }
-                System.out.println("Deleted room: " + r.getId() + r.getName());
                 gameMap.remove(r);
                 return;
             }
         }
-        System.out.println("Room not found.");
     }
 
     /** Delete a given item from the game's items.
@@ -274,9 +265,7 @@ public class Game implements Serializable {
         if (room != null) {
             //delete enemy from room it is associated with
             room.deleteEnemy(enemy);
-            return;
         }
-        System.out.println("Enemy was not found.");
     }
 
     /** Add the second given room to the given direction of the first given room.
@@ -320,7 +309,6 @@ public class Game implements Serializable {
                     return r;
             }
         }
-        System.out.println("WARNING: Item " + item + " was not found in any room.");
         return null;
     }
 

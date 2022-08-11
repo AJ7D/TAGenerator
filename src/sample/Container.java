@@ -104,8 +104,8 @@ public class Container extends Item {
     public String use(Player p, Item item2) {
         switch (lockState) {
             case LOCKED: {
-                if (item2 instanceof Key)
-                    return item2.use(p, this);
+                if (item2.compatibleWithItem() && p.getInventory().containsItem(item2))
+                    return this.getName() + " is locked.\n" + item2.use(p, this);
                 return this.getName() + " is locked.";
             }
             case UNLOCKED: {
@@ -168,6 +168,20 @@ public class Container extends Item {
         for (Item i : items)
             itemNames.add(i.getName());
         return itemNames;
+    }
+
+    /** Determines if the item requires another entity to use.
+     * @return boolean Returns true as container needs an item to place/remove. */
+    @Override
+    public boolean compatibleWithItem() {
+        return true;
+    }
+
+    /** Determines if the item contains entities.
+     * @return boolean Returns true as container can be used to store items. */
+    @Override
+    public boolean containsEntities() {
+        return true;
     }
 
     /** Displays the container's information as a string.*/

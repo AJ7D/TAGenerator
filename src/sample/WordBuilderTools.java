@@ -59,4 +59,20 @@ public class WordBuilderTools { //methods for parsing user input
         }
         return combinations;
     }
+
+    public static Entity determineEntityFromInput(ArrayList<? extends Entity> accessibleEntities, ArrayList<String> input) {
+        for (Entity e : accessibleEntities) {
+            for (ArrayList<String> combi : WordBuilderTools.buildComplex(input)) {
+                for (String string : combi) {
+                    if (string.equalsIgnoreCase(e.getName())) {
+                        //if current combination of user input matches the name of a player interactable, assign it
+                        input = combi;
+                        input.remove(string); //alter input string to reflect unprocessed input for further query
+                        return e; //viable entity found, return it
+                    }
+                }
+            }
+        }
+        return null;
+    }
 }

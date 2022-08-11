@@ -256,80 +256,48 @@ class Use implements Action {
     @Override
     public String process(Player player, ArrayList<String> input) {
         input.remove(0); //remove action string from input, as it is no longer needed
-        Item item = null; //item to find
-        ArrayList<String> remaining = new ArrayList<>(); //for storing unused input arguments
-        for (Item i : player.getInteractables()) {
-            for (ArrayList<String> combi : WordBuilderTools.buildComplex(input)) {
-                for (String string : combi) {
-                    if (string.equalsIgnoreCase(i.getName())) {
+        ArrayList<Item> interactables = player.getInteractables();
+        ArrayList<ArrayList<String>> candidates = WordBuilderTools.buildComplex(input);
+
+        Item item = null;
+        for (int i = 0; i < interactables.size() && item == null; i++) {
+            for (int j = 0; j < candidates.size() && item == null; j++) {
+                for (String string : candidates.get(j)) {
+                    if (string.equalsIgnoreCase(interactables.get(i).getName())) {
                         //if current combination of user input matches the name of a player interactable, assign it
-                        item = i;
-                        remaining = combi;
-                        System.out.println("remaining = " + remaining);
-                        remaining.remove(string); //store any remaining input to test for multi item action
-                        System.out.println("remaining after removal = " + remaining);
+                        input = candidates.get(j);
+                        input.remove(string);
+                        item = interactables.get(i);
                         break;
                     }
                 }
             }
         }
-
         if (item == null) { //no item could be found from user input
             return "You do not have that item.";
         }
-        if (remaining.isEmpty()) //attempt to use item by itself
+        if (input.isEmpty()) //attempt to use item by itself
             return item.use(player);
 
-        if (item instanceof Key || item instanceof Container) {
+        if (item.compatibleWithItem()) {
             //need to try locating a second item
-            Item item2 = null;
-            for (Item i : player.getInteractables()) {
-                for (ArrayList<String> combi : WordBuilderTools.buildComplex(remaining)) {
-                    for (String string : combi) {
-                        if (string.equalsIgnoreCase(i.getName())) {
-                            item2 = i;
-                            break;
-                        }
-                    }
-                }
-            }
+            Item item2 = (Item) WordBuilderTools.determineEntityFromInput(player.getInteractables(), input);
             if (item2 == null && item instanceof Container) {
                 //extra check for container items, if player is trying to take an item from container
-                for (Item i : ((Container) item).getItems()) {
-                    for (ArrayList<String> combi : WordBuilderTools.buildComplex(remaining)) {
-                        for (String string : combi) {
-                            if (string.equalsIgnoreCase(i.getName())) {
-                                item2 = i;
-                                break;
-                            }
-                        }
-                    }
-                }
+                item2 = (Item) WordBuilderTools.determineEntityFromInput(((Container) item).getItems(), input);
             }
-            if (item2 == null) {
-                return "Cannot find that item.";
+            if (item2 != null) {
+                return item.use(player, item2);
             }
-            return item.use(player, item2);
         }
-
-        if (item instanceof Weapon) {
+        if (item.compatibleWithEnemy()) {
             //must specifically find an enemy for weapon
-            Enemy enemy = null;
-            for (Enemy e : player.getCurrentRoom().getEnemies()) {
-                for (ArrayList<String> combi : WordBuilderTools.buildComplex(remaining)) {
-                    for (String string : combi) {
-                        if (string.equalsIgnoreCase(e.getName())) {
-                            enemy = e;
-                            break;
-                        }
-                    }
-                }
+            Enemy enemy = (Enemy) WordBuilderTools.determineEntityFromInput(player.getCurrentRoom().getEnemies(), input);
+            if (enemy != null) {
+                return item.use(player, enemy);
             }
-            if (enemy == null) {
-                return "Cannot find that enemy.";
-            }
-            return item.use(player, enemy);
+
         }
-        return item.use(player);
+        return "Cannot do that.";
     }
 }
