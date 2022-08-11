@@ -103,6 +103,13 @@ public class Weapon extends Item {
         return this.durability;
     }
 
+    /** Determines if the item requires another entity to use.
+     * @return boolean Returns true as weapon needs an entity to attack. */
+    @Override
+    public boolean compatibleWithEnemy() {
+        return true;
+    }
+
     /** Displays the weapon's information as a string.*/
     @Override
     public String toString() {

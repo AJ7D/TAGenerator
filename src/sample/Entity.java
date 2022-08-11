@@ -45,6 +45,13 @@ public abstract class Entity implements Serializable {
         this.name = name;
     }
 
+    /** Determines if the entity can hold additional entities within itself.
+     * Default entities do not contain other entities; override to return true in subclasses that do.
+     * @return boolean Returns true if item can hold additional entities. */
+    public boolean containsEntities() {
+        return false;
+    }
+
     /**Determines that entities are equal if their unique IDs are equal.*/
     @Override
     public boolean equals(Object o) { //entity identified by its id

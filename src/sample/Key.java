@@ -89,6 +89,13 @@ public class Key extends Item{
         this.compatibility.remove(container);
     }
 
+    /** Determines if the item requires another entity to use.
+     * @return boolean Returns true as key needs an entity to open. */
+    @Override
+    public boolean compatibleWithItem() {
+        return true;
+    }
+
     /** Displays information about the key's fields as a formatted string.
      * @return String The formatted string.*/
     @Override

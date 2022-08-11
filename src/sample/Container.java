@@ -170,6 +170,20 @@ public class Container extends Item {
         return itemNames;
     }
 
+    /** Determines if the item requires another entity to use.
+     * @return boolean Returns true as container needs an item to place/remove. */
+    @Override
+    public boolean compatibleWithItem() {
+        return true;
+    }
+
+    /** Determines if the item contains entities.
+     * @return boolean Returns true as container can be used to store items. */
+    @Override
+    public boolean containsEntities() {
+        return true;
+    }
+
     /** Displays the container's information as a string.*/
     @Override
     public String toString() {
