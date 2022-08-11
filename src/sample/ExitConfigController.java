@@ -20,8 +20,6 @@ public class ExitConfigController {
     public Text title;
     /** Text for displaying the room and direction in which this room is being connected.*/
     public Text roomDirTxt;
-    /** Check box for selecting if the room can be travelled to or is locked.*/
-    public CheckBox isLockedChx;
     /** Button for saving the exit.*/
     public Button saveExitBtn;
     /** Button for adding a new requirement to unlock room traversal.*/
@@ -45,7 +43,6 @@ public class ExitConfigController {
     private void initialize() {
         UITools.configureComboboxRoom(roomSelCbx); //set roomselcbx to contain room references
         roomSelCbx.getSelectionModel().selectFirst(); //get first room in room list
-        isLockedChx.setOnAction(eventHandler);
     }
 
     /** Called when the save button is clicked by the user. Saves the room configuration.
@@ -55,7 +52,6 @@ public class ExitConfigController {
             Room toConnect = roomSelCbx.getValue();
             game.connectRooms(room, direction, toConnect);
         }
-        room.setIsLocked(isLockedChx.isSelected(), direction); //update room to show new connection info
 
         generatorController.newRoomDisplay(String.valueOf(room.getId())); //update display on generator to reflect change
 
@@ -92,19 +88,7 @@ public class ExitConfigController {
             roomSelCbx.getSelectionModel().selectFirst();
         }
 
-        isLockedChx.setSelected(room.isDirectionBlocked(dir)); //reflect locked status in checkbox
-        newReqBtn.setDisable(!isLockedChx.isSelected()); //disable requirements button if islocked = false
     }
-
-    /** Event handler that disables the new requirement button if the passage is not locked.*/
-    EventHandler<ActionEvent> eventHandler = new EventHandler<ActionEvent>() {
-        @Override
-        public void handle(ActionEvent event) {
-            if (event.getSource().equals(isLockedChx)) {
-                newReqBtn.setDisable(!isLockedChx.isSelected());
-            }
-        }
-    };
 
     /** Gets generator controller reference for updating interface
      * @param gc The generator controller to be passed.*/

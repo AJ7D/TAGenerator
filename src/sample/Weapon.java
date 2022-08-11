@@ -76,10 +76,16 @@ public class Weapon extends Item {
         if (enemy.isAlive()) { //enemy can be attacked
             p.incrementTurnCount(); //successful action, increment player turn
             enemy.setHp(enemy.getHp() - this.getMight()); //update enemy hp
+            durability--;
             if (enemy.getState() == EnemyState.PASSIVE) { //a passive enemy becomes aggressive when attacks
                 enemy.setState(EnemyState.AGGRESSIVE);
             }
 
+            if (durability <= 0) { //max uses reached, take consumable from player
+                p.getInventory().removeItem(this);
+                return p.getName() + " attacked " + enemy.getName() + ", dealing " + this.getMight() + " damage.\n" +
+                        "The " + this.getName() + " was no more.";
+            }
             return p.getName() + " attacked " + enemy.getName() + ", dealing " + this.getMight() + " damage.";
         }
         return enemy.getName() + " was already slain.";
