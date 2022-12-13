@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<Pane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400" prefWidth="400" style="-fx-background-color: #F0DFAD;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.generator.RoomConfigController">
+    <Text fx:id="title" layoutX="25" layoutY="10" text="Creating a new room..." />
+
+    <Text fx:id="roomNameTxt" layoutX="25" layoutY="75" text="Room Name: " />
+    <TextField fx:id="nameEntryTF" layoutX="110" layoutY="55" />
+
+    <Text fx:id="roomDescTxt" layoutX="25" layoutY="100" text="Description: " />
+    <TextArea fx:id="roomDescTA" layoutX="110" layoutY="85" prefHeight="100" prefWidth="200" />
+
+    <Button fx:id="saveRoomBtn" layoutX="250" layoutY="300" mnemonicParsing="false" onMouseClicked="#saveRoom" text="Save Room" />
+
+    <stylesheets>
+        <URL value="@../TAGmain.css" />
+    </stylesheets>
+</Pane>
