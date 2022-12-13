@@ -16,35 +16,44 @@ import sample.tools.ValidationTools;
  * @see Enemy*/
 public class EnemyConfigController {
     /** Pane for holding nodes.*/
-    public Pane pane;
+    @FXML
+    private Pane pane;
 
     /** The title of the newly generated page.*/
-    public Text title;
+    @FXML
+    private Text title;
     /** The text indicating enemy's name entry.*/
-    public Text enemyNameTxt;
+    @FXML
+    private Text enemyNameTxt;
     /** The button for saving the enemy.*/
-    public Button saveEnemyBtn;
+    @FXML
+    private Button saveEnemyBtn;
     /** The text field for entering enemy's name.*/
-    public TextField nameEntryTF;
+    @FXML
+    private TextField nameEntryTF;
     /** The text field for entering enemy's health.*/
-    public TextField healthTF;
+    @FXML
+    private TextField healthTF;
     /** The text field for entering enemy's attack.*/
-    public TextField attackTF;
+    @FXML
+    private TextField attackTF;
     /** The checkbox for selecting enemy's state.*/
-    public CheckBox passiveCheck;
+    @FXML
+    private CheckBox passiveCheck;
 
     /** The enemy being created or edited.*/
-    public Enemy enemy;
+    private Enemy enemy;
 
     /** Reference to the generator controller for updating display.*/
     public GeneratorController generatorController;
     /** The combo box for selecting the enemy's current room.*/
-    public ComboBox<Room> roomSelCbx;
+    @FXML
+    private ComboBox<Room> roomSelCbx;
 
     /** The game file that holds this enemy.*/
-    Game game = GeneratorController.getNewGame();
+    private Game game = GeneratorController.getNewGame();
     /** Stores the old room of the enemy in case it is updated.*/
-    public Room oldRoom;
+    private Room oldRoom;
 
     /** The maximum length for enemy's name.*/
     private final int MAX_STRING_LENGTH = 50;
@@ -58,7 +67,8 @@ public class EnemyConfigController {
     }
 
     /** Saves the enemy to the current game if input passes validation.*/
-    public void saveEnemy()  {
+    @FXML
+    private void saveEnemy()  {
         if (enemy == null) {
             //create new enemy if not updating an existing one
             enemy = new Enemy();
@@ -84,7 +94,8 @@ public class EnemyConfigController {
     }
 
     /** Deletes the selected enemy from the game.*/
-    public void deleteEnemy() { //delete enemy of current window and close window
+    @FXML
+    private void deleteEnemy() { //delete enemy of current window and close window
         game.deleteEnemy(enemy);
         closeWindow();
     }
@@ -120,7 +131,7 @@ public class EnemyConfigController {
 
     /** Tries to place the enemy into the selected room when saving.
      * @param enemy The enemy to attempt placing into the current room*/
-    public void tryPlaceEnemyInSetRoom(Enemy enemy) {
+    private void tryPlaceEnemyInSetRoom(Enemy enemy) {
         //gets selected room from combobox and adds enemy to it
         Room r = roomSelCbx.getValue();
         if (!r.containsEnemy(enemy)) {
@@ -134,7 +145,7 @@ public class EnemyConfigController {
 
     /** Determines the enemy state to be saved by checking if check box is selected.
      * @return EnemyState The state of the enemy, restricted to AGGRESSIVE or PASSIVE.*/
-    public EnemyState determineEnemyState() {
+    private EnemyState determineEnemyState() {
         //quick conversion of checkbox selection -> EnemyState
         if (passiveCheck.isSelected())
             return EnemyState.PASSIVE;
@@ -143,7 +154,7 @@ public class EnemyConfigController {
 
     /** Validates all user input before saving the enemy. Throws an exception if any field is invalid.
      * @throws InvalidInputException if any validation checks fail.*/
-    public void validateInputs() throws InvalidInputException {
+    private void validateInputs() throws InvalidInputException {
         if (nameEntryTF.getText().trim().length() > MAX_STRING_LENGTH ||
             nameEntryTF.getText().trim().length() == 0) {
             throw new InvalidInputException("Please enter a name between 0-50 characters.");

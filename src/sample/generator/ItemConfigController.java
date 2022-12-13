@@ -23,49 +23,65 @@ import java.util.HashMap;
  * @see Item*/
 public class ItemConfigController {
     /** Pane for holding nodes.*/
-    public Pane pane;
+    @FXML
+    private Pane pane;
 
     /** The title of the newly generated page.*/
-    public Text title;
+    @FXML
+    private Text title;
     /** The text indicating enemy's name entry.*/
-    public Text itemNameTxt;
+    @FXML
+    private Text itemNameTxt;
     /** The text indicating item's description entry.*/
-    public Text itemDescTxt;
+    @FXML
+    private Text itemDescTxt;
     /** The text field for entering enemy's description.*/
-    public TextArea itemDescTA;
+    @FXML
+    private TextArea itemDescTA;
     /** The button for saving the item.*/
-    public Button saveItemBtn;
+    @FXML
+    private Button saveItemBtn;
     /** The text field for entering enemy's name.*/
-    public TextField nameEntryTF;
+    @FXML
+    private TextField nameEntryTF;
 
     /** The item being created or edited.*/
-    public Item item;
+    private Item item;
 
     /** Reference to the generator controller for updating display.*/
     public GeneratorController generatorController;
     /** The combo box for selecting the item's type.
      * @see Item*/
-    public ComboBox<String> itemTypeCbx;
+    @FXML
+    private ComboBox<String> itemTypeCbx;
     /** The text indicating item type entry.*/
-    public Text itemTypeTxt;
+    @FXML
+    private Text itemTypeTxt;
     /** The check box for selecting if the item is visible.*/
-    public CheckBox isVisibleChx;
+    @FXML
+    private CheckBox isVisibleChx;
     /** The check box for selecting if the item can be carried.*/
-    public CheckBox isCarryChx;
+    @FXML
+    private CheckBox isCarryChx;
     /** The check box for selecting if player starts with the item.*/
-    public CheckBox startWithChx;
+    @FXML
+    private CheckBox startWithChx;
     /** Vbox for holding additional parameters generated when certain item types are selected.*/
-    public VBox paramsVbox;
+    @FXML
+    private VBox paramsVbox;
 
     /** Vbox for holding generated verb entries.*/
-    public VBox verbsVbox;
+    @FXML
+    private VBox verbsVbox;
     /** Combo box for selecting the type of entity that holds item.*/
-    public ComboBox<String> locSelectCbx;
+    @FXML
+    private ComboBox<String> locSelectCbx;
     /** Hbox for holding location nodes.*/
-    public HBox locHbox;
+    @FXML
+    private HBox locHbox;
 
     /** Reference to generator window for updating interface.*/
-    Game game = GeneratorController.getNewGame();
+    private Game game = GeneratorController.getNewGame();
 
     /** Maximum number of characters for item name entry.*/
     private final int MAX_STRING_LENGTH = 50;
@@ -106,7 +122,8 @@ public class ItemConfigController {
     }
 
     /** Saves the item to the current game if input passes validation.*/
-    public void saveItem() {
+    @FXML
+    private void saveItem() {
         try {
             //get item parameters from user interface
             validateInputs(); //validate all input to check if item can be saved
@@ -138,7 +155,8 @@ public class ItemConfigController {
     }
 
     /** Deletes the item from the game and closes the current configuration window.*/
-    public void deleteItem() { //remove item from game
+    @FXML
+    private void deleteItem() { //remove item from game
         try {
             game.deleteItem(item);
         }
@@ -202,7 +220,7 @@ public class ItemConfigController {
      * @param iStart Determines if the player starts with the item.
      * @return Item Returns a newly constructed item of the determined type.
      * @see Item */
-    public Item readType(String iName, String iDesc, boolean iVis, boolean iCarry, boolean iStart) {
+    private Item readType(String iName, String iDesc, boolean iVis, boolean iCarry, boolean iStart) {
         boolean isOverwrite = (item != null); //true if existing item is being edited
         //produces a new item dependent on the subclass of item selected
         if (item instanceof Container && !itemTypeCbx.getValue().equals("Container")) {
@@ -266,7 +284,7 @@ public class ItemConfigController {
      * already has the item.
      * @param c The character to give the item to.
      * @param item The item to give to the character.*/
-    public void tryGiveCharacterItem(Character c, Item item) {
+    private void tryGiveCharacterItem(Character c, Item item) {
         //gives item to player, if permitted
         if (!c.getInventory().containsItem(item)) {
             game.deleteItemInstances(item);
@@ -280,7 +298,7 @@ public class ItemConfigController {
     /** Tries to give the specified item to the specified entity.
      * @param item The item to give to the character.
      * @see Entity*/
-    public void tryPlaceItem(Item item) { //try to place item based on current combo box selection
+    private void tryPlaceItem(Item item) { //try to place item based on current combo box selection
         game.deleteItemInstances(item); //remove any instances first
         ComboBox cbx = (ComboBox) locHbox.getChildren().get(0); //locate combo box for reading
         switch (locSelectCbx.getValue().toString()) {
@@ -304,7 +322,8 @@ public class ItemConfigController {
      * Adds the nodes to a pre-existing Vbox for display.
      * @throws ClassNotFoundException if class could not be found.
      * @see Item*/
-    public void produceAdditionalParams() throws ClassNotFoundException {
+    @FXML
+    private void produceAdditionalParams() throws ClassNotFoundException {
         //generates different nodes for user input dependent on the item type
         switch (itemTypeCbx.getValue()) {
             case "Consumable":
@@ -489,7 +508,8 @@ public class ItemConfigController {
     /** Generates a new verb input component by creating three nodes for verb input, action type
      * and a delete button to remove the verb.
      * @see Action*/
-    public void genNewVerb() { //adds a new verb component to the verb list
+    @FXML
+    private void genNewVerb() { //adds a new verb component to the verb list
         //intialise nodes
         HBox nbx = new HBox();
         TextField tf = new TextField();
@@ -578,7 +598,7 @@ public class ItemConfigController {
         }
     }
 
-    public ArrayList<Item> getAllItems() {
+    private ArrayList<Item> getAllItems() {
         ArrayList<Item> items = new ArrayList<>(game.getPlayer().getInventory().getContents());
         items.addAll(game.getGameItems());
         return items;
@@ -587,7 +607,7 @@ public class ItemConfigController {
     /** Allows for lookup of all items of a particular class, e.g. containers, weapons, etc.
      * @param c The class to search for.
      * @return ArrayList The ArrayList of items found of the given class.*/
-    public ArrayList<Item> getAllItemsOfType(Class<? extends Item> c) {
+    private ArrayList<Item> getAllItemsOfType(Class<? extends Item> c) {
         ArrayList<Item> ret = new ArrayList<>();
 
         for (Item i: getAllItems()) {
@@ -601,7 +621,8 @@ public class ItemConfigController {
     /** Updates the contents of the possible item holders based on the selected category e.g.
      * if user selects 'enemy' in the second combobox, the first combobox will update to show
      * all enemies in the game for selection.*/
-    public void updateHolderCbx() {
+    @FXML
+    private void updateHolderCbx() {
         locHbox.getChildren().clear();
         switch (locSelectCbx.getValue().toString()) {
             case "Room":
@@ -644,7 +665,7 @@ public class ItemConfigController {
     /** Validates all user input before saving an item, throws an error and does not save
      * if user needs to update any parameters.
      * @throws InvalidInputException if any valid does not meet standards.*/
-    public void validateInputs() throws InvalidInputException {
+    private void validateInputs() throws InvalidInputException {
         if (nameEntryTF.getText().trim().length() > MAX_STRING_LENGTH ||
                 nameEntryTF.getText().trim().length() == 0) {
             throw new InvalidInputException("Please enter a name between 0-50 characters.");

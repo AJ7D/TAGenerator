@@ -11,23 +11,30 @@ import sample.game.Room;
  * @see Room */
 public class RoomConfigController {
     /** Pane for holding nodes.*/
-    public Pane pane;
+    @FXML
+    private Pane pane;
 
     /** The title of the newly generated page.*/
-    public Text title;
+    @FXML
+    private Text title;
     /** The text indicating room name entry.*/
-    public Text roomNameTxt;
+    @FXML
+    private Text roomNameTxt;
     /** The text indicating room description entry.*/
-    public Text roomDescTxt;
+    @FXML
+    private Text roomDescTxt;
     /** The text area for description entry.*/
-    public TextArea roomDescTA;
+    @FXML
+    private TextArea roomDescTA;
     /** The button for saving the current room.*/
-    public Button saveRoomBtn;
+    @FXML
+    private Button saveRoomBtn;
     /** The text area for name entry.*/
-    public TextField nameEntryTF;
+    @FXML
+    private TextField nameEntryTF;
 
     /** Reference of the room being edited.*/
-    public Room room;
+    private Room room;
 
     /** Reference of the generator controller for updating interface.*/
     public GeneratorController generatorController;
@@ -41,7 +48,8 @@ public class RoomConfigController {
     }
 
     /** Saves the room to the current game if input passes validation.*/
-    public void saveRoom() {
+    @FXML
+    private void saveRoom() {
         String rName = nameEntryTF.getText();
         String rDesc = roomDescTA.getText();
 
@@ -57,7 +65,7 @@ public class RoomConfigController {
 
             closeWindow();
         } catch (InvalidInputException e) {
-            System.out.println(e.toString()); //for debugging if needed
+            System.out.println(e.toString());
         }
     }
 
@@ -78,7 +86,7 @@ public class RoomConfigController {
 
     /** Validates all user input before saving the enemy. Throws an exception if any field is invalid.
      * @throws InvalidInputException if any validation checks fail.*/
-    public void validateInputs() throws InvalidInputException {
+    private void validateInputs() throws InvalidInputException {
         if (nameEntryTF.getText().trim().length() > MAX_STRING_LENGTH ||
                 nameEntryTF.getText().trim().length() == 0) {
             throw new InvalidInputException("Please enter a name between 0-50 characters.");

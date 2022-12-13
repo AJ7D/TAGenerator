@@ -22,20 +22,25 @@ import java.util.List;
 /** Class for the engine controller.*/
 public class EngineController {
     /** Area for the user to input text commands.*/
-    public TextField textEntryTa;
+    @FXML
+    private TextField textEntryTa;
     /** Scroll pane for viewing all input/output.*/
-    public ScrollPane gameTextSp;
+    @FXML
+    private ScrollPane gameTextSp;
     /** Text area for holding all user input and engine output.*/
-    public TextArea gameTextTa;
+    @FXML
+    private TextArea gameTextTa;
     /** Button for selecting a game file to play.*/
-    public Button loadGameBtn;
+    @FXML
+    private Button loadGameBtn;
     /** Exit button for returning to the main menu.*/
-    public Button exitBtn;
+    @FXML
+    private Button exitBtn;
 
     /** Game manager provides functions for loading/saving game files/states.*/
-    public GameManager gameManager = new GameManager();
+    private GameManager gameManager = new GameManager();
     /** List of stop words to filter out of user input when processing commands.*/
-    private final List<String> stopwords = Arrays.asList("i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your", "yours", "yourself", "yourselves", "he", "him", "his", "himself", "she", "her", "hers", "herself", "it", "its", "itself", "they", "them", "their", "theirs", "themselves", "what", "which", "who", "whom", "this", "that", "these", "those", "am", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had", "having", "do", "does", "did", "doing", "a", "an", "the", "but", "if", "or", "because", "as", "until", "while", "of", "at", "by", "for", "with", "about", "against", "between", "into", "through", "during", "before", "after", "above", "below", "to", "from", "up", "down", "in", "out", "on", "off", "over", "under", "again", "further", "then", "once", "here", "there", "when", "where", "why", "how", "all", "any", "both", "each", "few", "more", "most", "other", "some", "such", "no", "nor", "not", "only", "own", "same", "so", "than", "too", "very", "s", "t", "can", "will", "just", "don", "should", "now");
+    private final List<String> stopwords = Arrays.asList("i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your", "yours", "yourself", "yourselves", "he", "him", "his", "himself", "she", "her", "hers", "herself", "it", "its", "itself", "they", "them", "their", "theirs", "themselves", "what", "which", "who", "whom", "this", "that", "these", "those", "am", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had", "having", "do", "does", "did", "doing", "a", "an", "the", "but", "if", "or", "because", "as", "until", "while", "of", "at", "by", "for", "with", "about", "against", "between", "into", "through", "during", "before", "after", "above", "below", "to", "from", "up", "down", "in", "out", "on", "off", "over", "under", "again", "further", "then", "once", "here", "there", "when", "where", "why", "how", "all", "any", "both", "each", "few", "more", "most", "other", "some", "such", "no", "nor", "not", "only", "own", "same", "so", "than", "too", "very", "t", "can", "will", "just", "don", "should", "now");
 
     /** Grammar defined by the currently loaded game, determines valid input.
      * @see Game*/
@@ -74,7 +79,7 @@ public class EngineController {
      * @param input The user's command to be processed by the engine.
      * @return String Describes the effects of the player's command.
      * @see EngineState*/
-    public String engineControl(String input) {
+    private String engineControl(String input) {
         //engine handling, returns game log output based on engine state
         switch (state) {
             case NOT_LOADED:
@@ -93,7 +98,7 @@ public class EngineController {
     /** Parses user input using NLP to determine effects on game.
      * @param input The user's command to be processed.
      * @return String Describes the effects of the player's command.*/
-    public String parseInput(String input) {
+    private String parseInput(String input) {
         //take user input and determine an action, if legal
         String[] split = input.split(" "); //split input into list of words on " " delimiter
 
@@ -135,7 +140,7 @@ public class EngineController {
     /** Executes a command after initial processing has been completed.
      * @param args The NL processed user input, transformed into an ArrayList of strings.
      * @return String Describes the effects of the player's command.*/
-    public String executeCommand(ArrayList<String> args) {
+    private String executeCommand(ArrayList<String> args) {
         turn = player.getTurnCount(); //update number of turns in current game
         if (args.size() > 0) {
             if (grammar.get(args.get(0)) != null) {
@@ -157,7 +162,8 @@ public class EngineController {
     /** Called when the user clicks the load game button. Passes request to the game manager.
      * @throws IOException if file cannot be read.
      * @see GameManager*/
-    public void loadGame() throws IOException {
+    @FXML
+    private void loadGame() throws IOException {
         Stage stage = (Stage) loadGameBtn.getScene().getWindow();
         game = gameManager.loadGameFile(stage); //opens file selection and loads selected file
         oldGame = new Game(game); //store a copy of the original game parameters
@@ -178,7 +184,8 @@ public class EngineController {
      * @throws IllegalSaveStateException if game is in a non-saveable state.
      * @throws IOException if file cannot be written to.
      * @see GameManager*/
-    public void saveGameState() throws IllegalSaveStateException, IOException {
+    @FXML
+    private void saveGameState() throws IllegalSaveStateException, IOException {
         switch (state) {
             case PLAYING: {
                 gameManager.saveGameState(oldGame, game, stage);
@@ -198,7 +205,8 @@ public class EngineController {
      * @throws FileNotSelectedException if user exits without selecting a file.
      * @throws IllegalSaveStateException if state is not compatible with current game file.
      * @see GameManager*/
-    public void loadGameState() throws IOException, FileNotSelectedException, IllegalSaveStateException {
+    @FXML
+    private void loadGameState() throws IOException, FileNotSelectedException, IllegalSaveStateException {
         if (state == EngineState.NOT_LOADED) {
             throw new IllegalSaveStateException("No game loaded, please select a game first.");
         } else {

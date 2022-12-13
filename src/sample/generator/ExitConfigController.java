@@ -16,26 +16,32 @@ import java.util.ArrayList;
  * @see Room */
 public class ExitConfigController {
     /** The pane for holding nodes.*/
-    public Pane pane;
+    @FXML
+    private Pane pane;
 
     /** The title of the new window.*/
-    public Text title;
+    @FXML
+    private Text title;
     /** Text for displaying the room and direction in which this room is being connected.*/
-    public Text roomDirTxt;
+    @FXML
+    private Text roomDirTxt;
     /** Button for saving the exit.*/
-    public Button saveExitBtn;
+    @FXML
+    private Button saveExitBtn;
     /** Button for adding a new requirement to unlock room traversal.*/
-    public Button newReqBtn;
+    @FXML
+    private Button newReqBtn;
 
     /** The room to be connected to.*/
-    public Room room;
+    private Room room;
     /** The direction from the room to connect from.*/
-    public Direction direction;
+    private Direction direction;
 
     /** Stores reference to main generator controller window for updating interface.*/
     public GeneratorController generatorController;
     /** Combo box for selecting the other room to be attached.*/
-    public ComboBox<Room> roomSelCbx;
+    @FXML
+    private ComboBox<Room> roomSelCbx;
 
     /** Reference of the game being edited in the generator.*/
     Game game = GeneratorController.getNewGame();
@@ -49,7 +55,8 @@ public class ExitConfigController {
 
     /** Called when the save button is clicked by the user. Saves the room configuration.
      * @throws IllegalRoomConnection if trying to connect a room that cannot be connected.*/
-    public void saveExit() throws IllegalRoomConnection {
+    @FXML
+    private void saveExit() throws IllegalRoomConnection {
         if (roomSelCbx.getValue() != null) { //connect rooms if valid room selected
             Room toConnect = roomSelCbx.getValue();
             game.connectRooms(room, direction, toConnect);

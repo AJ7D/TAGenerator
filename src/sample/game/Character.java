@@ -21,14 +21,14 @@ public abstract class Character extends Entity implements Serializable {
     private int hp;
 
     /** Default constructor for a character.*/
-    Character() {
+    public Character() {
         this.name = "Character";
         this.hp = this.maxHp;
     }
 
     /** Constructor for a character that takes a name as input.
      * @param n The name of the new character.*/
-    Character(String n) {
+    public Character(String n) {
         this.name = n;
         this.hp = this.maxHp;
     }
@@ -36,7 +36,7 @@ public abstract class Character extends Entity implements Serializable {
     /** Constructor for a character that takes a name and current room as input.
      * @param n The name of the new character.
      * @param cr The room to place the new character into.*/
-    Character(String n, Room cr) {
+    public Character(String n, Room cr) {
         this.name = n;
         this.currentRoom = cr;
         this.hp = this.maxHp;

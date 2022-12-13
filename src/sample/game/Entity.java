@@ -17,13 +17,13 @@ public abstract class Entity implements Serializable {
     private String name;
 
     /**Default constructor for entity.*/
-    Entity() {
+    public Entity() {
         this.id = NEXT_ID.getAndIncrement();
     }
 
     /**Constructor for entity passed an ID for overwriting existing entities.
      * @param id The unique identifier of the entity.*/
-    Entity(Long id) {
+    public Entity(Long id) {
         this.id = id;
     }
 
