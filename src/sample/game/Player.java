@@ -14,14 +14,14 @@ public class Player extends Character {
 
     /** Constructor for creating a player with a name.
      * @param n The name to be set to the player.*/
-    Player(String n) {
+    public Player(String n) {
         super(n);
     }
 
     /** Constructor for creating a player with a name and a current room.
      * @param name The name to be set to the player.
      * @param currentRoom The room to place the player into by default.*/
-    Player(String name, Room currentRoom) {
+    public Player(String name, Room currentRoom) {
         super(name, currentRoom);
     }
 

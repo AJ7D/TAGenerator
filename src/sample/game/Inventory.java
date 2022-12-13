@@ -13,7 +13,7 @@ public class Inventory implements Serializable {
     private int capacity;
 
     /** Default value if no capacity is set.*/
-    public static int NO_CAPACITY = Integer.MAX_VALUE;
+    private static int NO_CAPACITY = Integer.MAX_VALUE;
 
     /** Default constructor for inventory, sets max capacity to default value (maximum).*/
     public Inventory() {

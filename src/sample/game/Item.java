@@ -27,7 +27,7 @@ public class Item extends Entity implements Serializable {
     private HashMap<String, Action> verbs = new HashMap<>();
 
     /** Default constructor for item, creating a generic object.*/
-    Item() {
+    public Item() {
         this.name = "Perfectly Generic Object";
         this.description = "It's a perfectly generic object.";
         this.isVisible = true;

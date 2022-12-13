@@ -197,7 +197,7 @@ public class ItemConfigController {
         startWithChx.setSelected(item.getStartWith());
 
         if (!item.getStartWith()) { //find item's location
-            Entity e = game.findItemInstance(item); //find entity that holds item
+            Entity e = game.findItemImmediateParent(item); //find entity that holds item
             if (e != null) { //entity found, continue
                 //determine type of entity, update combo box to select entity type
                 locSelectCbx.getSelectionModel().select(e.getClass().getSimpleName());
