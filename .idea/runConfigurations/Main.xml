@@ -5,7 +5,7 @@
     <option name="PROGRAM_PARAMETERS" value="--module-path ${JAVAFX_11} --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.web" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="sample.*" />
+        <option name="PATTERN" value="sample.tools.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

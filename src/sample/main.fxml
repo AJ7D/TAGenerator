@@ -1,0 +1,19 @@
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.Pane?>
+
+<?import java.net.URL?>
+<?import javafx.scene.text.Text?>
+<Pane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+      prefHeight="500" prefWidth="800" styleClass="mainPane" stylesheets="@TAGmain.css" xmlns="http://javafx.com/javafx/16"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.MainController">
+    <Text fx:id="titleTxt" text="TAG Builder" layoutX="160" layoutY="100" styleClass="title"/>
+
+    <Button fx:id="generatorBtn" layoutX="160" layoutY="250" onMouseClicked="#switchScene" mnemonicParsing="false"
+            text="Create Game" />
+
+    <Button fx:id="gameBtn" layoutX="480" layoutY="250" onMouseClicked="#switchScene" mnemonicParsing="false"
+            text="Play Game" />
+    <stylesheets>
+        <URL value="@TAGmain.css" />
+    </stylesheets>
+</Pane>

@@ -12,7 +12,7 @@ public class Main extends Application {
     /** Instantiates the application window, loads the FXML.*/
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("main.fxml"));
 
         primaryStage.setTitle("TAG Builder");
         primaryStage.setScene(new Scene(root, 800, 500));
