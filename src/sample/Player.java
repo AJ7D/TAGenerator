@@ -100,7 +100,7 @@ public class Player extends Character {
         String item = "items";
         if (inventorySize == 1)
             item = "item";
-        return "YOUR NAME IS " + this.getName() + ".\nCurrent HP: " + this.getHp() + "/" + this.getMaxHp() +
+        return "YOUR NAME IS " + this.getName() + ".\nCurrent HP: " + this.getCurrentHp() + "/" + this.getMaxHp() +
                 "\nYou are carrying " + this.getInventory().countItems() + " " + item + ".";
     }
 

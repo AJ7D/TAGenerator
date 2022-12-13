@@ -75,7 +75,7 @@ public class Weapon extends Item {
     public String use(Player p, Enemy enemy) {
         if (enemy.isAlive()) { //enemy can be attacked
             p.incrementTurnCount(); //successful action, increment player turn
-            enemy.setHp(enemy.getHp() - this.getMight()); //update enemy hp
+            enemy.setCurrentHp(enemy.getCurrentHp() - this.getMight()); //update enemy hp
             durability--;
             if (enemy.getState() == EnemyState.PASSIVE) { //a passive enemy becomes aggressive when attacks
                 enemy.setState(EnemyState.AGGRESSIVE);

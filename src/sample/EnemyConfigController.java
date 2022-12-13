@@ -67,7 +67,7 @@ public class EnemyConfigController {
             enemy.setState(determineEnemyState());
             enemy.setCurrentRoom(roomSelCbx.getValue());
 
-            tryGiveRoomEnemy(enemy); //place enemy into indicated room
+            tryPlaceEnemyInSetRoom(enemy); //place enemy into indicated room
 
             game.updateEnemy(enemy);
             closeWindow();
@@ -114,7 +114,7 @@ public class EnemyConfigController {
 
     /** Tries to place the enemy into the selected room when saving.
      * @param enemy The enemy to attempt placing into the current room*/
-    public void tryGiveRoomEnemy(Enemy enemy) {
+    public void tryPlaceEnemyInSetRoom(Enemy enemy) {
         //gets selected room from combobox and adds enemy to it
         Room r = roomSelCbx.getValue();
         if (!r.containsEnemy(enemy)) {

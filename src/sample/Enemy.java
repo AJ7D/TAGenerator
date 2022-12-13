@@ -65,7 +65,7 @@ public class Enemy extends Character {
         switch (this.state) {
             case AGGRESSIVE:
                 if (this.isAlive())
-                    return this.attack(p); //attack player
+                    return this.attackCharacter(p); //attack player
                 else
                     return this.dropInventory(); //newly dead, drop inventory
             case PASSIVE:
@@ -94,15 +94,15 @@ public class Enemy extends Character {
     /** Determines if the enemy is living (HP is above 0).
      * @return boolean Returns true if the enemy is alive.*/
     public boolean isAlive() {
-        return this.getHp() > 0;
+        return this.getCurrentHp() > 0;
     }
 
     /** Makes the enemy attack the provided character.
      * @param character The character to take damage from the enemy attack.
      * @return String The string describing the interaction.*/
-    public String attack(Character character) {
+    public String attackCharacter(Character character) {
         //remove hp from character proportional to this enemy's attack stat
-        character.setHp(character.getHp()-this.getAttack());
+        character.setCurrentHp(character.getCurrentHp()-this.getAttack());
         return this.getName() + " attacked " + character.getName() + ", dealing " + this.getAttack() + " damage.";
     }
 
@@ -139,7 +139,7 @@ public class Enemy extends Character {
         System.out.println(orc.getInventory().addItem(pendant));
 
         System.out.println(orc.processTurn(p));
-        System.out.println(p.getHp());
+        System.out.println(p.getCurrentHp());
         System.out.println(sword.use(p, orc));
         System.out.println(orc.processTurn(p));
         System.out.println(sword.use(p, orc));

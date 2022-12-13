@@ -88,15 +88,15 @@ public class Consumable extends Item{
 
     public static void main(String[] args) {
         Player p = new Player("June");
-        p.setHp(10);
+        p.setCurrentHp(10);
         Consumable peach = new Consumable("Peach", "A juicy peach.", true, true, true, 30, 2);
         p.give(peach);
-        System.out.println(p.checkInventory());
-        System.out.println(p.getHp());
+        System.out.println(p.inventoryContentsAsString());
+        System.out.println(p.getCurrentHp());
         System.out.println(p.getInventory().findItemByName("Peach").use(p));
-        System.out.println(p.getHp());
+        System.out.println(p.getCurrentHp());
         System.out.println(p.getInventory().findItemByName("Peach").use(p));
-        System.out.println(p.getHp());
-        System.out.println(p.checkInventory());
+        System.out.println(p.getCurrentHp());
+        System.out.println(p.inventoryContentsAsString());
     }
 }

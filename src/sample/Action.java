@@ -159,7 +159,7 @@ class ItemCheck implements Action {
      */
     @Override
     public String process(Player player, ArrayList<String> input) {
-        return player.checkInventory();
+        return player.inventoryContentsAsString();
     }
 }
 

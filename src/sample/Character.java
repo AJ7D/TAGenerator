@@ -67,7 +67,7 @@ public abstract class Character extends Entity implements Serializable {
     /** Gets the contents of the character's inventory as a string.
      * @return String The contents of the character's inventory, formatted as a string.
      * @see Inventory*/
-    public String checkInventory() {
+    public String inventoryContentsAsString() {
         return this.getInventory().viewItems();
     }
 
@@ -93,13 +93,13 @@ public abstract class Character extends Entity implements Serializable {
 
     /** Sets the character's current HP.
      * @param h The amount of HP for the character to have.*/
-    public void setHp(int h) {
+    public void setCurrentHp(int h) {
         this.hp = Math.min(h, this.maxHp);
     }
 
     /** Gets the character's current HP.
      * @return int The current HP of the character.*/
-    public int getHp() {
+    public int getCurrentHp() {
         return this.hp;
     }
 

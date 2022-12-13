@@ -26,21 +26,17 @@ public enum Direction {
      * @return Direction The inverse direction.*/
     public Direction inverseDir() {
         //return opposite direction e.g. input north returns south
-        Direction newDir = this;
         switch (this) {
             case NORTH:
-                newDir = SOUTH;
-                break;
+                return SOUTH;
             case WEST:
-                newDir = EAST;
-                break;
+                return EAST;
             case EAST:
-                newDir = WEST;
-                break;
+                return WEST;
             case SOUTH:
-                newDir = NORTH;
-                break;
+                return NORTH;
+            default:
+                return this;
         }
-        return newDir;
     }
 }

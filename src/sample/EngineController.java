@@ -238,7 +238,7 @@ public class EngineController {
                 response = response.concat(e.processTurn(player) + "\n");
             }
         }
-        if (player.getHp() <= 0) { //gameover condition
+        if (player.getCurrentHp() <= 0) { //gameover condition
             response = response.concat(player.getName() + " has died.");
             state = EngineState.GAMEOVER;
         }
