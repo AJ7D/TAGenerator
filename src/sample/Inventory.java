@@ -7,9 +7,6 @@ import java.util.List;
 /** Inventory class for maintaining the items of an entity.
  * @serial */
 public class Inventory implements Serializable {
-    /** Serial version UID for the inventory.*/
-    private static final long serialVersionUID = 1L;
-
     /** Items contained in the inventory.*/
     private final List<Item> contents = new ArrayList<>();
     /** Maximum number of items that can be held by the inventory.*/
