@@ -8,9 +8,6 @@ import java.util.HashMap;
  * @serial
  * @see Entity*/
 public class Item extends Entity implements Serializable {
-    /** The serial version UID of the item.*/
-    private static final long serialVersionUID = 1L;
-
     /** The item's display name.*/
     private String name;
     /** The item's description.*/

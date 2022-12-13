@@ -6,9 +6,6 @@ import java.util.*;
 /** Room class for defining environments that hold non-Room entities. Extends entity.
  * @see Entity*/
 public class Room extends Entity implements Serializable {
-    /** The serial version UID of the room.*/
-    private static final long serialVersionUID = 1L;
-
     /** Generic error message if a direction is locked. Intended to be updated by player in later versions.*/
     public static String GENERIC_FAILURE = "You are unable to travel that way currently.";
 

@@ -1,7 +1,6 @@
 package sample;
 
 import java.io.Serializable;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Character class for defining game actors, such as the player or an enemy.
@@ -9,9 +8,6 @@ import java.util.concurrent.atomic.AtomicLong;
  * @see java.io.Serializable
  */
 public abstract class Character extends Entity implements Serializable {
-    /** The serial version UID of the character.*/
-    private static final long serialVersionUID = 1L;
-
     /** The display name of the character.*/
     private String name;
     /** The inventory belonging to the character, for holding items.*/
