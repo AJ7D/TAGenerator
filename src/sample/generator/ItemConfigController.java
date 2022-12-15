@@ -223,7 +223,7 @@ public class ItemConfigController {
     private Item readType(String iName, String iDesc, boolean iVis, boolean iCarry, boolean iStart) {
         boolean isOverwrite = (item != null); //true if existing item is being edited
         //produces a new item dependent on the subclass of item selected
-        if (item instanceof Container && !itemTypeCbx.getValue().equals("Container")) {
+        if (item != null && item.getHeldItems() != null && !itemTypeCbx.getValue().equals("Container")) {
             game.emptyContainer((Container) item); //place container items into its room if will no longer be container
         }
         switch (itemTypeCbx.getValue()) { //read parameters based on item type

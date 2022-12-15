@@ -1,5 +1,6 @@
 package sample;
 
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -17,16 +18,21 @@ import java.io.IOException;
  */
 public class MainController {
     /** Pane for holding main menu nodes.*/
-    public Pane pane;
+    @FXML
+    private Pane pane;
 
     /** The main menu stage.*/
-    public static Stage stage;
+    @FXML
+    private static Stage stage;
     /** Button that takes the user to the generator screen.*/
-    public Button generatorBtn;
+    @FXML
+    private Button generatorBtn;
     /** Button that takes the user to the engine screen.*/
-    public Button gameBtn;
+    @FXML
+    private Button gameBtn;
     /** Displays the main menu title.*/
-    public Text titleTxt;
+    @FXML
+    private Text titleTxt;
 
     /** Handles scene changing when the user clicks the generator or engine button.
      * @throws IOException if scene contents cannot be loaded.

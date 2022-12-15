@@ -125,7 +125,7 @@ public class Game implements Serializable {
             return null;
         ArrayList<Item> containers = new ArrayList<>();
         for (Item i : this.getGameItems()) {
-            if (i instanceof Container) {
+            if (i.getHeldItems() != null) {
                 containers.add(i);
             }
         }
@@ -232,7 +232,7 @@ public class Game implements Serializable {
      * @param item The item to be deleted from the game's items.
      * @see Item*/
     public void deleteItem(Item item) { //remove an item from the game, severing any established connections
-        if (item instanceof Container) {
+        if (item.getHeldItems() != null) {
             this.emptyContainer((Container) item); //all items in container moved to container's room
         }
         deleteItemInstances(item); //remove item from any rooms, containers, inventories, etc.
@@ -301,7 +301,7 @@ public class Game implements Serializable {
                 return r;
             }
             for (Item i : r.getItems()) {
-                if (i instanceof Container) {
+                if (i.getHeldItems() != null) {
                     if (recSearchItemContains((Container) i, item))
                         return r;
                 }
@@ -328,7 +328,7 @@ public class Game implements Serializable {
             if (i.getId() == itemToFind.getId()) {
                 return true; //item has been found
             }
-            if (i instanceof Container) {
+            if (i.getHeldItems() != null) {
                 return recSearchItemContains((Container) i, itemToFind); //search next container
             }
         }
@@ -349,7 +349,7 @@ public class Game implements Serializable {
             if (i.getId() == itemToFind.getId()) {
                 return true; //item found
             }
-            if (i instanceof Container) {
+            if (i.getHeldItems() != null) {
                 return recSearchItemContains((Container) i, itemToFind); //search container
             }
         }
@@ -363,7 +363,7 @@ public class Game implements Serializable {
             r.getItems().remove(item); //remove from any rooms
         }
         for (Item i : gameItems) {
-            if (i instanceof Container) {
+            if (i.getHeldItems() != null) {
                 ((Container) i).getItems().remove(item); //remove from any containers
             }
         }
@@ -377,13 +377,13 @@ public class Game implements Serializable {
      * @param item The item to be found.
      * @return Entity The entity holding the item.
      * @see Entity*/
-    public Entity findItemInstance(Item item) { //locate primary item holder
+    public Entity findItemImmediateParent(Item item) { //locate primary item holder
         for (Room r : gameMap) {
             if (r.getItems().contains(item)) //item is in a room
                 return r;
         }
         for (Item i : gameItems) {
-            if (i instanceof Container) {
+            if (i.getHeldItems() != null) {
                 if (((Container) i).getItems().contains(item)) { //item is in a container
                     return i;
                 }

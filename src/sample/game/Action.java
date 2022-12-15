@@ -285,7 +285,7 @@ class Use implements Action {
         if (item.compatibleWithItem()) {
             //need to try locating a second item
             Item item2 = (Item) WordBuilderTools.determineEntityFromInput(player.getInteractables(), input);
-            if (item2 == null && item instanceof Container) {
+            if (item2 == null && item.getHeldItems() != null) {
                 //extra check for container items, if player is trying to take an item from container
                 item2 = (Item) WordBuilderTools.determineEntityFromInput(((Container) item).getItems(), input);
             }
