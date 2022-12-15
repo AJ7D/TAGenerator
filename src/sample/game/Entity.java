@@ -1,6 +1,7 @@
 package sample.game;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -45,11 +46,10 @@ public abstract class Entity implements Serializable {
         this.name = name;
     }
 
-    /** Determines if the entity can hold additional entities within itself.
-     * Default entities do not contain other entities; override to return true in subclasses that do.
-     * @return boolean Returns true if item can hold additional entities. */
-    public boolean containsEntities() {
-        return false;
+    /** Returns Entities held by this Entity. Returns null if Entity cannot hold other Entities.
+     * @return ArrayList Returns held entities. */
+    public ArrayList<? extends Entity> getHeldItems() {
+        return null;
     }
 
     /**Determines that entities are equal if their unique IDs are equal.*/

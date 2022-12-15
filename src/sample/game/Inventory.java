@@ -8,7 +8,7 @@ import java.util.List;
  * @serial */
 public class Inventory implements Serializable {
     /** Items contained in the inventory.*/
-    private final List<Item> contents = new ArrayList<>();
+    private final ArrayList<Item> contents = new ArrayList<>();
     /** Maximum number of items that can be held by the inventory.*/
     private int capacity;
 
@@ -27,8 +27,8 @@ public class Inventory implements Serializable {
     }
 
     /** Gets the items held by the inventory.
-     * @return List The list of items held by the inventory.*/
-    public List<Item> getContents() { return this.contents; }
+     * @return ArrayList The list of items held by the inventory.*/
+    public ArrayList<Item> getContents() { return this.contents; }
 
     public int getCapacity() { return this.capacity; }
 

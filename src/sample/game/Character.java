@@ -1,6 +1,7 @@
 package sample.game;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Character class for defining game actors, such as the player or an enemy.
@@ -112,6 +113,13 @@ public abstract class Character extends Entity implements Serializable {
             this.hp = maxHp;
         }
         else this.hp = Math.max(this.hp + hpToGive, 0); //if hp change is less than 0 set to 0
+    }
+
+    /** Determines if the item contains entities.
+     * @return boolean Returns true as container can be used to store items. */
+    @Override
+    public ArrayList<? extends Entity> getHeldItems() {
+        return getInventory().getContents();
     }
 }
 

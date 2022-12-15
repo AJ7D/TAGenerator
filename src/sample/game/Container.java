@@ -177,11 +177,11 @@ public class Container extends Item {
         return true;
     }
 
-    /** Determines if the item contains entities.
-     * @return boolean Returns true as container can be used to store items. */
+    /** Returns the held items of the container.
+     * @return ArrayList Returns items held. */
     @Override
-    public boolean containsEntities() {
-        return true;
+    public ArrayList<? extends Entity> getHeldItems() {
+        return items;
     }
 
     /** Displays the container's information as a string.*/
