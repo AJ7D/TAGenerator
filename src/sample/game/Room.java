@@ -81,6 +81,11 @@ public class Room extends Entity implements Serializable {
      * @return ArrayList The items held by the room.*/
     public ArrayList<Item> getItems() { return this.items; }
 
+    @Override
+    public ArrayList<? extends Entity> getHeldItems() {
+        return this.items;
+    }
+
     public ArrayList<Character> getNpcs() { return npcs; }
 
     /** Gets a list of all entities within the room, but not player.
