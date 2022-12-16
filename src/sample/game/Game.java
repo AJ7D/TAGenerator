@@ -6,6 +6,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 
 /** Class for storing game entity data and player stats. Editable in generator and playable in engine.
  * @serial */
@@ -16,11 +17,11 @@ public class Game implements Serializable {
     /** The title of the game, displayed when game is loaded.*/
     private String title;
     /** ArrayList of game's rooms.*/
-    private ArrayList<Room> gameMap = new ArrayList<>();
+    private HashSet<Room> gameMap = new HashSet<>();
     /** ArrayList of game's items.*/
-    private ArrayList<Item> gameItems = new ArrayList<>();
+    private HashSet<Item> gameItems = new HashSet<>();
     /** ArrayList of game's enemies.*/
-    private ArrayList<Enemy> gameEnemies = new ArrayList<>();
+    private HashSet<Enemy> gameEnemies = new HashSet<>();
 
     /** The player character for this game.*/
     private Player player = new Player("Player");
@@ -100,19 +101,19 @@ public class Game implements Serializable {
     /** Gets the game map as an ArrayList of Rooms.
      * @return ArrayList The ArrayList of Rooms defined in the game map.
      * @see Room*/
-    public ArrayList<Room> getGameMap() { return this.gameMap; }
+    public HashSet<Room> getGameMap() { return this.gameMap; }
 
     /** Gets the game items as an ArrayList of Items.
      * @return ArrayList The ArrayList of Items defined in the game items.
      * @see Item*/
-    public ArrayList<Item> getGameItems() {
+    public HashSet<Item> getGameItems() {
         return gameItems;
     }
 
     /** Gets the game enemies as an ArrayList of Enemies.
      * @return ArrayList The ArrayList of Enemies defined in the game enemies.
      * @see Enemy*/
-    public ArrayList<Enemy> getGameEnemies() {
+    public HashSet<Enemy> getGameEnemies() {
         return gameEnemies;
     }
 
@@ -121,10 +122,10 @@ public class Game implements Serializable {
      * @see Container*/
     public ArrayList<Item> getContainers() {
         //returns all items of type container
-        if (this.getGameItems().isEmpty())
+        if (getGameItems().isEmpty())
             return null;
         ArrayList<Item> containers = new ArrayList<>();
-        for (Item i : this.getGameItems()) {
+        for (Item i : getGameItems()) {
             if (i.getHeldItems() != null) {
                 containers.add(i);
             }
@@ -137,7 +138,7 @@ public class Game implements Serializable {
      * @return Room The room with the corresponding unique identifier.
      * @see Room*/
     public Room getRoom(Long id) { //find room by unique id
-        for (Room r : this.gameMap) {
+        for (Room r : gameMap) {
             if (id == r.getId()) {
                 return r;
             }
@@ -150,7 +151,7 @@ public class Game implements Serializable {
      * @return Item The item with the corresponding unique identifier.
      * @see Item*/
     public Item getItem(Long id) { //find item by unique id
-        for (Item i : this.gameItems) {
+        for (Item i : gameItems) {
             if (id == i.getId()) {
                 return i;
             }
@@ -163,7 +164,7 @@ public class Game implements Serializable {
      * @return Enemy The enemy with the corresponding unique identifier.
      * @see Enemy*/
     public Enemy getEnemy(Long id) { //find enemy by unique id
-        for (Enemy e : this.gameEnemies) {
+        for (Enemy e : gameEnemies) {
             if (id == e.getId()) {
                 return e;
             }
@@ -175,12 +176,6 @@ public class Game implements Serializable {
      * @param room The room data to update with.
      * @see Room*/
     public void updateRoom(Room room) { //change attributes of an established room
-        for (Room r : gameMap) {
-            if (r.getId() == (room.getId())) {
-                r = room;
-                return;
-            }
-        }
         gameMap.add(room); //room wasn't found, so add it
     }
 
@@ -188,12 +183,6 @@ public class Game implements Serializable {
      * @param item The item data to update with.
      * @see Item*/
     public void updateItem(Item item) { //change attributes of an established item
-        for (Item i : gameItems) {
-            if (i.getId() == (item.getId())) {
-                i = item;
-                return;
-            }
-        }
         gameItems.add(item); //item wasn't found, so add it
     }
 
@@ -201,12 +190,6 @@ public class Game implements Serializable {
      * @param enemy The enemy data to update with.
      * @see Enemy*/
     public void updateEnemy(Enemy enemy) { //change attributes of an established enemy
-        for (Enemy e : gameEnemies) {
-            if (e.getId() == (enemy.getId())) {
-                e = enemy;
-                return;
-            }
-        }
         gameEnemies.add(enemy); //enemy wasn't found, so add it
     }
 
@@ -233,31 +216,17 @@ public class Game implements Serializable {
      * @see Item*/
     public void deleteItem(Item item) { //remove an item from the game, severing any established connections
         if (item.getHeldItems() != null) {
-            this.emptyContainer((Container) item); //all items in container moved to container's room
+            emptyContainer((Container) item); //all items in container moved to container's room
         }
         deleteItemInstances(item); //remove item from any rooms, containers, inventories, etc.
-        deleteEntity(gameItems, item); //remove item from game items
-    }
-
-    /** Delete an entity from a given entity collection.
-     * @param collection The collection to remove the given entity from.
-     * @param entity The entity to remove from the collection
-     * @see Entity*/
-    public void deleteEntity(Collection<? extends Entity> collection, Entity entity) {
-        //for implementing any conditional checks
-        for (Entity e : collection) {
-            if (e.equals(entity)) {
-                collection.remove(entity);
-                return;
-            }
-        }
+        gameItems.remove(item);
     }
 
     /** Delete a given enemy from the game's enemies.
      * @param enemy The enemy to be deleted from the game's enemies.
      * @see Enemy*/
     public void deleteEnemy(Enemy enemy) { //remove enemy from game
-        deleteEntity(gameEnemies, enemy);
+        gameEnemies.remove(enemy);
         Room room = enemy.getCurrentRoom();
 
         if (!enemy.getInventory().getContents().isEmpty()) {
@@ -281,12 +250,8 @@ public class Game implements Serializable {
             throw new IllegalRoomConnection("Room cannot be connected to itself (" + r1.getName() + ")");
         }
         r1.addExit(dir, r2);
-        if (!gameMap.contains(r1)) {
-            gameMap.add(r1);
-        }
-        if (!gameMap.contains(r2)) {
-            gameMap.add(r2);
-        }
+        gameMap.add(r1); //only add if doesn't exist yet
+        gameMap.add(r2);
         System.out.println("Connected rooms " + r1.getName() + " + " + r2.getName());
     }
 
@@ -296,7 +261,7 @@ public class Game implements Serializable {
      * @see Room
      * @see Item */
     public Room findItemLocRoom(Item item) { //find room of an item, or entity holding item
-        for (Room r : this.gameMap) {
+        for (Room r : gameMap) {
             if (r.containsItem(item)) {
                 return r;
             }
@@ -490,7 +455,7 @@ public class Game implements Serializable {
     public void emptyContainer(Container container) { //place container contents in container's room when deleted
         if (container.getItems().isEmpty())
             return;
-        this.findItemLocRoom(container).getItems().addAll(container.getItems());
+        findItemLocRoom(container).getItems().addAll(container.getItems());
         container.getItems().clear();
     }
 
