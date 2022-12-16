@@ -4,7 +4,6 @@ import sample.generator.IllegalRoomConnection;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -27,7 +26,6 @@ public class Game implements Serializable {
     private Player player = new Player("Player");
     /** The room that the player character should start in if no save state loaded.*/
     private Room startingRoom = new Room();
-
     /** The room the player character must reach to win the game.*/
     private Room winCondition = startingRoom;
 
@@ -149,51 +147,11 @@ public class Game implements Serializable {
         return null;
     }
 
-    /** Gets an item in the game's items by its unique identifier. Can return null.
-     * @param id The ID of the item to find.
-     * @return Item The item with the corresponding unique identifier.
-     * @see Item*/
-    public Item getItem(Long id) { //find item by unique id
-        for (Item i : gameItems) {
-            if (id == i.getId()) {
-                return i;
-            }
-        }
-        return null;
-    }
-
-    /** Gets an enemy in the game's enemies by its unique identifier. Can return null.
-     * @param id The ID of the enemy to find.
-     * @return Enemy The enemy with the corresponding unique identifier.
-     * @see Enemy*/
-    public Enemy getEnemy(Long id) { //find enemy by unique id
-        for (Enemy e : gameEnemies) {
-            if (id == e.getId()) {
-                return e;
-            }
-        }
-        return null;
-    }
-
     /** Updates an existing room with the data of the given room.
      * @param room The room data to update with.
      * @see Room*/
     public void updateRoom(Room room) { //change attributes of an established room
-        gameMap.add(room); //room wasn't found, so add it
-    }
-
-    /** Updates an existing item with the data of the given item.
-     * @param item The item data to update with.
-     * @see Item*/
-    public void updateItem(Item item) { //change attributes of an established item
-        gameItems.add(item); //item wasn't found, so add it
-    }
-
-    /** Updates an existing enemy with the data of the given enemy.
-     * @param enemy The enemy data to update with.
-     * @see Enemy*/
-    public void updateEnemy(Enemy enemy) { //change attributes of an established enemy
-        gameEnemies.add(enemy); //enemy wasn't found, so add it
+        gameMap.add(room); //add if room not found
     }
 
     /** Delete a given room from the game's map.
@@ -206,34 +164,6 @@ public class Game implements Serializable {
             for (Direction dir : Direction.values())
                 room.deleteExit(dir);
             gameMap.remove(room);
-        }
-    }
-
-    /** Delete a given item from the game's items.
-     * @param item The item to be deleted from the game's items.
-     * @see Item*/
-    public void deleteItem(Item item) { //remove an item from the game, severing any established connections
-        if (item.getHeldItems() != null) {
-            emptyContainer((Container) item); //all items in container moved to container's room
-        }
-        deleteItemInstances(item); //remove item from any rooms, containers, inventories, etc.
-        gameItems.remove(item);
-    }
-
-    /** Delete a given enemy from the game's enemies.
-     * @param enemy The enemy to be deleted from the game's enemies.
-     * @see Enemy*/
-    public void deleteEnemy(Enemy enemy) { //remove enemy from game
-        gameEnemies.remove(enemy);
-        Room room = enemy.getCurrentRoom();
-
-        if (!enemy.getInventory().getContents().isEmpty()) {
-            //place enemy inventory into enemy's current room
-            room.getItems().addAll(enemy.getInventory().getContents());
-        }
-        if (room != null) {
-            //delete enemy from room it is associated with
-            room.deleteEnemy(enemy);
         }
     }
 
@@ -253,6 +183,74 @@ public class Game implements Serializable {
         System.out.println("Connected rooms " + r1.getName() + " + " + r2.getName());
     }
 
+    /** Gets an item in the game's items by its unique identifier. Can return null.
+     * @param id The ID of the item to find.
+     * @return Item The item with the corresponding unique identifier.
+     * @see Item*/
+    public Item getItem(Long id) { //find item by unique id
+        for (Item i : gameItems) {
+            if (id == i.getId()) {
+                return i;
+            }
+        }
+        return null;
+    }
+
+    /** Updates an existing item with the data of the given item.
+     * @param item The item data to update with.
+     * @see Item*/
+    public void updateItem(Item item) { //change attributes of an established item
+        gameItems.add(item); //add if item not found
+    }
+
+    /** Delete a given item from the game's items.
+     * @param item The item to be deleted from the game's items.
+     * @see Item*/
+    public void deleteItem(Item item) { //remove an item from the game, severing any established connections
+        if (item.getHeldItems() != null) {
+            emptyContainer((Container) item); //all items in container moved to container's room
+        }
+        deleteItemInstances(item); //remove item from any rooms, containers, inventories, etc.
+        gameItems.remove(item);
+    }
+
+    /** Gets an enemy in the game's enemies by its unique identifier. Can return null.
+     * @param id The ID of the enemy to find.
+     * @return Enemy The enemy with the corresponding unique identifier.
+     * @see Enemy*/
+    public Enemy getEnemy(Long id) { //find enemy by unique id
+        for (Enemy e : gameEnemies) {
+            if (id == e.getId()) {
+                return e;
+            }
+        }
+        return null;
+    }
+
+    /** Updates an existing enemy with the data of the given enemy.
+     * @param enemy The enemy data to update with.
+     * @see Enemy*/
+    public void updateEnemy(Enemy enemy) { //change attributes of an established enemy
+        gameEnemies.add(enemy); //add if enemy not found
+    }
+
+    /** Delete a given enemy from the game's enemies.
+     * @param enemy The enemy to be deleted from the game's enemies.
+     * @see Enemy*/
+    public void deleteEnemy(Enemy enemy) { //remove enemy from game
+        gameEnemies.remove(enemy);
+        Room room = enemy.getCurrentRoom();
+
+        if (!enemy.getInventory().getContents().isEmpty()) {
+            //place enemy inventory into enemy's current room
+            room.getItems().addAll(enemy.getInventory().getContents());
+        }
+        if (room != null) {
+            //delete enemy from room it is associated with
+            room.deleteEnemy(enemy);
+        }
+    }
+
     /** Find the room that an item is contained within. Can return null.
      * @param item The item to find.
      * @return Room The room where the item was found.
@@ -268,6 +266,13 @@ public class Game implements Serializable {
         return null;
     }
 
+    /** Recursive search called within the findItemLocRoom function. Returns true if
+     * itemToFind is held by rootEntity, otherwise recursively searches items within RootEntity.
+     * Eventually returns false if itemToFind is never found.
+     * @param rootEntity Entity to search for item.
+     * @param itemToFind Item to search for.
+     * @return boolean Returns true if item found, otherwise false.
+     */
     public boolean recSearchContains(Entity rootEntity, Item itemToFind) {
         //recursively searches for an item, handling containers within containers
         if (rootEntity.getHeldItems().isEmpty())
@@ -283,6 +288,8 @@ public class Game implements Serializable {
         return false; //item was not found in any container
     }
 
+    /** Returns all entities contained in the game.
+     * @return HashSet HashSet of all entities known to game. */
     public HashSet<Entity> getAllGameEntities() {
         HashSet<Entity> entities = new HashSet<>();
         entities.addAll(gameMap);
