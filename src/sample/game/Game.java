@@ -122,10 +122,10 @@ public class Game implements Serializable {
      * @see Container*/
     public ArrayList<Item> getContainers() {
         //returns all items of type container
-        if (getGameItems().isEmpty())
+        if (gameItems.isEmpty())
             return null;
         ArrayList<Item> containers = new ArrayList<>();
-        for (Item i : getGameItems()) {
+        for (Item i : gameItems) {
             if (i.getHeldItems() != null) {
                 containers.add(i);
             }
@@ -197,17 +197,12 @@ public class Game implements Serializable {
      * @param room The room to be deleted from the game map.
      * @see Room*/
     public void deleteRoom(Room room) {
-        for (Room r : gameMap) {
-            if (r.getId() == room.getId()) {
-                for (Item i : r.getItems()) { //delete all items attached to this room
-                    gameItems.remove(i);
-                }
-                for (Direction dir : Direction.values()) { //sever all room connections before deletion
-                    r.deleteExit(dir);
-                }
-                gameMap.remove(r);
-                return;
-            }
+        if (gameMap.contains(room)) {
+            for (Item i : room.getItems())
+                gameItems.remove(i);
+            for (Direction dir : Direction.values())
+                room.deleteExit(dir);
+            gameMap.remove(room);
         }
     }
 
@@ -262,63 +257,27 @@ public class Game implements Serializable {
      * @see Item */
     public Room findItemLocRoom(Item item) { //find room of an item, or entity holding item
         for (Room r : gameMap) {
-            if (r.containsItem(item)) {
-                return r;
-            }
-            for (Item i : r.getItems()) {
-                if (i.getHeldItems() != null) {
-                    if (recSearchItemContains((Container) i, item))
-                        return r;
-                }
-            }
-            for (Enemy e : r.getEnemies()) {
-                if (recSearchEnemyContains(e, item))
+            for (Entity e : r.getEntities()) {
+                if (e.getId() == item.getId() || (e.getHeldItems() != null && recSearchContains(e, item)))
                     return r;
             }
         }
         return null;
     }
 
-    /** Recursive search for an item that traverses all nested containers. Used to determine if
-     * an item exists within another item in a room.
-     * @param rootContainer The container to perform a recursive search within.
-     * @param itemToFind The item to be found.
-     * @return boolean Returns true if the item was found.
-     * @see Container*/
-    public boolean recSearchItemContains(Container rootContainer, Item itemToFind) {
+    public boolean recSearchContains(Entity rootEntity, Item itemToFind) {
         //recursively searches for an item, handling containers within containers
-        if (rootContainer.getItems().isEmpty())
+        if (rootEntity.getHeldItems().isEmpty())
             return false;
-        for (Item i : rootContainer.getItems()) {
-            if (i.getId() == itemToFind.getId()) {
+        for (Entity e : rootEntity.getHeldItems()) {
+            if (e.getId() == itemToFind.getId()) {
                 return true; //item has been found
             }
-            if (i.getHeldItems() != null) {
-                return recSearchItemContains((Container) i, itemToFind); //search next container
+            if (e.getHeldItems() != null) {
+                return recSearchContains(e, itemToFind); //search next container
             }
         }
         return false; //item was not found in any container
-    }
-
-    /** Recursive search for an item that traverses all nested containers within an enemy inventory.
-     * Used to determine if an item exists within other entities in a room.
-     * @param rootEnemy The enemy to perform a recursive search within.
-     * @param itemToFind The item to be found.
-     * @return boolean Returns true if the item was found.
-     * @see Enemy*/
-    public boolean recSearchEnemyContains(Enemy rootEnemy, Item itemToFind) {
-        //recursively searches for an item, handling containers within enemies
-        if (rootEnemy.getInventory().getContents().isEmpty())
-            return false;
-        for (Item i : rootEnemy.getInventory().getContents()) {
-            if (i.getId() == itemToFind.getId()) {
-                return true; //item found
-            }
-            if (i.getHeldItems() != null) {
-                return recSearchItemContains((Container) i, itemToFind); //search container
-            }
-        }
-        return false; //item not found
     }
 
     /** Deletes all references of an item then removes it from the game items list.
