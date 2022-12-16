@@ -169,13 +169,13 @@ public class Room extends Entity implements Serializable {
      * @return ArrayList The ArrayList of visible items in the room.
      * @see Item*/
     public ArrayList<Item> getVisibleItems() {
-        ArrayList<Item> items = new ArrayList<>();
-        for (Item i : items) {
+        ArrayList<Item> visItems = new ArrayList<>();
+        for (Item i : this.items) {
             if (i.getIsVisible()) {
-                items.add(i);
+                visItems.add(i);
             }
         }
-        return items;
+        return visItems;
     }
 
     /** Adds the given item to the room's items.
