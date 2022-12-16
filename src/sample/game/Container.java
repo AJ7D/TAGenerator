@@ -154,7 +154,7 @@ public class Container extends Item {
      * @see Item*/
     public void addItem(Item item) { this.items.add(item); }
 
-    /** Displays the container's current lock state.
+    /** Gets the item contents of the container.
      * @return ArrayList The items contained in the container.*/
     public ArrayList<Item> getItems() {
         return items;

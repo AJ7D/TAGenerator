@@ -170,7 +170,7 @@ public class Room extends Entity implements Serializable {
      * @see Item*/
     public ArrayList<Item> getVisibleItems() {
         ArrayList<Item> items = new ArrayList<>();
-        for (Item i : this.getItems()) {
+        for (Item i : items) {
             if (i.getIsVisible()) {
                 items.add(i);
             }
@@ -267,18 +267,6 @@ public class Room extends Entity implements Serializable {
         return true;
     }
 
-    /** Checks if the room contains a given item.
-     * @param item The item to check for.
-     * @return boolean Returns true if the item is in this room.*/
-    public boolean containsItem(Item item) { //check if room contains given item
-        for (Item i : this.items) {
-            if (i.compareItem(item)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     /** Checks if the room contains a given enemy.
      * @param enemy The enemy to check for.
      * @return boolean Returns true if the enemy is in this room.*/
@@ -302,15 +290,6 @@ public class Room extends Entity implements Serializable {
     public Item findItemByName(String item) {
         for (Item i : items) {
             if (i.getName().equalsIgnoreCase(item)) {
-                return i;
-            }
-        }
-        return null;
-    }
-
-    public Item findItemById(Long id) {
-        for (Item i : items) {
-            if (i.getId() == id) {
                 return i;
             }
         }
