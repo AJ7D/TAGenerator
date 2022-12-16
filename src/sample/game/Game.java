@@ -134,6 +134,9 @@ public class Game implements Serializable {
     }
 
     /** Gets a room in the game map by its unique identifier. Can return null.
+     * Note: we iterate instead of using a HashMap because there are very few instances where
+     * we need to identify an entity by its ID, the engine primarily identifies items by their names
+     * due to design requirements therefore prioritise faster iteration > faster ID identification.
      * @param id The ID of the room to find.
      * @return Room The room with the corresponding unique identifier.
      * @see Room*/
@@ -280,21 +283,23 @@ public class Game implements Serializable {
         return false; //item was not found in any container
     }
 
-    /** Deletes all references of an item then removes it from the game items list.
+    public HashSet<Entity> getAllGameEntities() {
+        HashSet<Entity> entities = new HashSet<>();
+        entities.addAll(gameMap);
+        entities.addAll(gameItems);
+        entities.addAll(gameEnemies);
+        entities.add(player);
+        return entities;
+    }
+
+    /** Deletes all references of an item but does not remove it from the game items list.
      * @param item The item to be fully removed.*/
     public void deleteItemInstances(Item item) { //delete all item instances in the game
-        for (Room r : gameMap) {
-            r.getItems().remove(item); //remove from any rooms
-        }
-        for (Item i : gameItems) {
-            if (i.getHeldItems() != null) {
-                ((Container) i).getItems().remove(item); //remove from any containers
+        for (Entity e : getAllGameEntities()) {
+            if (e.getHeldItems() != null) {
+                e.getHeldItems().remove(item);
             }
         }
-        for (Enemy e : gameEnemies) {
-            e.getInventory().getContents().remove(item); //remove from any enemy inventories
-        }
-        player.getInventory().getContents().remove(item); //remove from player inventory
     }
 
     /** Finds the primary holder of an item, e.g. container, enemy or player holding an item.
@@ -302,23 +307,9 @@ public class Game implements Serializable {
      * @return Entity The entity holding the item.
      * @see Entity*/
     public Entity findItemImmediateParent(Item item) { //locate primary item holder
-        for (Room r : gameMap) {
-            if (r.getItems().contains(item)) //item is in a room
-                return r;
-        }
-        for (Item i : gameItems) {
-            if (i.getHeldItems() != null) {
-                if (((Container) i).getItems().contains(item)) { //item is in a container
-                    return i;
-                }
-            }
-        }
-        for (Enemy e : gameEnemies) {
-            if (e.getInventory().getContents().contains(item)) //item is in an enemy inventory
+        for (Entity e : getAllGameEntities())
+            if (e.getHeldItems() != null && e.getHeldItems().contains(item))
                 return e;
-        }
-        if (player.getInventory().getContents().contains(item)) //item is in player inventory
-            return player;
         return null; //item could not be found?
     }
 
